@@ -1,5 +1,10 @@
 import { useSelector } from 'react-redux'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom'
 
 import { Helmet } from 'react-helmet'
 import { IntlProvider } from 'react-intl'
@@ -39,13 +44,17 @@ export default function App() {
           messages={messages[locale]}
           locale={locale}
           defaultLocale="en"
+          onError={() => console.log('IntlProvider Error')}
         >
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <ErrorBoundary>
               <Router>
                 <Switch>
-                  <ProtectedRoute exact path="/">
+                  <Route exact path="/">
+                    <Redirect to="/dashboard" />
+                  </Route>
+                  <ProtectedRoute path="/dashboard">
                     <Dashboard />
                   </ProtectedRoute>
                   <Route path="/login">

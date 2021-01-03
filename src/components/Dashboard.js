@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { FormattedMessage } from 'react-intl'
 import Page from '../layout/Page'
 

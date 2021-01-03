@@ -4,7 +4,7 @@ const appSlice = createSlice({
   name: 'app',
   initialState: {
     mode: 'light',
-    locale: 'he',
+    locale: 'en',
   },
   reducers: {
     toggleMode: state => ({
