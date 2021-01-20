@@ -1,16 +1,25 @@
+import Person from '@material-ui/icons/Person'
+import LocationCity from '@material-ui/icons/LocationCity'
+import AccessTime from '@material-ui/icons/AccessTime'
+import Phone from '@material-ui/icons/Phone'
+
 export const validEntityTypes = [
   'PERSON',
   'PLACE',
-  'MENTION',
-  'HASHTAG',
   'OTHER',
   'ANOTHER',
+  'MENTION',
+  'HASHTAG',
 ]
+
+export const selectedEntityTypes = ['PERSON', 'PLACE', 'OTHER', 'ANOTHER']
 
 const entityTypes = {
   PERSON: {
     name: 'Person',
     mutability: 'IMMUTABLE',
+    icon: <Person />,
+    color: 'orange',
     style: {
       backgroundColor: 'orange',
     },
@@ -18,8 +27,28 @@ const entityTypes = {
   PLACE: {
     name: 'Place',
     mutability: 'IMMUTABLE',
+    icon: <LocationCity />,
+    color: 'deepskyblue',
     style: {
       backgroundColor: 'deepskyblue',
+    },
+  },
+  OTHER: {
+    name: 'Mention',
+    mutability: 'IMMUTABLE',
+    icon: <AccessTime />,
+    color: 'aquamarine',
+    style: {
+      backgroundColor: 'aquamarine',
+    },
+  },
+  ANOTHER: {
+    name: 'Hashtag',
+    mutability: 'IMMUTABLE',
+    icon: <Phone />,
+    color: 'coral',
+    style: {
+      backgroundColor: 'coral',
     },
   },
   MENTION: {
@@ -36,20 +65,7 @@ const entityTypes = {
       backgroundColor: 'pink',
     },
   },
-  OTHER: {
-    name: 'Hashtag',
-    mutability: 'IMMUTABLE',
-    style: {
-      backgroundColor: 'yellow',
-    },
-  },
-  ANOTHER: {
-    name: 'Hashtag',
-    mutability: 'IMMUTABLE',
-    style: {
-      backgroundColor: 'brown',
-    },
-  },
+
   UNDEFINED: {
     name: 'Undefined',
     mutability: 'IMMUTABLE',

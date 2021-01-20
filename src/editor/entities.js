@@ -37,8 +37,3 @@ export const applyEntityToSelection = ({ editorState, userData }) => {
 
   return newEditorState
 }
-
-export const getEntityType = ({ contentState, entityKey }) => {
-  const entity = contentState.getEntity(entityKey)
-  return entity?.type
-}

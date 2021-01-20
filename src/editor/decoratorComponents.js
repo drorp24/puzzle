@@ -1,7 +1,11 @@
 /** @jsxImportSource @emotion/react */
+import { useRef } from 'react'
+
+import Tooltip from '@material-ui/core/Tooltip'
+import Zoom from '@material-ui/core/Zoom'
 
 import entityTypes from './entityTypes'
-import { getEntityType } from './entities'
+import { EntityDetails } from './EntityDetails'
 
 export const HandleSpan = ({ children }) => {
   const style = entityTypes['MENTION'].style
@@ -15,7 +19,24 @@ export const HashtagSpan = ({ children }) => {
 }
 
 export const EntitySpan = ({ contentState, entityKey, children }) => {
-  const entityType = getEntityType({ contentState, entityKey })
+  const entity = contentState.getEntity(entityKey)
+  const {
+    data: {
+      userData: { entityType },
+    },
+  } = entity
   const style = entityTypes[entityType].style
-  return <span css={style}>{children}</span>
+  const ref = useRef()
+
+  return (
+    <Tooltip
+      title={<EntityDetails {...{ entity }} />}
+      arrow
+      TransitionComponent={Zoom}
+    >
+      <span css={style} ref={ref}>
+        {children}
+      </span>
+    </Tooltip>
+  )
 }
