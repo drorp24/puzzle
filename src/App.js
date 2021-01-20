@@ -14,6 +14,7 @@ import en from './i18n/en'
 import ProtectedRoute from './auth/ProtectedRoute'
 import Dashboard from './components/Dashboard'
 import Login from './auth/Login'
+import Editor from './editor/Editor'
 
 import Direction from './layout/Direction'
 import Snackbar from './communication/Snackbar'
@@ -52,13 +53,16 @@ export default function App() {
               <Router>
                 <Switch>
                   <Route exact path="/">
-                    <Redirect to="/dashboard" />
+                    <Redirect to="/editor" />
                   </Route>
-                  <ProtectedRoute path="/dashboard">
+                  <Route path="/dashboard">
                     <Dashboard />
-                  </ProtectedRoute>
+                  </Route>
                   <Route path="/login">
                     <Login />
+                  </Route>
+                  <Route path="/editor">
+                    <Editor />
                   </Route>
                   <Route path="/simulateerror">
                     <SimulateError />

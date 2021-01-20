@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react'
 import Page from '../layout/Page'
-import Drawer from './Drawer'
+// import Drawer from './Drawer'
 
 const styles = {
   root: theme => ({
@@ -48,9 +49,7 @@ const Dashboard = () => (
     <div css={styles.root}>
       <div css={styles.menu} />
       <div css={styles.appBar} />
-      <div css={styles.drawer}>
-        <Drawer />
-      </div>
+      <div css={styles.drawer} />
       <div css={styles.chart} />
       <div css={styles.stat} />
       <div css={styles.list} />
