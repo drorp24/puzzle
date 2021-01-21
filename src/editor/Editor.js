@@ -1,8 +1,15 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
-import { Editor, EditorState, RichUtils, ContentState } from 'draft-js'
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  ContentState,
+  convertFromRaw,
+} from 'draft-js'
 import 'draft-js/dist/Draft.css'
+import { rawContent } from '../api/fakeEditorApi'
 
 import { emptyUserData } from './SpeedDial'
 import { applyEntityToSelection } from './entities'
@@ -19,18 +26,9 @@ const styles = {
   }),
 }
 
-const styleMap = {
-  HIGHLIGHT: {
-    backgroundColor: 'yelow',
-  },
-}
-
 const MyEditor = () => {
   const [editorState, setEditorState] = useState(() =>
-    EditorState.createWithContent(
-      ContentState.createFromText('This is the text read from the UTF-8 file'),
-      decorator
-    )
+    EditorState.createWithContent(convertFromRaw(rawContent), decorator)
   )
 
   const [userData, setUserData] = useState(emptyUserData)
@@ -90,7 +88,6 @@ const MyEditor = () => {
           onFocus={handleFocus}
           onBlur={handleBlur}
           handleKeyCommand={handleKeyCommand}
-          customStyleMap={styleMap}
         />
         <SpeedDial {...{ sdOpen, uSetSdOpen, uSetUserData }} />
       </div>

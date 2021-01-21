@@ -20,12 +20,8 @@ export const HashtagSpan = ({ children }) => {
 
 export const EntitySpan = ({ contentState, entityKey, children }) => {
   const entity = contentState.getEntity(entityKey)
-  const {
-    data: {
-      userData: { entityType },
-    },
-  } = entity
-  const style = entityTypes[entityType].style
+  const { type } = entity
+  const style = entityTypes[type].style
   const ref = useRef()
 
   return (
@@ -33,6 +29,8 @@ export const EntitySpan = ({ contentState, entityKey, children }) => {
       title={<EntityDetails {...{ entity }} />}
       arrow
       TransitionComponent={Zoom}
+      disableFocusListener={true}
+      // open={true}
     >
       <span css={style} ref={ref}>
         {children}

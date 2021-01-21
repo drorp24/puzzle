@@ -1,32 +1,58 @@
 /** @jsxImportSource @emotion/react */
+import { useSelector } from 'react-redux'
 
-import Typography from '@material-ui/core/Typography'
 import entityTypes from './entityTypes'
+import useTheme from '../styling/useTheme'
+import { directionByLocale, otherMode, dateString } from '../utility/functions'
 
-export const EntityDetails = ({
-  entity: {
-    data: {
-      userData: { entityType, comment },
+import { ThemeProvider, makeStyles } from '@material-ui/core/styles'
+import Chip from '@material-ui/core/Chip'
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
+import CardContent from '@material-ui/core/CardContent'
+import CardActions from '@material-ui/core/CardActions'
+import IconButton from '@material-ui/core/IconButton'
+import Typography from '@material-ui/core/Typography'
+import AccountTreeIcon from '@material-ui/icons/AccountTree'
+import RoomIcon from '@material-ui/icons/Room'
+import InfoIcon from '@material-ui/icons/Info'
+import Divider from '@material-ui/core/Divider'
+
+export const EntityDetails = ({ entity }) => {
+  const { mode, locale } = useSelector(store => store.app)
+  const direction = directionByLocale(locale)
+  const inverseMode = otherMode(mode)
+  const theme = useTheme({ mode: inverseMode, direction })
+
+  const { name, icon, color } = entityTypes[entity.type]
+  const { userData, created } = entity.data
+  console.log('userData: ', userData)
+  const { user, comment } = userData || {}
+  console.log('created: ', created)
+
+  const handleDelete = () => {}
+
+  const useStyles = makeStyles(theme => ({
+    icon: {
+      color: 'rgba(0, 0, 0, 0.4)',
     },
-  },
-}) => {
-  const { name, icon, color } = entityTypes[entityType]
+    label: {
+      color: 'rgba(0, 0, 0, 0.5)',
+    },
+    deleteIcon: {
+      color: 'rgba(0, 0, 0, 0.4)',
+    },
+  }))
+
+  const classes = useStyles()
 
   const styles = {
     root: {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
+      backgroundColor: 'transparent !important',
     },
-    icon: {
-      color,
-      height: '1.2rem',
-    },
-    name: {
-      color,
-      fontSize: '0.9rem',
-      marginBottom: '0.5rem',
+
+    entityType: {
+      backgroundColor: `${color} !important`,
     },
     details: {
       fontWeight: '100',
@@ -36,14 +62,51 @@ export const EntityDetails = ({
   }
 
   return (
-    <div css={styles.root}>
-      <div css={styles.icon}>{icon}</div>
-      <div>
-        <Typography css={styles.name}>{name}</Typography>
-      </div>
-      <div>
-        <Typography css={styles.details}>{comment}</Typography>
-      </div>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Card elevation={0} css={styles.root}>
+        <CardHeader
+          // avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
+          title={
+            <Chip
+              icon={icon}
+              size="small"
+              label={name}
+              css={styles.entityType}
+              onDelete={handleDelete}
+              classes={{
+                icon: classes.icon,
+                label: classes.label,
+                deleteIcon: classes.deleteIcon,
+              }}
+            />
+          }
+          subheader={
+            created
+              ? created.toLocaleDateString(locale, dateString)
+              : 'no date recorded'
+          }
+        />
+        <Divider />
+        <CardContent>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {comment || 'No information recorded'}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            {user || 'No user recorded'}
+          </Typography>
+        </CardContent>
+        <CardActions disableSpacing>
+          <IconButton>
+            <AccountTreeIcon />
+          </IconButton>
+          <IconButton>
+            <RoomIcon />
+          </IconButton>
+          <IconButton>
+            <InfoIcon />
+          </IconButton>
+        </CardActions>
+      </Card>
+    </ThemeProvider>
   )
 }

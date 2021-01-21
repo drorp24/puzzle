@@ -2,6 +2,7 @@ import Person from '@material-ui/icons/Person'
 import LocationCity from '@material-ui/icons/LocationCity'
 import AccessTime from '@material-ui/icons/AccessTime'
 import Phone from '@material-ui/icons/Phone'
+import NotListedIcon from '@material-ui/icons/NotListedLocation'
 
 export const validEntityTypes = [
   'PERSON',
@@ -34,7 +35,7 @@ const entityTypes = {
     },
   },
   OTHER: {
-    name: 'Mention',
+    name: 'Other',
     mutability: 'IMMUTABLE',
     icon: <AccessTime />,
     color: 'aquamarine',
@@ -43,7 +44,7 @@ const entityTypes = {
     },
   },
   ANOTHER: {
-    name: 'Hashtag',
+    name: 'Another',
     mutability: 'IMMUTABLE',
     icon: <Phone />,
     color: 'coral',
@@ -67,8 +68,10 @@ const entityTypes = {
   },
 
   UNDEFINED: {
-    name: 'Undefined',
+    name: 'Not listed',
     mutability: 'IMMUTABLE',
+    icon: <NotListedIcon />,
+    color: 'rgba(255, 255, 255, 0.8)',
     style: {
       backgroundColor: 'lightgrey',
     },
