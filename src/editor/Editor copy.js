@@ -1,12 +1,15 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useState, useEffect, useCallback } from 'react'
 
-import { Editor, EditorState, RichUtils, convertFromRaw } from 'draft-js'
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  ContentState,
+  convertFromRaw,
+} from 'draft-js'
 import 'draft-js/dist/Draft.css'
 import { getContent } from '../api/fakeEditorApi'
-
-import { fetchContent } from '../redux/content'
 
 import { emptyUserData } from './SpeedDial'
 import { applyEntityToSelection } from './entities'
@@ -24,30 +27,20 @@ const styles = {
 }
 
 const MyEditor = () => {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  )
-
-  const contentRef = useRef()
-  console.log('contentRef: ', contentRef)
-
-  const dispatch = useDispatch()
+  const [editorState, setEditorState] = useState(null)
 
   useEffect(() => {
-    if (contentRef.current?.fetched) return
+    if (editorState) return
 
-    dispatch(fetchContent())
-
-    const oldFetchContent = async () => {
+    const fetchContent = async () => {
       const rawContent = await getContent()
       console.log('rawContent: ', rawContent)
       setEditorState(
         EditorState.createWithContent(convertFromRaw(rawContent), decorator)
       )
-      contentRef.current = { fetched: true }
     }
 
-    oldFetchContent()
+    fetchContent()
   }, [editorState])
 
   const [userData, setUserData] = useState(emptyUserData)
