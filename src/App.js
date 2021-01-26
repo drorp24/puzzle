@@ -13,9 +13,8 @@ import en from './i18n/en'
 import { directionByLocale } from './utility/functions'
 
 import ProtectedRoute from './auth/ProtectedRoute'
-import Dashboard from './components/Dashboard'
 import Login from './auth/Login'
-import Editor from './editor/Editor'
+import Home from './components/Home'
 
 import Direction from './layout/Direction'
 import Snackbar from './communication/Snackbar'
@@ -53,17 +52,14 @@ export default function App() {
             <ErrorBoundary>
               <Router>
                 <Switch>
-                  <Route exact path="/">
-                    <Redirect to="/editor" />
-                  </Route>
-                  <Route path="/dashboard">
-                    <Dashboard />
+                  <ProtectedRoute exact path="/">
+                    <Redirect to="/home" />
+                  </ProtectedRoute>
+                  <Route path="/home">
+                    <Home />
                   </Route>
                   <Route path="/login">
                     <Login />
-                  </Route>
-                  <Route path="/editor">
-                    <Editor />
                   </Route>
                   <Route path="/simulateerror">
                     <SimulateError />
