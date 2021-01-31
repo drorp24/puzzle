@@ -3,12 +3,7 @@
 // ToDo: look at the 'Responsive Routes' example at the react-router documentation and do what they do
 // https://reactrouter.com/web/guides/philosophy/responsive-routes
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  NavLink,
-} from 'react-router-dom'
+import { Switch, Route, NavLink } from 'react-router-dom'
 
 import Dashboard from './Dashboard'
 import Editor from '../editor/Editor'

@@ -32,9 +32,6 @@ const rawContent = {
           offset: 31,
           length: 8,
           key: 'first',
-          score: 9.99,
-          subTypes: ['A', 'B', 'C'],
-          location: 'Tel aviv',
         },
       ],
     },
@@ -56,7 +53,7 @@ const rawContent = {
     {
       text:
         'This is a "segmented" entity: Green Lantern. Deleting any ' +
-        'characters will delete the current "segment" from the range. ' +
+        'characters will delete @the #current "segment" from the range. ' +
         'Adding characters will remove the entire entity from the range.',
       type: 'unstyled',
       entityRanges: [{ offset: 30, length: 13, key: 'third' }],
@@ -65,16 +62,38 @@ const rawContent = {
 
   entityMap: {
     first: {
+      id: 'first',
       type: 'TOKEN',
       mutability: 'IMMUTABLE',
+      data: {
+        userData: {
+          score: 9.99,
+          subTypes: ['A', 'B', 'C'],
+          location: 'Tel aviv',
+        },
+      },
     },
     second: {
+      id: 'second',
       type: 'TOKEN',
       mutability: 'MUTABLE',
+      data: {
+        userData: {
+          score: 10.99,
+          subTypes: ['A', 'B'],
+        },
+      },
     },
     third: {
+      id: 'third',
       type: 'TOKEN',
       mutability: 'SEGMENTED',
+      data: {
+        userData: {
+          score: 8.99,
+          subTypes: [],
+        },
+      },
     },
   },
 }

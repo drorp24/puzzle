@@ -1,24 +1,50 @@
 import { EditorState, Modifier, convertToRaw, SelectionState } from 'draft-js'
 
+import { add } from '../redux/content'
+
 import decorator from './decorator'
 import entityTypes from './entityTypes'
 import parseSelection from './selection'
 
-export const applyEntityToSelection = ({ editorState, userData }) => {
-  const { content, selection, blockKey, selectedText } = parseSelection(
-    editorState
-  )
-  const { entityType } = userData
-  const { mutability } = entityTypes[entityType]
-  const created = new Date()
-  const entityData = { blockKey, selectedText, userData, created }
+export const applyEntityToSelection = ({ editorState, userData, dispatch }) => {
+  const { entityType: type } = userData
+  const { mutability } = entityTypes[type]
 
-  const contentWithNewEntity = content.createEntity(
-    entityType,
-    mutability,
-    entityData
-  )
+  const {
+    content,
+    selection,
+    selectedText,
+    anchorKey,
+    anchorOffset,
+    focusKey,
+    focusOffset,
+  } = parseSelection(editorState)
+  const editorData = {
+    anchorKey,
+    anchorOffset,
+    focusKey,
+    focusOffset,
+    selectedText,
+  }
+  const data = {
+    editorData,
+    userData,
+  }
+
+  const contentWithNewEntity = content.createEntity(type, mutability, data)
+
   const entityKey = contentWithNewEntity.getLastCreatedEntityKey()
+
+  const id = entityKey
+
+  dispatch(
+    add({
+      id,
+      type,
+      mutability,
+      data,
+    })
+  )
 
   const contentWithAppliedEntity = Modifier.applyEntity(
     contentWithNewEntity,
@@ -29,9 +55,10 @@ export const applyEntityToSelection = ({ editorState, userData }) => {
   const newEditorState = EditorState.set(editorState, {
     currentContent: contentWithAppliedEntity,
     decorator,
-    selection: SelectionState.createEmpty(blockKey),
+    selection: SelectionState.createEmpty(anchorKey),
   })
 
+  console.log(' ')
   console.log('raw content: ', convertToRaw(contentWithAppliedEntity))
   console.log(' ')
 

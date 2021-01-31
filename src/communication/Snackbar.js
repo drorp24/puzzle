@@ -31,7 +31,7 @@ const Snack = () => {
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       open={open}
       onClose={handleClose}
-      autoHideDuration={3000}
+      autoHideDuration={5000}
       className={classes.snackbar}
     >
       <Alert

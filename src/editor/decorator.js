@@ -1,11 +1,7 @@
 import { CompositeDecorator } from 'draft-js'
 
 import { mentionStrategy, hashtagStrategy, entityStrategy } from './strategies'
-import {
-  HandleSpan as MentionSpan,
-  HashtagSpan,
-  EntitySpan,
-} from './decoratorComponents'
+import { TextSpan, EntitySpan } from './decoratorComponents'
 
 const decorator = new CompositeDecorator([
   {
@@ -14,11 +10,11 @@ const decorator = new CompositeDecorator([
   },
   {
     strategy: mentionStrategy,
-    component: MentionSpan,
+    component: TextSpan('Mention'),
   },
   {
     strategy: hashtagStrategy,
-    component: HashtagSpan,
+    component: TextSpan('Hashtag'),
   },
 ])
 

@@ -4,11 +4,9 @@ const parseSelection = editorState => {
 
   const content = editorState.getCurrentContent()
   const block = content.getBlockForKey(anchorKey)
-  const blockKey = block.getKey()
   const selectedText = block.getText().slice(anchorOffset, focusOffset)
   return {
     content,
-    blockKey,
     selection,
     selectedText,
     anchorKey,

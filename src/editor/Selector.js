@@ -1,7 +1,8 @@
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
-import entityTypes, { selectedEntityTypes } from './entityTypes'
+import entityTypes from './entityTypes'
+import { useLocalDate } from '../utility/appUtilities'
 
 import { makeStyles } from '@material-ui/core/styles'
 import SpeedDial from '@material-ui/core/SpeedDial'
@@ -24,28 +25,36 @@ const useStyles = makeStyles(theme => ({
 export const emptyUserData = {
   user: null,
   entityType: null,
-  comment: null,
+  entitySubTypes: [],
+  score: null,
+  created: null,
 }
 
-const MySpeedDial = memo(({ sdOpen, uSetSdOpen, uSetUserData }) => {
+const Selector = memo(({ sdOpen, uSetSdOpen, uSetUserData }) => {
   const classes = useStyles()
+
   const user = useSelector(store => store.users.loggedIn.username)
+  const created = useLocalDate(new Date())
 
   const handleOpen = () => {
     uSetSdOpen(true)
   }
 
-  const comment = 'Some entity information'
-
   const handleClose = entityType => () => {
     if (entityType)
       uSetUserData({
-        user,
+        ...emptyUserData,
         entityType,
-        comment,
+        created,
       })
+
     uSetSdOpen(false)
   }
+
+  const selectedTypes = useMemo(
+    () => Object.values(entityTypes).filter(t => t.selector),
+    []
+  )
 
   return (
     <div className={classes.root}>
@@ -58,12 +67,12 @@ const MySpeedDial = memo(({ sdOpen, uSetSdOpen, uSetUserData }) => {
         open={sdOpen}
         direction="down"
       >
-        {selectedEntityTypes.map(entityType => (
+        {selectedTypes.map(({ name, icon }) => (
           <SpeedDialAction
-            key={entityType}
-            icon={entityTypes[entityType].icon}
-            tooltipTitle={entityType}
-            onClick={handleClose(entityType)}
+            key={name}
+            icon={icon}
+            tooltipTitle={name}
+            onClick={handleClose(name)}
           />
         ))}
       </SpeedDial>
@@ -71,4 +80,4 @@ const MySpeedDial = memo(({ sdOpen, uSetSdOpen, uSetUserData }) => {
   )
 })
 
-export default MySpeedDial
+export default Selector

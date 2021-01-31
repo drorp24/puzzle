@@ -10,11 +10,12 @@ import { Helmet } from 'react-helmet'
 import { IntlProvider } from 'react-intl'
 import he from './i18n/he'
 import en from './i18n/en'
-import { directionByLocale } from './utility/functions'
+import { directionByLocale } from './utility/appUtilities'
 
 import ProtectedRoute from './auth/ProtectedRoute'
 import Login from './auth/Login'
 import Home from './components/Home'
+import Editor from './editor/Editor'
 
 import Direction from './layout/Direction'
 import Snackbar from './communication/Snackbar'
@@ -45,7 +46,7 @@ export default function App() {
           messages={messages[locale]}
           locale={locale}
           defaultLocale="en"
-          onError={() => console.log('IntlProvider Error')}
+          onError={() => console.error('IntlProvider Error')}
         >
           <ThemeProvider theme={theme}>
             <CssBaseline />
@@ -60,6 +61,9 @@ export default function App() {
                   </Route>
                   <Route path="/login">
                     <Login />
+                  </Route>
+                  <Route path="/editor">
+                    <Editor />
                   </Route>
                   <Route path="/simulateerror">
                     <SimulateError />

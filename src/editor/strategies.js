@@ -7,7 +7,9 @@ const applyCallbackByRegex = (regex, contentBlock, callback) => {
   }
 }
 
-// Note: these aren't very good regexes, don't use them!
+// ToDo: remove
+// Appending '#' or '@' in the text does not create entities.
+// I'm leaving these 2 in since it might be helpful to identify texts with hashtags and mentions, but I suppose they're tracked.
 const MENTION_REGEX = /@[\w]+/g
 const HASHTAG_REGEX = /#[\w\u0590-\u05ff]+/g
 

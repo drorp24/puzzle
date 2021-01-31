@@ -3,7 +3,11 @@ import { useSelector } from 'react-redux'
 
 import entityTypes from './entityTypes'
 import useTheme from '../styling/useTheme'
-import { directionByLocale, otherMode, dateString } from '../utility/functions'
+import {
+  directionByLocale,
+  otherMode,
+  useLocalDate,
+} from '../utility/appUtilities'
 
 import { ThemeProvider, makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
@@ -26,9 +30,7 @@ export const EntityDetails = ({ entity }) => {
 
   const { name, icon, color } = entityTypes[entity.type]
   const { userData, created } = entity.data
-  console.log('userData: ', userData)
   const { user, comment } = userData || {}
-  console.log('created: ', created)
 
   const handleDelete = () => {}
 
@@ -80,11 +82,7 @@ export const EntityDetails = ({ entity }) => {
               }}
             />
           }
-          subheader={
-            created
-              ? created.toLocaleDateString(locale, dateString)
-              : 'no date recorded'
-          }
+          subheader={useLocalDate(created)}
         />
         <Divider />
         <CardContent>

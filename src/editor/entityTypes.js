@@ -1,89 +1,74 @@
+import { keyProxy } from '../utility/proxies'
+
 import Person from '@material-ui/icons/Person'
 import LocationCity from '@material-ui/icons/LocationCity'
-import AccessTime from '@material-ui/icons/AccessTime'
+import AccessTime from '@material-ui/icons/WatchLater'
 import Phone from '@material-ui/icons/Phone'
-import NotListedIcon from '@material-ui/icons/NotListedLocation'
+import NotListedIcon from '@material-ui/icons/HelpOutlined'
 
-export const validEntityTypes = [
-  'PERSON',
-  'PLACE',
-  'OTHER',
-  'ANOTHER',
-  'MENTION',
-  'HASHTAG',
-]
-
-export const selectedEntityTypes = ['PERSON', 'PLACE', 'OTHER', 'ANOTHER']
-
-const entityTypes = {
-  PERSON: {
+const entityTypes = keyProxy({
+  Person: {
     name: 'Person',
     mutability: 'IMMUTABLE',
     icon: <Person />,
+    selector: true,
     color: 'orange',
-    style: {
-      backgroundColor: 'orange',
-    },
   },
-  PLACE: {
+  Place: {
     name: 'Place',
     mutability: 'IMMUTABLE',
     icon: <LocationCity />,
+    selector: true,
     color: 'deepskyblue',
-    style: {
-      backgroundColor: 'deepskyblue',
-    },
   },
-  OTHER: {
-    name: 'Other',
+  Time: {
+    name: 'Time',
     mutability: 'IMMUTABLE',
     icon: <AccessTime />,
+    selector: true,
     color: 'aquamarine',
-    style: {
-      backgroundColor: 'aquamarine',
-    },
   },
-  ANOTHER: {
-    name: 'Another',
+  Phone: {
+    name: 'Phone',
     mutability: 'IMMUTABLE',
     icon: <Phone />,
+    selector: true,
     color: 'coral',
-    style: {
-      backgroundColor: 'coral',
-    },
   },
-  MENTION: {
+  Mention: {
     name: 'Mention',
     mutability: 'IMMUTABLE',
-    style: {
-      backgroundColor: 'lightgreen',
-    },
+    selector: false,
+    color: 'lightgreen',
   },
-  HASHTAG: {
+  Hashtag: {
     name: 'Hashtag',
     mutability: 'IMMUTABLE',
-    style: {
-      backgroundColor: 'pink',
-    },
+    selector: false,
+    color: 'pink',
   },
-
-  UNDEFINED: {
+  Undefined: {
     name: 'Not listed',
     mutability: 'IMMUTABLE',
     icon: <NotListedIcon />,
-    color: 'rgba(255, 255, 255, 0.8)',
-    style: {
-      backgroundColor: 'lightgrey',
-    },
+    selector: false,
+    color: 'lightgrey',
   },
-}
+})
 
-const handler = {
-  get(target, property) {
-    return validEntityTypes.includes(property)
-      ? target[property]
-      : target['UNDEFINED']
+export const entityStyle = entityType => ({
+  backgroundColor: entityTypes[entityType].color,
+  borderRadius: '1rem',
+  padding: '0.1rem 0.5rem',
+  display: 'inline-flex',
+  alignItems: 'center',
+  position: entityTypes[entityType].icon ? 'relative' : 'static',
+  top: '0.2rem',
+  '& > svg': {
+    marginRight: '0.25rem',
+    fontSize: '1.25rem',
+    color: 'rgba(0, 0, 0, 0.5)',
   },
-}
+})
 
-export default new Proxy(entityTypes, handler)
+export default entityTypes

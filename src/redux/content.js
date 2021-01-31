@@ -2,45 +2,46 @@ import {
   createAsyncThunk,
   createSlice,
   createEntityAdapter,
-  current,
+  // current,
 } from '@reduxjs/toolkit'
 
 import { getContent } from '../api/fakeEditorApi'
 
 const contentAdapter = createEntityAdapter({
-  selectId: entry => {
-    console.log('entry: ', entry)
-    return entry.key
-  },
-  sortComparer: false, // maintain sort order following any CRUD operation
+  selectId: entry => entry.id,
+  sortComparer: (a, b) =>
+    Number(b.data?.userData?.score) - Number(a.data?.userData?.score),
 })
 
 export const fetchContent = createAsyncThunk(
   'content/fetch',
-  async (_, thunkAPI) => {
+  async (callback, thunkAPI) => {
     try {
-      const data = await getContent()
-      console.log('data: ', data)
-      if (!data) throw new Error('No data returned')
-      if (data.error) throw new Error(data.error?.message?.toString())
-      return data.blocks
+      const rawContent = await getContent()
+      if (!rawContent) throw new Error('No rawContent returned')
+      if (rawContent.error)
+        throw new Error(rawContent.error?.message?.toString())
+      callback(rawContent)
+      return rawContent.entityMap
     } catch (error) {
       return thunkAPI.rejectWithValue(error.toString())
     }
   }
 )
 
-const initialState = {
-  currentRequestId: undefined,
+const initialState = contentAdapter.getInitialState({
   loading: 'idle',
-  error: null,
-  data: null,
-}
+})
 
 const contentSlice = createSlice({
   name: 'content',
   initialState,
-  reducers: {},
+  reducers: {
+    clear: () => initialState,
+    add: (state, entity) => {
+      contentAdapter.addOne(state, entity)
+    },
+  },
   extraReducers: {
     [fetchContent.pending]: (state, { meta: { requestId } }) => {
       if (state.loading === 'idle') {
@@ -55,7 +56,6 @@ const contentSlice = createSlice({
         state.currentRequestId = undefined
         state.loading = 'idle'
         state.error = null
-        // state.data = payload
         contentAdapter.setAll(state, payload)
       }
     },
@@ -71,6 +71,6 @@ const contentSlice = createSlice({
 })
 
 const { reducer, actions } = contentSlice
-// export const { logout } = actions
+export const { clear, add } = actions
 
 export default reducer

@@ -5,15 +5,21 @@ const useNotifications = setOpen => {
   const [message, setMessage] = useState('')
   const [severity, setSeverity] = useState('')
 
-  const { error } = useSelector(store => store.users)
+  const userError = useSelector(store => store.users.error)
+  const contentError = useSelector(store => store.content.error)
 
   useEffect(() => {
-    if (error) {
+    if (userError) {
       setOpen(true)
-      setMessage(error || 'Something went wrong')
+      setMessage(userError || 'Something went wrong')
       setSeverity('error')
     }
-  }, [error, setOpen])
+    if (contentError) {
+      setOpen(true)
+      setMessage(contentError || 'Something went wrong')
+      setSeverity('error')
+    }
+  }, [setOpen, userError, contentError])
 
   return { message, severity }
 }
