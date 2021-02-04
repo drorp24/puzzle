@@ -5,6 +5,7 @@ const appSlice = createSlice({
   initialState: {
     mode: 'light',
     locale: 'en',
+    window: {},
   },
   reducers: {
     toggleMode: state => ({
@@ -15,10 +16,17 @@ const appSlice = createSlice({
       ...state,
       locale: state.locale === 'en' ? 'he' : 'en',
     }),
+    setDimensions: (state, { payload: { height, width } }) => ({
+      ...state,
+      window: {
+        height,
+        width,
+      },
+    }),
   },
 })
 
 const { actions, reducer } = appSlice
 
 export default reducer
-export const { toggleMode, toggleLocale } = actions
+export const { toggleMode, toggleLocale, setDimensions } = actions

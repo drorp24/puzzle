@@ -30,25 +30,26 @@ export const emptyUserData = {
   created: null,
 }
 
-const Selector = memo(({ sdOpen, uSetSdOpen, uSetUserData }) => {
+const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetUserData }) => {
   const classes = useStyles()
 
   const user = useSelector(store => store.users.loggedIn.username)
   const created = useLocalDate(new Date())
 
   const handleOpen = () => {
-    uSetSdOpen(true)
+    uSetSelectorOpen(true)
   }
 
   const handleClose = entityType => () => {
     if (entityType)
       uSetUserData({
         ...emptyUserData,
+        user,
         entityType,
         created,
       })
 
-    uSetSdOpen(false)
+    uSetSelectorOpen(false)
   }
 
   const selectedTypes = useMemo(
@@ -64,7 +65,7 @@ const Selector = memo(({ sdOpen, uSetSdOpen, uSetUserData }) => {
         icon={<SpeedDialIcon />}
         onClose={handleClose(null)}
         onOpen={handleOpen}
-        open={sdOpen}
+        open={uSelectorOpen}
         direction="down"
       >
         {selectedTypes.map(({ name, icon }) => (

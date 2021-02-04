@@ -6,7 +6,8 @@ const useNotifications = setOpen => {
   const [severity, setSeverity] = useState('')
 
   const userError = useSelector(store => store.users.error)
-  const contentError = useSelector(store => store.content.error)
+  const fileError = useSelector(store => store.content.error)
+  const contentError = useSelector(store => store.content.error === 'content')
 
   useEffect(() => {
     if (userError) {
@@ -15,6 +16,13 @@ const useNotifications = setOpen => {
       setSeverity('error')
     }
     if (contentError) {
+      setOpen(true)
+      setMessage(
+        "There are issues with the file's content. Check log for more details"
+      )
+      setSeverity('error')
+    }
+    if (fileError && !contentError) {
       setOpen(true)
       setMessage(contentError || 'Something went wrong')
       setSeverity('error')

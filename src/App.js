@@ -1,10 +1,13 @@
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom'
+import { setDimensions } from './redux/app'
+import { debounce } from './utility/debounce'
 
 import { Helmet } from 'react-helmet'
 import { IntlProvider } from 'react-intl'
@@ -32,8 +35,25 @@ export default function App() {
   const direction = directionByLocale(locale)
   const theme = useTheme({ mode, direction })
   const messages = { he, en }
+  const dispatch = useDispatch()
 
-  window.theme = theme // ToDo: remove
+  useEffect(() => {
+    window.theme = theme // ToDo: remove
+
+    function handleResize() {
+      dispatch(
+        setDimensions({
+          height: window.innerHeight,
+          width: window.innerWidth,
+        })
+      )
+    }
+    // ToDo: try replacing debounce with requestAnimationFrame
+    window.addEventListener('resize', debounce(handleResize, 300))
+    return () => {
+      window.removeEventListener('resize', debounce(handleResize, 300))
+    }
+  }, [dispatch, theme])
 
   return (
     <StylesProvider injectFirst>
