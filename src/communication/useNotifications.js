@@ -27,7 +27,7 @@ const useNotifications = setOpen => {
       setMessage(contentError || 'Something went wrong')
       setSeverity('error')
     }
-  }, [setOpen, userError, contentError])
+  }, [setOpen, userError, contentError, fileError])
 
   return { message, severity }
 }

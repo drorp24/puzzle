@@ -9,7 +9,7 @@ import 'draft-js/dist/Draft.css'
 import Flow from '../flow/Flow'
 
 import Selector, { emptyUserData } from './Selector'
-import { applyEntityToSelection } from './entities'
+import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
 import Page from '../layout/Page'
@@ -92,7 +92,7 @@ const MyEditor = () => {
       return
     }
     if (selectionExists && userData.entityType) {
-      const newEditorState = applyEntityToSelection({
+      const newEditorState = createEntityFromSelection({
         editorState,
         userData,
         dispatch,

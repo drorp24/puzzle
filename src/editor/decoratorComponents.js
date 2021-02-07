@@ -16,6 +16,8 @@ export const TextSpan = type => ({ children }) => (
 
 export const EntitySpan = ({ contentState, entityKey, children }) => {
   const ref = useRef()
+  const entity = contentState.getEntity(entityKey)
+  const id = entity.data.id || entityKey // see note on content.js
 
   const contentLoaded = useSelector(store => selectContent(store).loaded)
   const contentChanges = useSelector(store => store.content.changes)
@@ -34,7 +36,7 @@ export const EntitySpan = ({ contentState, entityKey, children }) => {
     if (x !== ref.current.viewport?.x || y !== ref.current.viewport?.y) {
       const viewport = { x, y, width, height }
       ref.current.viewport = viewport
-      dispatch(update({ id: entityKey, changes: { viewport } }))
+      dispatch(update({ id, changes: { viewport } }))
     }
   }, [
     contentLoaded,
@@ -43,6 +45,7 @@ export const EntitySpan = ({ contentState, entityKey, children }) => {
     windowWidth,
     dispatch,
     entityKey,
+    id,
   ])
 
   return <Entity {...{ contentState, entityKey, children, ref }} />

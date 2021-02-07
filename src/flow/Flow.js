@@ -22,6 +22,7 @@ const Flow = () => {
   const onLoad = reactFlowInstance => {
     window.rfi = reactFlowInstance
   }
+
   return (
     <div
       style={{

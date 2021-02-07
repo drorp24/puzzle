@@ -6,7 +6,12 @@ import decorator from './decorator'
 import entityTypes from './entityTypes'
 import parseSelection from './selection'
 
-export const applyEntityToSelection = ({ editorState, userData, dispatch }) => {
+// ToDo: decide whether to use useData (as in here) or data (as in createEntitiesFromContent) - modify sortComparer accordingly!
+export const createEntityFromSelection = ({
+  editorState,
+  userData,
+  dispatch,
+}) => {
   const { entityType: type } = userData
   const { mutability } = entityTypes[type]
 
