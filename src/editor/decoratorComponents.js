@@ -2,7 +2,11 @@
 import { memo, forwardRef } from 'react'
 import { useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { update, selectContent } from '../redux/content'
+import {
+  updatePosition,
+  selectContent,
+  selectEntityById,
+} from '../redux/content'
 
 import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
@@ -14,21 +18,43 @@ export const TextSpan = type => ({ children }) => (
   <span css={entityStyle(type)}>{children}</span>
 )
 
-export const EntitySpan = ({ contentState, entityKey, children }) => {
+export const EntitySpan = ({
+  contentState,
+  entityKey,
+  children,
+  blockKey,
+  start,
+  end,
+}) => {
   const ref = useRef()
   const entity = contentState.getEntity(entityKey)
   const id = entity.data.id || entityKey // see note on content.js
 
+  const selectorEntity = useSelector(selectEntityById(id))
   const contentLoaded = useSelector(store => selectContent(store).loaded)
   const contentChanges = useSelector(store => store.content.changes)
   const { height: windowHeight, width: windowWidth } = useSelector(
     store => store.app.window
   )
-
   const dispatch = useDispatch()
 
+  const of = ({ blockKey, start, end }) => item =>
+    item.blockKey === blockKey &&
+    item.offset === start &&
+    item.length === end - start
+
+  const entityRangeIndex =
+    selectorEntity &&
+    selectorEntity.entityRanges.length &&
+    selectorEntity.entityRanges.findIndex(of({ blockKey, start, end }))
+
   useEffect(() => {
-    if (!contentLoaded) return
+    if (
+      !contentLoaded ||
+      selectorEntity === undefined ||
+      entityRangeIndex === undefined
+    )
+      return
 
     const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
 
@@ -36,7 +62,8 @@ export const EntitySpan = ({ contentState, entityKey, children }) => {
     if (x !== ref.current.viewport?.x || y !== ref.current.viewport?.y) {
       const viewport = { x, y, width, height }
       ref.current.viewport = viewport
-      dispatch(update({ id, changes: { viewport } }))
+
+      dispatch(updatePosition({ id, entityRangeIndex, viewport }))
     }
   }, [
     contentLoaded,
@@ -46,6 +73,8 @@ export const EntitySpan = ({ contentState, entityKey, children }) => {
     dispatch,
     entityKey,
     id,
+    entityRangeIndex,
+    selectorEntity,
   ])
 
   return <Entity {...{ contentState, entityKey, children, ref }} />

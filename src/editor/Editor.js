@@ -6,7 +6,7 @@ import { fetchContent, error, changes } from '../redux/content'
 
 import { Editor, EditorState, RichUtils, convertFromRaw } from 'draft-js'
 import 'draft-js/dist/Draft.css'
-import Flow from '../flow/Flow'
+import Relations from '../flow/Relations'
 
 import Selector, { emptyUserData } from './Selector'
 import { createEntityFromSelection } from './entities'
@@ -119,7 +119,7 @@ const MyEditor = () => {
             uSetUserData,
           }}
         />
-        <Flow />
+        {/* <Relations /> */}
       </div>
     </Page>
   )

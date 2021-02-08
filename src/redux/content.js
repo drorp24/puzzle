@@ -60,6 +60,13 @@ const contentSlice = createSlice({
     update: contentAdapter.updateOne,
     error: (state, { payload: error }) => ({ ...state, error }),
     changes: state => ({ ...state, changes: state.changes + 1 }),
+    updatePosition: (
+      state,
+      { payload: { id, entityRangeIndex, viewport } }
+    ) => {
+      // Immer to the rescue
+      state.entities[id].entityRanges[entityRangeIndex].viewport = viewport
+    },
   },
   extraReducers: {
     [fetchContent.pending]: (state, { meta: { requestId } }) => {
@@ -78,13 +85,23 @@ const contentSlice = createSlice({
         state.currentRequestId = undefined
         state.loading = 'idle'
         state.error = null
+        console.log('entities: ', entities)
         contentAdapter.setAll(state, entities)
+        state.relations = relations
         relations.forEach(({ from, to, type }) => {
           state.entities[from].data.outputs =
             state.entities[from].data.outputs || []
           state.entities[to].data.inputs = state.entities[to].data.inputs || []
-          state.entities[from].data.outputs.push({ target: to, type })
-          state.entities[to].data.inputs.push({ source: from, type })
+          state.entities[from].data.outputs.push({
+            source: from,
+            target: to,
+            type,
+          })
+          state.entities[to].data.inputs.push({
+            source: from,
+            target: to,
+            type,
+          })
         })
       }
     },
@@ -100,20 +117,21 @@ const contentSlice = createSlice({
 })
 
 // * memoized selectors (reselect)
+// common selector functions should be defined here rather than in the callers for memoization
 const contentSelectors = contentAdapter.getSelectors()
 
 // combine createAsyncThunk's loading/error states with createEntityAdapter's ids/entities join
 export const selectContent = ({ content }) => {
   const entities = contentSelectors.selectAll(content)
-  const { loading, error } = content
+  const { loading, error, relations } = content
   const loaded = entities.length > 0 && loading === 'idle' && !error
-  return { entities, loading, error, loaded }
+  return { entities, relations, loading, error, loaded }
 }
 
 export const selectEntityById = id => ({ content }) =>
   contentSelectors.selectById(content, id)
 
 const { reducer, actions } = contentSlice
-export const { clear, add, update, error, changes } = actions
+export const { clear, add, update, error, changes, updatePosition } = actions
 
 export default reducer

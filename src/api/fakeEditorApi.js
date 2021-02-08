@@ -13,14 +13,14 @@
 // Accordingly, the structure has two main keys:
 // - blocks: an array of text blocks. Each block has an array with entity occurrences ("entityRanges").
 //   To keep it normalized, each occurrence has only 'offset', 'length' and 'key', pointing to 'entityMap's key.
-// - entityMap: an object whose every key has an entity record, keyed by that referenced 'key'.
+// - entityMap: an object whose every key is an entity record, keyed by that referenced 'key'.
 //
-// Importantly, draft ignores (= doesn't convert) any key in an entity record other than
+// draft ignores (= doesn't convert) any key in an entity record other than
 // 'type', 'mutability' and 'data'. Even Id gets ignored!
 // Hence anything we want to survive draft's conversion must sit in the 'data' object.
-// Once field we must include in the 'data' is the original key. Here's why.
+// One field we must include in the 'data' is the original key. Here's why.
 //
-// ? draft conversion and the double key
+// ? draft conversion
 // To do its thing, draft has to convert the input JSON ("rawContent") into
 // its own different (Immutable.js - based) structure.
 // Oddly, the original 'keys' never make it into draft's converted structure.

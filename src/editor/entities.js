@@ -6,7 +6,9 @@ import decorator from './decorator'
 import entityTypes from './entityTypes'
 import parseSelection from './selection'
 
-// ToDo: decide whether to use useData (as in here) or data (as in createEntitiesFromContent) - modify sortComparer accordingly!
+// ToDo: change userData to data and the fields inside it to match original entities, plus:
+// - add 'id' to newly created entities too
+// - modify sortComparer if required (if 'id' changed)
 export const createEntityFromSelection = ({
   editorState,
   userData,
@@ -87,11 +89,12 @@ export const createEntityFromSelection = ({
 //   them out in a separate api.
 //
 export const createEntitiesFromContent = content => {
-  const entities = []
+  const entities = {}
 
   let entity, entityKey
+
   content.getBlockMap().forEach(block => {
-    // const blockKey = block.getKey()
+    const blockKey = block.getKey()
     block.findEntityRanges(
       character => {
         entityKey = character.getEntity()
@@ -102,18 +105,22 @@ export const createEntitiesFromContent = content => {
         }
       },
       (from, to) => {
-        // const range = {
-        //   key: blockKey,
-        //   offset: from,
-        //   length: to - from,
-        // }
+        const entityRange = {
+          blockKey,
+          offset: from,
+          length: to - from,
+        }
 
-        const entityToJs = entity.toJS()
-        entityToJs.entityKey = entityKey
-        entities.push(entityToJs)
+        if (!entities[entityKey]) {
+          const entityToJs = entity.toJS()
+          entityToJs.entityKey = entityKey
+          entityToJs.entityRanges = []
+          entities[entityKey] = entityToJs
+        }
+
+        entities[entityKey].entityRanges.push(entityRange)
       }
     )
   })
-
-  return entities
+  return Object.values(entities)
 }
