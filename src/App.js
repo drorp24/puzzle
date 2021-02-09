@@ -35,6 +35,8 @@ export default function App() {
   const direction = directionByLocale(locale)
   const theme = useTheme({ mode, direction })
   const messages = { he, en }
+
+  // ToDo: extract into custom useEffect and move away
   const dispatch = useDispatch()
 
   useEffect(() => {

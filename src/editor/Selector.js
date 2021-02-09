@@ -21,16 +21,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-// only this component should control the structure of userData
-export const emptyUserData = {
+export const emptyData = {
   user: null,
-  entityType: null,
-  entitySubTypes: [],
+  subTypes: [],
   score: null,
   created: null,
 }
 
-const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetUserData }) => {
+const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
   const classes = useStyles()
 
   const user = useSelector(store => store.users.loggedIn.username)
@@ -42,10 +40,10 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetUserData }) => {
 
   const handleClose = entityType => () => {
     if (entityType)
-      uSetUserData({
-        ...emptyUserData,
-        user,
+      uSetData({
+        ...emptyData,
         entityType,
+        user,
         created,
       })
 

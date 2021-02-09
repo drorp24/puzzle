@@ -62,10 +62,13 @@ const contentSlice = createSlice({
     changes: state => ({ ...state, changes: state.changes + 1 }),
     updatePosition: (
       state,
-      { payload: { id, entityRangeIndex, viewport } }
+      { payload: { id, entityRangeIndex, position } }
     ) => {
       // Immer to the rescue
-      state.entities[id].entityRanges[entityRangeIndex].viewport = viewport
+      state.entities[id].entityRanges = state.entities[id].entityRanges || []
+      state.entities[id].entityRanges[entityRangeIndex] =
+        state.entities[id].entityRanges[entityRangeIndex] || {}
+      state.entities[id].entityRanges[entityRangeIndex].position = position
     },
   },
   extraReducers: {
@@ -85,7 +88,6 @@ const contentSlice = createSlice({
         state.currentRequestId = undefined
         state.loading = 'idle'
         state.error = null
-        console.log('entities: ', entities)
         contentAdapter.setAll(state, entities)
         state.relations = relations
         relations.forEach(({ from, to, type }) => {
@@ -121,12 +123,20 @@ const contentSlice = createSlice({
 const contentSelectors = contentAdapter.getSelectors()
 
 // combine createAsyncThunk's loading/error states with createEntityAdapter's ids/entities join
+// 'entities' in this selector are returned as a sorted array rather than keyed
 export const selectContent = ({ content }) => {
   const entities = contentSelectors.selectAll(content)
   const { loading, error, relations } = content
   const loaded = entities.length > 0 && loading === 'idle' && !error
   return { entities, relations, loading, error, loaded }
 }
+
+// this will return entities keyed, as they naturally appear in redux
+// todo: memoize with reselect
+export const selectEntities = ({ content: { entities, relations } }) => ({
+  entities,
+  relations,
+})
 
 export const selectEntityById = id => ({ content }) =>
   contentSelectors.selectById(content, id)

@@ -6,6 +6,21 @@ import AccessTime from '@material-ui/icons/WatchLater'
 import Phone from '@material-ui/icons/Phone'
 import NotListedIcon from '@material-ui/icons/HelpOutlined'
 
+export const relationTypes = keyProxy({
+  son: {
+    entity: 'Person',
+  },
+  brother: {
+    entity: 'Person',
+  },
+  'is in': {
+    entity: 'Place',
+  },
+  Undefined: {
+    entity: 'Undefined',
+  },
+})
+
 const entityTypes = keyProxy({
   Person: {
     name: 'Person',
@@ -28,8 +43,8 @@ const entityTypes = keyProxy({
     selector: true,
     color: 'aquamarine',
   },
-  Phone: {
-    name: 'Phone',
+  Device: {
+    name: 'Device',
     mutability: 'IMMUTABLE',
     icon: <Phone />,
     selector: true,

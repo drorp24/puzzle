@@ -9,29 +9,30 @@ import parseSelection from './selection'
 // ToDo: change userData to data and the fields inside it to match original entities, plus:
 // - add 'id' to newly created entities too
 // - modify sortComparer if required (if 'id' changed)
-export const createEntityFromSelection = ({
-  editorState,
-  userData,
-  dispatch,
-}) => {
-  const { entityType: type } = userData
+export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
+  const { entityType: type } = data
   const { mutability } = entityTypes[type]
 
-  const { content, selection, anchorKey } = parseSelection(editorState)
+  const {
+    content,
+    selection,
+    anchorKey,
+    anchorOffset,
+    focusOffset,
+  } = parseSelection(editorState)
 
-  // const key = anchorKey
-  // const offset = anchorOffset
-  // const length = focusOffset - anchorOffset
-  // const range = {
-  //   key,
-  //   offset,
-  //   length,
-  // }
-
-  const data = {
-    // range,
-    userData,
-  }
+  const blockKey = anchorKey
+  const offset = anchorOffset
+  const length = focusOffset - anchorOffset
+  const position = {}
+  const entityRanges = [
+    {
+      blockKey,
+      offset,
+      length,
+      position,
+    },
+  ]
 
   const contentWithNewEntity = content.createEntity(type, mutability, data)
 
@@ -43,6 +44,7 @@ export const createEntityFromSelection = ({
       type,
       mutability,
       data,
+      entityRanges,
     })
   )
 

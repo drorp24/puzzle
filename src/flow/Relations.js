@@ -1,101 +1,168 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { selectContent } from '../redux/content'
-import ReactFlow, { removeElements, addEdge, Handle } from 'react-flow-renderer'
+import { selectEntities } from '../redux/content'
+import ReactFlow, {
+  removeElements,
+  addEdge,
+  Handle,
+  // MiniMap,
+  Controls,
+} from 'react-flow-renderer'
+
+import entityTypes, { relationTypes } from '../../src/editor/entityTypes'
 
 const styles = {
   container: {
     height: '100%',
     width: '100%',
     position: 'fixed',
-    left: '0',
-    top: '0',
+    left: '-5px',
+    top: '-5px',
     boxSizing: 'border-box',
     border: '5px solid pink',
     pointerEvents: 'none',
+    zIndex: '1',
   },
-  node: {
-    border: '1px solid',
+  nodeStyle: {
+    // border: '5px solid white',
+    borderRadius: '1rem',
+    padding: '0 1rem',
   },
-  relation: {
+  relationStyle: {
     color: 'black',
+  },
+  handleStyle: {
+    width: '0.5rem',
+    height: '0.5rem',
   },
 }
 
-const Node = ({ data: { name, inputs, outputs } }) => (
+const Node = ({ id, data: { name, inputs, outputs } }) => (
   <div>
     {outputs &&
       outputs.map(({ source, target, type }) => (
-        <Handle type="target" id={`${source}-${target}-${type}`} key={target} />
+        <Handle
+          type="source"
+          id={`${source}-${target}-${type}`}
+          key={target}
+          position="right"
+          style={{
+            ...styles.handleStyle,
+            backgroundColor: entityTypes[relationTypes[type].entity].color,
+          }}
+        />
       ))}
-    <div>{name}</div>
+    {/* <div>{name}</div> */}
     {inputs &&
       inputs.map(({ source, target, type }) => (
-        <Handle type="source" id={`${target}-${source}-${type}`} key={source} />
+        <Handle
+          type="target"
+          id={`${target}-${source}-${type}`}
+          key={source}
+          position="left"
+          style={{
+            ...styles.handleStyle,
+            backgroundColor: entityTypes[relationTypes[type].entity].color,
+          }}
+        />
       ))}
   </div>
 )
 
+// ToDo:
+// - ! implement a toggle button in the editor that, when clicked, shows relations and fades the entities decorators
+//   or, better yet: 2 toggle buttons, one showing/hiding the entities, the other showing/hiding the relations
+// - add an extra handle for online connections (something to demo)
+// - spread the handles so they're not one on another
+// - implement the connections button on the details hover card, so that it shows upon hover only the connection of this entity to others
 const Relations = () => {
-  const { entities, relations } = useSelector(selectContent)
-  console.log('entities: ', entities)
+  const [elements, setElements] = useState([])
 
-  const [elements, setElements] = useState()
+  const { entities, relations } = useSelector(selectEntities)
 
   const nodeTypes = { node: Node }
+  const { nodeStyle } = styles
 
   const onElementsRemove = elementsToRemove =>
     setElements(els => removeElements(elementsToRemove, els))
-  const onConnect = params => setElements(els => addEdge(params, els))
-  const onLoad = reactFlowInstance => {
-    window.rfi = reactFlowInstance // ToDo: remove
+
+  const onConnect = params => {
+    return setElements(els => addEdge(params, els))
+  }
+
+  const options = {
+    nodesDraggable: false,
+    zoomOnScroll: false,
+    zoomOnDoubleClick: false,
+    paneMoveable: false,
+    connectionMode: 'loose',
+    connectionLineType: 'smoothstep',
+    deleteKeyCode: 46,
   }
 
   useEffect(() => {
-    console.log('useEffect entered')
-    console.log('useEffect. relations: ', relations)
-    const { node, relation } = styles
-    const elements = []
+    const entityEntries = Object.entries(entities)
+    if (!entityEntries.length) return
 
-    entities.forEach(({ data, viewport: { x, y, width, height } = {} }) => {
-      const { id } = data
-      const element = {
-        id,
-        type: 'node',
-        position: { x, y },
-        style: { width: width, height: height, ...node },
-        data,
-      }
-      elements.push(element)
+    const nodes = []
+    const edges = []
+
+    entityEntries.forEach(([id, { data, entityRanges }]) => {
+      entityRanges.forEach(
+        ({ position: { x, y, width, height } = {} }, index) => {
+          const node = {
+            id: `${id}-${index}`,
+            type: 'node',
+            position: { x, y },
+            style: { width: width, height: height, ...nodeStyle },
+            sourcePosition: 'right',
+            targetPosition: 'left',
+            data,
+          }
+          nodes.push(node)
+        }
+      )
     })
+
     relations &&
       relations.forEach(({ from, to, type }) => {
-        const relation = {
-          id: `${from}-${to}-${type}`,
-          source: from,
-          sourceHandle: `${from}-${to}-${type}`,
-          target: to,
-          targetHandle: `${to}-${from}-${type}`,
-          label: type,
-        }
-        elements.push(relation)
-        console.log('relation: ', relation)
+        entities[from].entityRanges.forEach((_, fromEntityRangeIndex) => {
+          entities[to].entityRanges.forEach((_, toEntityRangeIndex) => {
+            const source = `${from}-${fromEntityRangeIndex}`
+            const target = `${to}-${toEntityRangeIndex}`
+            const relation = {
+              id: `${source}-${target}-${type}`,
+              source: `${source}`,
+              sourceHandle: `${from}-${to}-${type}`,
+              target: `${target}`,
+              targetHandle: `${to}-${from}-${type}`,
+              label: type,
+              // type: 'smoothstep',
+              arrowHeadType: 'arrow',
+            }
+            edges.push(relation)
+          })
+        })
       })
 
-    setElements(elements)
-  }, [entities, relations])
+    setElements([...nodes, ...edges])
+  }, [entities, nodeStyle, relations])
 
   return (
     <div css={styles.container}>
       <ReactFlow
-        elements={elements}
-        nodeTypes={nodeTypes}
-        onElementsRemove={onElementsRemove}
-        onConnect={onConnect}
-        deleteKeyCode={46} /* 'delete'-key */
-        onLoad={onLoad}
-      />
+        {...{
+          elements,
+          nodeTypes,
+          onElementsRemove,
+          onConnect,
+          ...options,
+        }}
+      >
+        {/* <MiniMap /> */}
+        <Controls />
+      </ReactFlow>
     </div>
   )
 }

@@ -29,8 +29,8 @@ export const EntityDetails = ({ entity }) => {
   const theme = useTheme({ mode: inverseMode, direction })
 
   const { name, icon, color } = entityTypes[entity.type]
-  const { userData, created } = entity.data
-  const { user, comment } = userData || {}
+  const { data, created } = entity.data
+  const { user, comment } = data || {}
 
   const handleDelete = () => {}
 

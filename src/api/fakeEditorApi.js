@@ -90,14 +90,14 @@ const rawContent = {
     {
       key: 'thirdBlock',
       text:
-        'This is an "immutable" entity: Superman. Deleting any ' +
+        'This is an "immutable" entity: Tel Aviv. Deleting any ' +
         'characters will delete the entire entity. Adding characters ' +
         'will remove the entity from the range.',
       type: 'unstyled',
       entityRanges: [
         {
           offset: 31,
-          length: 8,
+          length: 9,
           key: 'fifthEntity',
         },
       ],
@@ -178,11 +178,11 @@ const rawContent = {
       },
     },
     fifthEntity: {
-      type: 'Time',
+      type: 'Place',
       mutability: 'MUTABLE',
       data: {
         id: 'fifthEntity',
-        name: 'Superman',
+        name: 'Tel Aviv',
         score: 10.99,
         subTypes: ['A', 'B'],
       },
@@ -209,8 +209,8 @@ const rawContent = {
     },
     {
       from: 'secondEntity',
-      to: 'fourthEntity',
-      type: 'son',
+      to: 'fifthEntity',
+      type: 'is in',
     },
     {
       from: 'firstEntity',

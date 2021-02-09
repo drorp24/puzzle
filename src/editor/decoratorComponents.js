@@ -45,7 +45,7 @@ export const EntitySpan = ({
 
   const entityRangeIndex =
     selectorEntity &&
-    selectorEntity.entityRanges.length &&
+    selectorEntity.entityRanges?.length &&
     selectorEntity.entityRanges.findIndex(of({ blockKey, start, end }))
 
   useEffect(() => {
@@ -59,11 +59,11 @@ export const EntitySpan = ({
     const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
 
     // only report position changes, keeping previous position in ref
-    if (x !== ref.current.viewport?.x || y !== ref.current.viewport?.y) {
-      const viewport = { x, y, width, height }
-      ref.current.viewport = viewport
+    if (x !== ref.current.position?.x || y !== ref.current.position?.y) {
+      const position = { x, y, width, height }
+      ref.current.position = position
 
-      dispatch(updatePosition({ id, entityRangeIndex, viewport }))
+      dispatch(updatePosition({ id, entityRangeIndex, position }))
     }
   }, [
     contentLoaded,

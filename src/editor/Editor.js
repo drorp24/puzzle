@@ -8,7 +8,7 @@ import { Editor, EditorState, RichUtils, convertFromRaw } from 'draft-js'
 import 'draft-js/dist/Draft.css'
 import Relations from '../flow/Relations'
 
-import Selector, { emptyUserData } from './Selector'
+import Selector, { emptyData } from './Selector'
 import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
@@ -43,12 +43,12 @@ const MyEditor = () => {
       })
   }, [dispatch])
 
-  const [userData, setUserData] = useState(emptyUserData)
+  const [data, setData] = useState(emptyData)
   const [selectorOpen, setSelectorOpen] = useState(false)
 
   // Todo: find if these useCallbacks are effective
   const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
-  const uSetUserData = useCallback(setUserData, [setUserData])
+  const uSetData = useCallback(setData, [setData])
 
   const handleKeyCommand = (command, editorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command)
@@ -88,19 +88,19 @@ const MyEditor = () => {
       editorState
     )
     if (selectionExists && selectionSpansBlocks) {
-      alert('Please select inside a single block') // ToDo: replace alert with a snackbar
+      // alert('Please select inside a single block') // ToDo: replace alert with a snackbar
       return
     }
-    if (selectionExists && userData.entityType) {
+    if (selectionExists && data.entityType) {
       const newEditorState = createEntityFromSelection({
         editorState,
-        userData,
+        data,
         dispatch,
       })
       setEditorState(newEditorState)
-      setUserData(emptyUserData)
+      setData(emptyData)
     }
-  }, [dispatch, editorState, userData])
+  }, [dispatch, editorState, data])
 
   return (
     <Page>
@@ -116,10 +116,10 @@ const MyEditor = () => {
           {...{
             selectorOpen,
             uSetSelectorOpen,
-            uSetUserData,
+            uSetData,
           }}
         />
-        {/* <Relations /> */}
+        <Relations />
       </div>
     </Page>
   )
