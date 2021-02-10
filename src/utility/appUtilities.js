@@ -14,7 +14,7 @@ const dateTimeOptions = {
 
 export const useLocalDate = date => {
   const { locale } = useSelector(store => store.app)
-  return date
+  return /* date */ false // ToDo: fix. Throws for newly created entities.
     ? new Intl.DateTimeFormat(locale, dateTimeOptions).format(date)
     : 'no date recorded'
 }

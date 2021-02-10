@@ -11,13 +11,16 @@ import SpeedDialAction from '@material-ui/core/SpeedDialAction'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: 320,
-    transform: 'translateZ(0px)',
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    paddingTop: '0.5rem',
   },
-  speedDial: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
+  speedDial: {},
+  icon: {
+    backgroundColor: 'black',
   },
 }))
 
@@ -65,6 +68,7 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
         onOpen={handleOpen}
         open={uSelectorOpen}
         direction="down"
+        FabProps={{ style: { backgroundColor: 'black' } }}
       >
         {selectedTypes.map(({ name, icon }) => (
           <SpeedDialAction

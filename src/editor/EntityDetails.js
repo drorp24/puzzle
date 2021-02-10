@@ -19,10 +19,11 @@ import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import AccountTreeIcon from '@material-ui/icons/AccountTree'
 import RoomIcon from '@material-ui/icons/Room'
-import InfoIcon from '@material-ui/icons/Info'
+import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
 
 export const EntityDetails = ({ entity }) => {
+  console.log('!!!entity.toJS(): ', entity.toJS())
   const { mode, locale } = useSelector(store => store.app)
   const direction = directionByLocale(locale)
   const inverseMode = otherMode(mode)
@@ -101,7 +102,7 @@ export const EntityDetails = ({ entity }) => {
             <RoomIcon />
           </IconButton>
           <IconButton>
-            <InfoIcon />
+            <TableIcon />
           </IconButton>
         </CardActions>
       </Card>

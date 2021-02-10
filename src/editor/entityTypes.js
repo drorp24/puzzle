@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { keyProxy } from '../utility/proxies'
 
 import Person from '@material-ui/icons/Person'
@@ -5,6 +6,11 @@ import LocationCity from '@material-ui/icons/LocationCity'
 import AccessTime from '@material-ui/icons/WatchLater'
 import Phone from '@material-ui/icons/Phone'
 import NotListedIcon from '@material-ui/icons/HelpOutlined'
+
+export const useColor = relationType =>
+  useMemo(() => entityTypes[relationTypes[relationType].entity].color, [
+    relationType,
+  ])
 
 export const relationTypes = keyProxy({
   son: {

@@ -6,6 +6,7 @@ const appSlice = createSlice({
     mode: 'light',
     locale: 'en',
     window: {},
+    view: { tags: true },
   },
   reducers: {
     toggleMode: state => ({
@@ -23,10 +24,17 @@ const appSlice = createSlice({
         width,
       },
     }),
+    toggleTags: state => ({
+      ...state,
+      view: {
+        ...state.view,
+        tags: !state.view.tags,
+      },
+    }),
   },
 })
 
 const { actions, reducer } = appSlice
 
 export default reducer
-export const { toggleMode, toggleLocale, setDimensions } = actions
+export const { toggleMode, toggleLocale, setDimensions, toggleTags } = actions

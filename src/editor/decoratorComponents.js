@@ -33,6 +33,7 @@ export const EntitySpan = ({
   const selectorEntity = useSelector(selectEntityById(id))
   const contentLoaded = useSelector(store => selectContent(store).loaded)
   const contentChanges = useSelector(store => store.content.changes)
+  const { tags } = useSelector(store => store.app.view)
   const { height: windowHeight, width: windowWidth } = useSelector(
     store => store.app.window
   )
@@ -59,7 +60,7 @@ export const EntitySpan = ({
     const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
 
     // only report position changes, keeping previous position in ref
-    if (x !== ref.current.position?.x || y !== ref.current.position?.y) {
+    if (x !== ref.current?.position?.x || y !== ref.current?.position?.y) {
       const position = { x, y, width, height }
       ref.current.position = position
 
@@ -77,13 +78,13 @@ export const EntitySpan = ({
     selectorEntity,
   ])
 
-  return <Entity {...{ contentState, entityKey, children, ref }} />
+  return <Entity {...{ contentState, entityKey, children, tags, ref }} />
 }
 
 // memo ensures position changes do not trigger unnecessary re-rendering
 // forwardRef enables using this component's ref in parent component
 const Entity = memo(
-  forwardRef(({ contentState, entityKey, children }, ref) => {
+  forwardRef(({ contentState, entityKey, children, tags }, ref) => {
     const entity = contentState.getEntity(entityKey)
     const { type } = entity
     const { icon } = entityTypes[type]
@@ -96,8 +97,8 @@ const Entity = memo(
         TransitionComponent={Zoom}
         disableFocusListener={true}
       >
-        <span {...{ css, ref }}>
-          {icon}
+        <span {...(tags && { css, ref })}>
+          {tags && icon}
           {children}
         </span>
       </Tooltip>

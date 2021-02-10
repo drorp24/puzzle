@@ -13,19 +13,41 @@ import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
 import Page from '../layout/Page'
+import EditorControl from './EditorControl'
 
 const styles = {
   container: theme => ({
+    height: '100%',
     display: 'grid',
-    gridTemplateColumns: '9fr 1fr',
+    gridTemplateColumns: '8.5fr 1.5fr',
+    gridTemplateRows: '8.5fr 1.5fr',
+    gridTemplateAreas: `
+      "editor selector"
+      "editor control"
+      `,
     padding: '1rem',
   }),
+  editor: {
+    gridArea: 'editor',
+  },
+  selector: {
+    gridArea: 'selector',
+  },
+  control: {
+    gridArea: 'control',
+  },
+  relations: {},
 }
 
 const MyEditor = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
+  const [showEditor, setShowEditor] = useState(true)
+  const [showTags, setShowTags] = useState(false)
+  const [showRelations, setShowRelations] = useState(false)
+  console.log('showRelations: ', showRelations)
+  const visibility = showEditor ? 'visible' : 'hidden'
 
   const dispatch = useDispatch()
 
@@ -105,21 +127,34 @@ const MyEditor = () => {
   return (
     <Page>
       <div css={styles.container}>
-        <Editor
-          editorState={editorState}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          handleKeyCommand={handleKeyCommand}
-        />
-        <Selector
-          {...{
-            selectorOpen,
-            uSetSelectorOpen,
-            uSetData,
-          }}
-        />
-        <Relations />
+        <div css={styles.editor} style={{ visibility }}>
+          <Editor
+            editorState={editorState}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            handleKeyCommand={handleKeyCommand}
+            css={styles.editor}
+          />
+        </div>
+        <div css={styles.selector}>
+          <Selector
+            {...{
+              selectorOpen,
+              uSetSelectorOpen,
+              uSetData,
+            }}
+            css={styles.selector}
+          />
+        </div>
+        <div css={styles.relations}>
+          <Relations {...{ showRelations }} />
+        </div>
+        <div css={styles.control}>
+          <EditorControl
+            {...{ setShowEditor, setShowRelations, setShowTags }}
+          />
+        </div>
       </div>
     </Page>
   )
