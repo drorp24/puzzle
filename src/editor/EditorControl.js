@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { toggleTags } from '../redux/app'
+import { view } from '../redux/app'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
 import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
@@ -23,40 +23,61 @@ const styles = {
   button: {
     backgroundColor: 'white',
     color: 'rgba(0, 0, 0, 0.5)',
-    borderColor: 'rgba(0, 0, 0, 0.5)',
   },
-  selectedButton: {
+  selected: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     color: 'white',
     borderColor: 'white',
   },
+  disabled: {
+    color: 'rgba(0, 0, 0, 0.2)',
+  },
 }
 
-const EditorControl = ({
-  setShowEditor,
-  setShowRelations,
-  setShowTags,
-  setEditRelations,
-}) => {
+const EditorControl = () => {
+  const [selected, setSelected] = useState(['editor', 'tags'])
   const dispatch = useDispatch()
-  const [displays, setDisplays] = useState(() => ['editor', 'tags'])
 
-  const handleDisplay = (event, newDisplays) => {
-    if (displays.includes('tags') !== newDisplays.includes('tags'))
-      dispatch(toggleTags())
-
-    setShowEditor(newDisplays.includes('editor'))
-    setShowTags(newDisplays.includes('tags'))
-    setShowRelations(newDisplays.includes('relations'))
-    setEditRelations(newDisplays.includes('edit'))
-
-    setDisplays(newDisplays)
-  }
-
-  // ToDo: use button disables to prevent undesired states (e.g., relations & text on, tags off)
-  const [relationsDisabled, setRelationsDisabled] = useState(false)
-  const [tagsDisabled, setTagsDisabled] = useState(false)
   const [editorDisabled, setEditorDisabled] = useState(false)
+  const [tagsDisabled, setTagsDisabled] = useState(false)
+  const [relationsDisabled, setRelationsDisabled] = useState(false)
+  const [connectionsDisabled, setConnectionsDisabled] = useState(false)
+
+  const editorSelected = useMemo(() => selected.includes('editor'), [selected])
+  const tagsSelected = useMemo(() => selected.includes('tags'), [selected])
+  const relationsSelected = useMemo(() => selected.includes('relations'), [
+    selected,
+  ])
+  const connectionsSelected = useMemo(() => selected.includes('connections'), [
+    selected,
+  ])
+
+  const dispatchSelected = useCallback(() => {
+    dispatch(
+      view({
+        editor: editorSelected,
+        tags: tagsSelected,
+        relations: relationsSelected,
+        connections: connectionsSelected,
+      })
+    )
+    setConnectionsDisabled(!relationsSelected)
+  }, [
+    editorSelected,
+    tagsSelected,
+    relationsSelected,
+    connectionsSelected,
+    dispatch,
+  ])
+
+  useEffect(() => {
+    dispatchSelected()
+  }, [dispatchSelected])
+
+  const handleDisplay = (event, newSelected) => {
+    setSelected(newSelected)
+    dispatchSelected()
+  }
 
   return (
     <div css={styles.root}>
@@ -64,17 +85,19 @@ const EditorControl = ({
         orientation="vertical"
         size="small"
         css={styles.buttonGroup}
-        value={displays}
+        value={selected}
         onChange={handleDisplay}
       >
-        <Tooltip title="Show document" placement="left">
+        <Tooltip title="Show text" placement="left">
           <ToggleButton
             value="editor"
             disabled={editorDisabled}
-            selected={displays.includes('editor')}
+            selected={editorSelected}
             style={
-              displays.includes('editor')
-                ? styles.selectedButton
+              editorSelected
+                ? styles.selected
+                : editorDisabled
+                ? styles.disabled
                 : styles.button
             }
           >
@@ -86,9 +109,13 @@ const EditorControl = ({
           <ToggleButton
             value="tags"
             disabled={tagsDisabled}
-            selected={displays.includes('tags')}
+            selected={tagsSelected}
             style={
-              displays.includes('tags') ? styles.selectedButton : styles.button
+              tagsSelected
+                ? styles.selected
+                : tagsDisabled
+                ? styles.diabled
+                : styles.button
             }
           >
             <LabelIcon />
@@ -99,10 +126,12 @@ const EditorControl = ({
           <ToggleButton
             value="relations"
             disabled={relationsDisabled}
-            selected={displays.includes('relations')}
+            selected={relationsSelected}
             style={
-              displays.includes('relations')
-                ? styles.selectedButton
+              relationsSelected
+                ? styles.selected
+                : relationsDisabled
+                ? styles.disabled
                 : styles.button
             }
           >
@@ -112,11 +141,15 @@ const EditorControl = ({
 
         <Tooltip title="Edit relations" placement="left">
           <ToggleButton
-            value="edit"
-            disabled={relationsDisabled}
-            selected={displays.includes('edit')}
+            value="connections"
+            disabled={connectionsDisabled}
+            selected={connectionsSelected}
             style={
-              displays.includes('edit') ? styles.selectedButton : styles.button
+              connectionsSelected
+                ? styles.selected
+                : connectionsDisabled
+                ? styles.disabled
+                : styles.button
             }
           >
             <BorderColorOutlinedIcon />

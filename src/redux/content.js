@@ -9,16 +9,8 @@ import { getContent } from '../api/fakeEditorApi'
 import { createEntitiesFromContent } from '../../src/editor/entities'
 
 // * normalization
-// redux keys entities using two types of keys:
-// - Entities included in the rawContent api are keyed by their original key.
-//   That enables them to be directly accessed when the relations graph (keyed by id) is traversed,
-//   when a point on the map is clicked, and any place that requires retrieving and/or updaing an entity
-// - Newly created entities, however, are keyed by their ad-hoc generated entityKey.
-//   Such entities do not have any original key
-export const entityId = ({ entityKey, data: { id } }) => id || entityKey
-
 const contentAdapter = createEntityAdapter({
-  selectId: entityId,
+  selectId: ({ data: { id } }) => id,
   sortComparer: (a, b) => Number(b.data?.score) - Number(a.data?.score),
 })
 
@@ -49,6 +41,7 @@ export const fetchContent = createAsyncThunk(
 const initialState = contentAdapter.getInitialState({
   loading: 'idle',
   changes: 0,
+  selected: null,
 })
 
 const contentSlice = createSlice({
@@ -60,6 +53,9 @@ const contentSlice = createSlice({
     update: contentAdapter.updateOne,
     error: (state, { payload: error }) => ({ ...state, error }),
     changes: state => ({ ...state, changes: state.changes + 1 }),
+    selected: (state, { payload }) => {
+      state.selected = payload
+    },
     updatePosition: (
       state,
       { payload: { id, entityRangeIndex, position } }
@@ -142,6 +138,14 @@ export const selectEntityById = id => ({ content }) =>
   contentSelectors.selectById(content, id)
 
 const { reducer, actions } = contentSlice
-export const { clear, add, update, error, changes, updatePosition } = actions
+export const {
+  clear,
+  add,
+  update,
+  error,
+  changes,
+  updatePosition,
+  selected,
+} = actions
 
 export default reducer

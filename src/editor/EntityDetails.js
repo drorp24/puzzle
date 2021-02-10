@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { selected } from '../redux/content'
+import { view } from '../redux/app'
 
 import entityTypes from './entityTypes'
 import useTheme from '../styling/useTheme'
@@ -22,16 +24,15 @@ import RoomIcon from '@material-ui/icons/Room'
 import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
 
-export const EntityDetails = ({ entity }) => {
-  console.log('!!!entity.toJS(): ', entity.toJS())
+export const EntityDetails = ({ entity: { type, data } }) => {
   const { mode, locale } = useSelector(store => store.app)
   const direction = directionByLocale(locale)
   const inverseMode = otherMode(mode)
   const theme = useTheme({ mode: inverseMode, direction })
+  const dispatch = useDispatch(0)
 
-  const { name, icon, color } = entityTypes[entity.type]
-  const { data, created } = entity.data
-  const { user, comment } = data || {}
+  const { name, icon, color } = entityTypes[type]
+  const { id, created, user, comment } = data
 
   const handleDelete = () => {}
 
@@ -62,6 +63,11 @@ export const EntityDetails = ({ entity }) => {
       fontSize: '0.8rem',
       textAlign: 'center',
     },
+  }
+
+  const showRelationsOf = id => () => {
+    dispatch(selected(id))
+    dispatch(view({ exclusiveRelations: true }))
   }
 
   return (
@@ -95,7 +101,7 @@ export const EntityDetails = ({ entity }) => {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton>
+          <IconButton onClick={showRelationsOf(id)}>
             <AccountTreeIcon />
           </IconButton>
           <IconButton>

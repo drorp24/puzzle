@@ -24,11 +24,14 @@ const appSlice = createSlice({
         width,
       },
     }),
-    toggleTags: state => ({
+    view: (state, { payload }) => ({
       ...state,
       view: {
         ...state.view,
-        tags: !state.view.tags,
+        ...payload,
+        exclusiveRelations: payload.relations
+          ? false
+          : payload.exclusiveRelations || state.view.exclusiveRelations,
       },
     }),
   },
@@ -37,4 +40,4 @@ const appSlice = createSlice({
 const { actions, reducer } = appSlice
 
 export default reducer
-export const { toggleMode, toggleLocale, setDimensions, toggleTags } = actions
+export const { toggleMode, toggleLocale, setDimensions, view } = actions

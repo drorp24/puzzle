@@ -37,19 +37,13 @@ export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
   const contentWithNewEntity = content.createEntity(type, mutability, data)
 
   const entityKey = contentWithNewEntity.getLastCreatedEntityKey()
-
-  dispatch(
-    add({
-      entityKey,
-      type,
-      mutability,
-      data,
-      entityRanges,
-    })
+  const contentWithUpdatedEntity = contentWithNewEntity.mergeEntityData(
+    entityKey,
+    { id: entityKey }
   )
 
   const contentWithAppliedEntity = Modifier.applyEntity(
-    contentWithNewEntity,
+    contentWithUpdatedEntity,
     selection,
     entityKey
   )
@@ -59,6 +53,15 @@ export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
     decorator,
     selection: SelectionState.createEmpty(anchorKey),
   })
+
+  dispatch(
+    add({
+      type,
+      mutability,
+      data: { ...data, id: entityKey },
+      entityRanges,
+    })
+  )
 
   return newEditorState
 }

@@ -96,6 +96,7 @@ const Entity = memo(
         arrow
         TransitionComponent={Zoom}
         disableFocusListener={true}
+        placement="left"
       >
         <span {...(tags && { css, ref })}>
           {tags && icon}

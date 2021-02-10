@@ -23,23 +23,20 @@ export const makeNode = ({
   height,
   nodeStyle,
   editRelations,
-}) => {
-  console.log('in makeNode. editRelations: ', editRelations)
-  return {
-    id: `${id}-${index}`,
-    type: 'node',
-    position: { x, y },
-    style: {
-      width,
-      height,
-      ...nodeStyle,
-      borderColor: entityTypes[type].color,
-    },
-    sourcePosition: 'right',
-    targetPosition: 'left',
-    data: { ...data, editRelations },
-  }
-}
+}) => ({
+  id: `${id}-${index}`,
+  type: 'node',
+  position: { x, y },
+  style: {
+    width,
+    height,
+    ...nodeStyle,
+    borderColor: entityTypes[type].color,
+  },
+  sourcePosition: 'right',
+  targetPosition: 'left',
+  data: { ...data, editRelations },
+})
 
 export const relationOptions = type => ({
   label: type,
@@ -69,15 +66,20 @@ export const makeRelation = ({
   to,
   toEntityRangeIndex,
   type,
+  exclusiveRelations,
+  selected,
 }) => {
   const source = `${from}-${fromEntityRangeIndex}`
   const target = `${to}-${toEntityRangeIndex}`
+  const isHidden =
+    exclusiveRelations && selected && selected !== from && selected !== to
   const relation = {
     id: `${source}-${target}-${type}`,
     source: `${source}`,
     sourceHandle: `${from}-${to}-${type}`,
     target: `${target}`,
     targetHandle: `${to}-${from}-${type}`,
+    isHidden,
     ...relationOptions(type),
   }
   return relation

@@ -47,9 +47,9 @@ export const getUser = async ({ username, password }) => {
 // Test
 
 // getUser({ username: 'super', password: 'user' })
-//   .then(user => console.log('user:', user))
+//   .then(user => console log('user:', user))
 //   .catch(error => console.error(error))
 
 // getUser({ username: 'wrong', password: 'user' })
-//   .then(user => console.log('user:', user))
+//   .then(user => console log('user:', user))
 //   .catch(error => console.error(error))

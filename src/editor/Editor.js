@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import React, { useState, useEffect, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
 
@@ -43,44 +43,14 @@ const MyEditor = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
-  const [showEditor, setShowEditor] = useState(true)
-  const [showTags, setShowTags] = useState(false)
-  const [showRelations, setShowRelations] = useState(false)
-  const [editRelations, setEditRelations] = useState(false)
-
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    const convertContent = rawContent => convertFromRaw(rawContent)
-
-    const showContent = content =>
-      setEditorState(EditorState.createWithContent(content, decorator))
-
-    dispatch(fetchContent({ convertContent, showContent }))
-      .then(unwrapResult)
-      .catch(serializedError => {
-        console.error(serializedError)
-        dispatch(error('content'))
-      })
-  }, [dispatch])
-
   const [data, setData] = useState(emptyData)
   const [selectorOpen, setSelectorOpen] = useState(false)
 
-  // Todo: find if these useCallbacks are effective
+  const { editor } = useSelector(store => store.app.view)
+  const dispatch = useDispatch()
+
   const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
   const uSetData = useCallback(setData, [setData])
-
-  const handleKeyCommand = (command, editorState) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command)
-
-    if (newState) {
-      setEditorState(newState)
-      return 'handled'
-    }
-
-    return 'not-handled'
-  }
 
   const handleChange = newEditorState => {
     // only report changes that have the potential to change entities positions
@@ -96,14 +66,22 @@ const MyEditor = () => {
     if (selectionExists) setSelectorOpen(true)
   }
 
-  const handleFocus = e => {
-    e.preventDefault()
-  }
+  // conversion
+  useEffect(() => {
+    const convertContent = rawContent => convertFromRaw(rawContent)
 
-  const handleBlur = e => {
-    e.preventDefault()
-  }
+    const showContent = content =>
+      setEditorState(EditorState.createWithContent(content, decorator))
 
+    dispatch(fetchContent({ convertContent, showContent }))
+      .then(unwrapResult)
+      .catch(serializedError => {
+        console.error(serializedError)
+        dispatch(error('content'))
+      })
+  }, [dispatch])
+
+  // selection & entity creation
   useEffect(() => {
     const { selectionExists, selectionSpansBlocks } = parseSelection(
       editorState
@@ -128,17 +106,15 @@ const MyEditor = () => {
       <div css={styles.container}>
         <div
           css={styles.editor}
-          style={{ visibility: showEditor ? 'visible' : 'hidden' }}
+          style={{ visibility: editor ? 'visible' : 'hidden' }}
         >
           <Editor
             editorState={editorState}
             onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            handleKeyCommand={handleKeyCommand}
             css={styles.editor}
           />
         </div>
+
         <div css={styles.selector}>
           <Selector
             {...{
@@ -149,18 +125,13 @@ const MyEditor = () => {
             css={styles.selector}
           />
         </div>
+
         <div css={styles.relations}>
-          <Relations {...{ showRelations, editRelations }} />
+          <Relations />
         </div>
+
         <div css={styles.control}>
-          <EditorControl
-            {...{
-              setShowEditor,
-              setShowRelations,
-              setShowTags,
-              setEditRelations,
-            }}
-          />
+          <EditorControl />
         </div>
       </div>
     </Page>

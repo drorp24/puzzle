@@ -90,14 +90,19 @@ const Node = ({ id, data: { name, inputs, outputs, editRelations } }) => {
 // ToDo:
 // - ![DONE] implement a toggle button in the editor that, when clicked, shows relations and fades the entities decorators
 //   [DONE] or, better yet: 2 toggle buttons, one showing/hiding the entities, the other showing/hiding the relations
-// - add an extra handle for online connections (something to demo)
-// - implement the connections button on the details hover card, so that it shows upon hover only the connection of this entity to others
+// - [DONE] add an extra handle for online connections (something to demo)
+// - [DONE] implement the connections button on the details hover card, so that it shows upon hover only the connection of this entity to others
 // - spread the handles so they're not one on another
-const Relations = memo(({ showRelations, editRelations }) => {
-  console.log('in memoRelations. editRelations: ', editRelations)
+const Relations = memo(() => {
   const [elements, setElements] = useState([])
 
   const { entities, relations } = useSelector(selectEntities)
+  const {
+    relations: showRelations,
+    connections: editRelations,
+    exclusiveRelations,
+  } = useSelector(store => store.app.view)
+  const { selected } = useSelector(store => store.content)
 
   const nodeTypes = { node: Node }
   const { nodeStyle } = styles
@@ -145,6 +150,8 @@ const Relations = memo(({ showRelations, editRelations }) => {
               to,
               toEntityRangeIndex,
               type,
+              exclusiveRelations,
+              selected,
             })
             edges.push(relation)
           })
@@ -152,20 +159,20 @@ const Relations = memo(({ showRelations, editRelations }) => {
       })
 
     setElements([...nodes, ...edges])
-  }, [editRelations, entities, nodeStyle, relations])
-
-  const stl = {
-    visibility: showRelations ? 'visible' : 'hidden',
-    ...(editRelations && styles.editMode),
-  }
-  console.log('stl: ', stl)
-  console.log('editRelations: ', editRelations)
+  }, [
+    editRelations,
+    entities,
+    exclusiveRelations,
+    nodeStyle,
+    relations,
+    selected,
+  ])
 
   return (
     <div
       css={styles.container}
       style={{
-        visibility: showRelations ? 'visible' : 'hidden',
+        visibility: showRelations || exclusiveRelations ? 'visible' : 'hidden',
         ...(editRelations && styles.editMode),
       }}
     >
