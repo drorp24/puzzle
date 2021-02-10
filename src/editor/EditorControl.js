@@ -9,6 +9,7 @@ import AccountTreeIcon from '@material-ui/icons/AccountTreeOutlined'
 import LabelIcon from '@material-ui/icons/LabelOutlined'
 import TextIcon from '@material-ui/icons/DescriptionOutlined'
 import Tooltip from '@material-ui/core/Tooltip'
+import BorderColorOutlinedIcon from '@material-ui/icons/BorderColorOutlined'
 
 const styles = {
   root: theme => ({
@@ -19,78 +20,40 @@ const styles = {
   buttonGroup: theme => ({
     border: `3px solid rgba(0, 0, 0, 0.15)`,
   }),
+  button: {
+    backgroundColor: 'white',
+    color: 'rgba(0, 0, 0, 0.5)',
+    borderColor: 'rgba(0, 0, 0, 0.5)',
+  },
   selectedButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.78)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     color: 'white',
     borderColor: 'white',
   },
 }
 
-const EditorControl = ({ setShowEditor, setShowRelations, setShowTags }) => {
+const EditorControl = ({
+  setShowEditor,
+  setShowRelations,
+  setShowTags,
+  setEditRelations,
+}) => {
   const dispatch = useDispatch()
-
   const [displays, setDisplays] = useState(() => ['editor', 'tags'])
-  // let editorSelected, tagsSelected, relationsSelected
-  // console.log(
-  //   'editorSelected, tagsSelected, relationsSelected: ',
-  //   editorSelected,
-  //   tagsSelected,
-  //   relationsSelected
-  // )
-
-  console.log('displays: ', displays)
 
   const handleDisplay = (event, newDisplays) => {
-    console.log('handleDisplay ')
-    console.log('event, newDisplays: ', event, newDisplays)
-
-    // if (
-    //   newDisplays.includes('relations') &&
-    //   !newDisplays.includes('tags') &&
-    //   newDisplays.includes('editor')
-    // ) {
-    //   setDisplays(['relations', 'tags', 'editor'])
-    //   return
-    // }
-
     if (displays.includes('tags') !== newDisplays.includes('tags'))
       dispatch(toggleTags())
-
-    // relations requires tags to be on
-    // if (!newDisplays.includes('tags')) {
-    //   setShowRelations(false)
-    //   newDisplays = newDisplays.filter(i => i !== 'relations')
-    //   if (!relationsDisabled) setRelationsDisabled(true)
-    // } else {
-    //   if (relationsDisabled) setRelationsDisabled(false)
-    // }
-
-    // // tags requires editor to be on
-    // if (!newDisplays.includes('editor')) {
-    //   setShowEditor(false)
-    //   newDisplays = newDisplays.filter(i => i !== 'tags')
-    //   if (!tagsDisabled) setTagsDisabled(true)
-    // } else {
-    //   if (tagsDisabled) setTagsDisabled(false)
-    // }
-
-    // editorSelected = newDisplays.includes('editor')
-    // tagsSelected = newDisplays.includes('tags')
-    // relationsSelected = newDisplays.includes('relations')
-
-    // console.log(
-    //   'inside change: editorSelected, tagsSelected, relationsSelected: ',
-    //   editorSelected,
-    //   tagsSelected,
-    //   relationsSelected
-    // )
 
     setShowEditor(newDisplays.includes('editor'))
     setShowTags(newDisplays.includes('tags'))
     setShowRelations(newDisplays.includes('relations'))
+    setEditRelations(newDisplays.includes('edit'))
 
     setDisplays(newDisplays)
   }
+
+  // ToDo: use button disables to prevent undesired states (e.g., relations & text on, tags off)
   const [relationsDisabled, setRelationsDisabled] = useState(false)
   const [tagsDisabled, setTagsDisabled] = useState(false)
   const [editorDisabled, setEditorDisabled] = useState(false)
@@ -109,7 +72,11 @@ const EditorControl = ({ setShowEditor, setShowRelations, setShowTags }) => {
             value="editor"
             disabled={editorDisabled}
             selected={displays.includes('editor')}
-            style={displays.includes('editor') ? styles.selectedButton : {}}
+            style={
+              displays.includes('editor')
+                ? styles.selectedButton
+                : styles.button
+            }
           >
             <TextIcon />
           </ToggleButton>
@@ -120,7 +87,9 @@ const EditorControl = ({ setShowEditor, setShowRelations, setShowTags }) => {
             value="tags"
             disabled={tagsDisabled}
             selected={displays.includes('tags')}
-            style={displays.includes('tags') ? styles.selectedButton : {}}
+            style={
+              displays.includes('tags') ? styles.selectedButton : styles.button
+            }
           >
             <LabelIcon />
           </ToggleButton>
@@ -131,9 +100,26 @@ const EditorControl = ({ setShowEditor, setShowRelations, setShowTags }) => {
             value="relations"
             disabled={relationsDisabled}
             selected={displays.includes('relations')}
-            style={displays.includes('relations') ? styles.selectedButton : {}}
+            style={
+              displays.includes('relations')
+                ? styles.selectedButton
+                : styles.button
+            }
           >
             <AccountTreeIcon />
+          </ToggleButton>
+        </Tooltip>
+
+        <Tooltip title="Edit relations" placement="left">
+          <ToggleButton
+            value="edit"
+            disabled={relationsDisabled}
+            selected={displays.includes('edit')}
+            style={
+              displays.includes('edit') ? styles.selectedButton : styles.button
+            }
+          >
+            <BorderColorOutlinedIcon />
           </ToggleButton>
         </Tooltip>
       </ToggleButtonGroup>

@@ -6,7 +6,7 @@ import { fetchContent, error, changes } from '../redux/content'
 
 import { Editor, EditorState, RichUtils, convertFromRaw } from 'draft-js'
 import 'draft-js/dist/Draft.css'
-import Relations from '../flow/Relations'
+import Relations from '../relations/Relations'
 
 import Selector, { emptyData } from './Selector'
 import { createEntityFromSelection } from './entities'
@@ -46,8 +46,7 @@ const MyEditor = () => {
   const [showEditor, setShowEditor] = useState(true)
   const [showTags, setShowTags] = useState(false)
   const [showRelations, setShowRelations] = useState(false)
-  console.log('showRelations: ', showRelations)
-  const visibility = showEditor ? 'visible' : 'hidden'
+  const [editRelations, setEditRelations] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -127,7 +126,10 @@ const MyEditor = () => {
   return (
     <Page>
       <div css={styles.container}>
-        <div css={styles.editor} style={{ visibility }}>
+        <div
+          css={styles.editor}
+          style={{ visibility: showEditor ? 'visible' : 'hidden' }}
+        >
           <Editor
             editorState={editorState}
             onChange={handleChange}
@@ -148,11 +150,16 @@ const MyEditor = () => {
           />
         </div>
         <div css={styles.relations}>
-          <Relations {...{ showRelations }} />
+          <Relations {...{ showRelations, editRelations }} />
         </div>
         <div css={styles.control}>
           <EditorControl
-            {...{ setShowEditor, setShowRelations, setShowTags }}
+            {...{
+              setShowEditor,
+              setShowRelations,
+              setShowTags,
+              setEditRelations,
+            }}
           />
         </div>
       </div>
