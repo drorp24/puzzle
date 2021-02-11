@@ -87,12 +87,7 @@ const Node = ({ id, data: { name, inputs, outputs, editRelations } }) => {
   )
 }
 
-// ToDo:
-// - ![DONE] implement a toggle button in the editor that, when clicked, shows relations and fades the entities decorators
-//   [DONE] or, better yet: 2 toggle buttons, one showing/hiding the entities, the other showing/hiding the relations
-// - [DONE] add an extra handle for online connections (something to demo)
-// - [DONE] implement the connections button on the details hover card, so that it shows upon hover only the connection of this entity to others
-// - spread the handles so they're not one on another
+// ToDo: spread the handles so they don't overlap
 const Relations = memo(() => {
   const [elements, setElements] = useState([])
 

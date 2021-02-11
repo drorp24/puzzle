@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
 
-import { Editor, EditorState, RichUtils, convertFromRaw } from 'draft-js'
+import { Editor, EditorState, convertFromRaw } from 'draft-js'
 import 'draft-js/dist/Draft.css'
 import Relations from '../relations/Relations'
 
@@ -122,7 +122,6 @@ const MyEditor = () => {
               uSetSelectorOpen,
               uSetData,
             }}
-            css={styles.selector}
           />
         </div>
 

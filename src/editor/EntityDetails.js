@@ -34,6 +34,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const { name, icon, color } = entityTypes[type]
   const { id, created, user, comment } = data
 
+  // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}
 
   const useStyles = makeStyles(theme => ({
