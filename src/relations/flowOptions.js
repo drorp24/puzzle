@@ -40,7 +40,7 @@ export const makeNode = ({
 
 export const relationOptions = type => ({
   label: type,
-  // type: 'smoothstep',
+  type: 'smoothstep',
   // arrowHeadType: 'arrowclosed',
   style: {
     stroke: entityTypes[relationTypes[type].entity].color,
@@ -48,10 +48,11 @@ export const relationOptions = type => ({
   },
   labelStyle: {
     fill: entityTypes[relationTypes[type].entity].color,
-    fontSize: '0.8rem',
+    fontSize: '1.1rem',
+    fontWeight: '400',
   },
   labelBgStyle: {
-    fill: 'black',
+    // fill: 'black',
     // stroke: entityTypes[relationTypes[type].entity].color,
     // strokeWidth: '3',
     textAlign: 'center',

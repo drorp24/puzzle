@@ -49,8 +49,11 @@ const timeout = 100
 const rawContent = {
   blocks: [
     {
-      key: 'b1',
-      text: 'Uri goes to the beach every Saturday morning.',
+      key: 'firstBlock',
+      text:
+        'Uri went to Metzitzim beach. ' +
+        'He brought his brother Danny with him and his father Moshe.',
+      type: 'unstyled',
       entityRanges: [
         {
           offset: 0,
@@ -58,89 +61,73 @@ const rawContent = {
           key: 'firstEntity',
         },
         {
-          offset: 16,
-          length: 5,
+          offset: 12,
+          length: 15,
           key: 'secondEntity',
         },
         {
-          offset: 28,
-          length: 16,
-          key: 'thirdEntity',
-        },
-      ],
-    },
-    {
-      key: 'b2',
-      text: '',
-    },
-    {
-      key: 'b3',
-      text: '',
-    },
-    {
-      key: 'b4',
-      text:
-        'He lives in Tel Aviv, and the beach is right across Ben Yehuda street where he lives.',
-      entityRanges: [
-        {
-          offset: 0,
+          offset: 29,
           length: 2,
           key: 'firstEntity',
         },
         {
-          offset: 12,
-          length: 8,
-          key: 'fourthEntity',
+          offset: 40,
+          length: 17,
+          key: 'thirdEntity',
         },
         {
-          offset: 52,
-          length: 10,
+          offset: 71,
+          length: 16,
+          key: 'fourthEntity',
+        },
+      ],
+    },
+    {
+      key: 'secondBlock',
+      text: '',
+      type: 'unstyled',
+    },
+    {
+      key: 'thirdBlock',
+      text:
+        'This is an "immutable" entity: Tel Aviv. Deleting any ' +
+        'characters will delete the entire entity. Adding characters ' +
+        'will remove the entity from the range.',
+      type: 'unstyled',
+      entityRanges: [
+        {
+          offset: 31,
+          length: 9,
           key: 'fifthEntity',
         },
       ],
     },
     {
-      key: 'b5',
+      key: 'fourthBlock',
       text: '',
+      type: 'unstyled',
     },
     {
-      key: 'b6',
+      key: 'fifthBlock',
+      text:
+        'This is a "mutable" entity: Uri. Characters may be added ' +
+        'and removed. This is the same person mentioned above.',
+      type: 'unstyled',
+      entityRanges: [{ offset: 28, length: 3, key: 'firstEntity' }],
+    },
+    {
+      key: 'sixthBlock',
       text: '',
+      type: 'unstyled',
     },
     {
-      key: 'b7',
-      text: "When he's there, Uri likes listening to music on his iPhone.",
-      entityRanges: [
-        {
-          offset: 17,
-          length: 3,
-          key: 'firstEntity',
-        },
-        {
-          offset: 53,
-          length: 6,
-          key: 'sixthEntity',
-        },
-      ],
-    },
-    {
-      key: 'b8',
-      text: '',
-    },
-    {
-      key: 'b9',
-      text: '',
-    },
-    {
-      key: 'b10',
-      text: 'His girlfriend Vered usually joins.',
-      entityRanges: [
-        {
-          offset: 15,
-          length: 5,
-          key: 'seventhEntity',
-        },
-      ],
+      key: 'sebenthBlock',
+      text:
+        'This is a "segmented" entity: Green Lantern. Deleting any ' +
+        'characters will delete @the #current "segment" from the range. ' +
+        'Adding characters will remove the entire entity from the range.',
+      type: 'unstyled',
+      entityRanges: [{ offset: 30, length: 13, key: 'seventhEntity' }],
     },
   ],
 
@@ -161,18 +148,18 @@ const rawContent = {
       mutability: 'IMMUTABLE',
       data: {
         id: 'secondEntity',
-        name: 'beach',
+        name: 'Metzitzim',
         score: 9.99,
         subTypes: ['A', 'B', 'C'],
         location: 'Tel aviv',
       },
     },
     thirdEntity: {
-      type: 'Time',
+      type: 'Person',
       mutability: 'IMMUTABLE',
       data: {
         id: 'thirdEntity',
-        name: 'Saturday morning',
+        name: 'Danny',
         score: 9.99,
         subTypes: ['A', 'B', 'C'],
         location: 'Tel aviv',
@@ -180,11 +167,11 @@ const rawContent = {
     },
     fourthEntity: {
       willbeIgnored: 'youWillSee',
-      type: 'Place',
+      type: 'Person',
       mutability: 'IMMUTABLE',
       data: {
         id: 'fourthEntity',
-        name: 'Tel Aviv',
+        name: 'Moshe',
         score: 9.99,
         subTypes: ['A', 'B', 'C'],
         location: 'Tel aviv',
@@ -195,37 +182,18 @@ const rawContent = {
       mutability: 'MUTABLE',
       data: {
         id: 'fifthEntity',
-        name: 'Ben Yehuda',
+        name: 'Tel Aviv',
         score: 10.99,
         subTypes: ['A', 'B'],
       },
     },
-    sixthEntity: {
-      type: 'Device',
-      mutability: 'MUTABLE',
+
+    seventhEntity: {
+      type: 'Unrecognized',
+      mutability: 'SEGMENTED',
       data: {
         id: 'sixthEntity',
-        name: 'iPhone',
-        score: 10.99,
-        subTypes: ['A', 'B'],
-      },
-    },
-    seventhEntity: {
-      type: 'Person',
-      mutability: 'SEGMENTED',
-      data: {
-        id: 'seventhEntity',
-        name: 'Vered',
-        score: 8.99,
-        subTypes: [],
-      },
-    },
-    eighthEntity: {
-      type: 'Device',
-      mutability: 'SEGMENTED',
-      data: {
-        id: 'eighthEntity',
-        name: 'Android',
+        name: 'Green Lantern',
         score: 8.99,
         subTypes: [],
       },
@@ -234,21 +202,20 @@ const rawContent = {
   relations: [
     // assumptions:
     // - graph is unidirectional
-
     {
-      from: 'secondEntity',
+      from: 'firstEntity',
       to: 'fourthEntity',
-      type: 'in',
+      type: 'son',
     },
     {
       from: 'secondEntity',
       to: 'fifthEntity',
-      type: 'near',
+      type: 'is in',
     },
     {
-      from: 'seventhEntity',
-      to: 'firstEntity',
-      type: 'girlfriend',
+      from: 'firstEntity',
+      to: 'thirdEntity',
+      type: 'brother',
     },
   ],
 }

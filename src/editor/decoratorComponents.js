@@ -98,7 +98,7 @@ const Entity = memo(
         disableFocusListener={true}
         placement="left"
       >
-        <span {...(tags && { css, ref })}>
+        <span {...(tags && { css})} ref={ref}>
           {tags && icon}
           {children}
         </span>

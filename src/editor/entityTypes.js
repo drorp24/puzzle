@@ -19,7 +19,16 @@ export const relationTypes = keyProxy({
   brother: {
     entity: 'Person',
   },
-  'is in': {
+  girlfriend: {
+    entity: 'Person',
+  },
+  in: {
+    entity: 'Place',
+  },
+  near: {
+    entity: 'Place',
+  },
+  uses: {
     entity: 'Place',
   },
   Undefined: {
@@ -73,7 +82,7 @@ const entityTypes = keyProxy({
     mutability: 'IMMUTABLE',
     icon: <NotListedIcon />,
     selector: false,
-    color: 'lightgrey',
+    color: 'rgba(0, 0, 0, 0.5)',
   },
 })
 
