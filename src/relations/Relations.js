@@ -3,12 +3,14 @@ import { memo } from 'react'
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { selectEntities } from '../redux/content'
-import ReactFlow, { removeElements, addEdge, Handle } from 'react-flow-renderer'
+import ReactFlow, { removeElements, addEdge } from 'react-flow-renderer'
 
-import entityTypes, { relationTypes } from '../editor/entityTypes'
 import { options, makeNode, makeRelation, relationOptions } from './flowOptions'
+import { entityStyle } from '../editor/entityTypes'
 
-const styles = {
+import { Node } from './Node'
+
+export const styles = {
   container: {
     height: '100%',
     width: '100%',
@@ -36,57 +38,6 @@ const styles = {
   },
 }
 
-const Node = ({ id, data: { name, inputs, outputs, editRelations } }) => {
-  const visibility = editRelations ? 'visible' : 'hidden'
-  return (
-    <div>
-      {outputs &&
-        outputs.map(({ source, target, type }) => (
-          <Handle
-            type="source"
-            id={`${source}-${target}-${type}`}
-            key={target}
-            position="right"
-            style={{
-              ...styles.handleStyle,
-              backgroundColor: entityTypes[relationTypes[type].entity].color,
-              visibility,
-            }}
-          />
-        ))}
-      <Handle
-        type="source"
-        id="extraSource"
-        key="extraSource"
-        position="bottom"
-        style={{ ...styles.handleStyle, backgroundColor: 'green', visibility }}
-      />
-      {!editRelations && <div>{name}</div>}
-      {inputs &&
-        inputs.map(({ source, target, type }) => (
-          <Handle
-            type="target"
-            id={`${target}-${source}-${type}`}
-            key={source}
-            position="left"
-            style={{
-              ...styles.handleStyle,
-              backgroundColor: entityTypes[relationTypes[type].entity].color,
-              visibility,
-            }}
-          />
-        ))}
-      <Handle
-        type="target"
-        id="extraTarget"
-        key="extraTarget"
-        position="top"
-        style={{ ...styles.handleStyle, backgroundColor: 'red', visibility }}
-      />
-    </div>
-  )
-}
-
 // ToDo: spread the handles so they don't overlap
 const Relations = memo(() => {
   const [elements, setElements] = useState([])
@@ -100,7 +51,7 @@ const Relations = memo(() => {
   const { selected } = useSelector(store => store.content)
 
   const nodeTypes = { node: Node }
-  const { nodeStyle } = styles
+  // const { nodeStyle } = styles
 
   const onElementsRemove = elementsToRemove =>
     setElements(els => removeElements(elementsToRemove, els))
@@ -118,6 +69,7 @@ const Relations = memo(() => {
     entityEntries.forEach(([id, { type, data, entityRanges }]) => {
       entityRanges.forEach(
         ({ position: { x, y, width, height } = {} }, index) => {
+          // const nodeStyle = entityStyle(type)
           const node = makeNode({
             id,
             type,
@@ -127,7 +79,7 @@ const Relations = memo(() => {
             y,
             width,
             height,
-            nodeStyle,
+            nodeStyle: entityStyle(type),
             editRelations,
           })
           nodes.push(node)
@@ -154,14 +106,7 @@ const Relations = memo(() => {
       })
 
     setElements([...nodes, ...edges])
-  }, [
-    editRelations,
-    entities,
-    exclusiveRelations,
-    nodeStyle,
-    relations,
-    selected,
-  ])
+  }, [editRelations, entities, exclusiveRelations, relations, selected])
 
   return (
     <div

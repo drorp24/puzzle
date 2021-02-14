@@ -87,19 +87,13 @@ const contentSlice = createSlice({
         contentAdapter.setAll(state, entities)
         state.relations = relations
         relations.forEach(({ from, to, type }) => {
-          state.entities[from].data.outputs =
-            state.entities[from].data.outputs || []
-          state.entities[to].data.inputs = state.entities[to].data.inputs || []
-          state.entities[from].data.outputs.push({
+          const relation = {
             source: from,
             target: to,
             type,
-          })
-          state.entities[to].data.inputs.push({
-            source: from,
-            target: to,
-            type,
-          })
+          }
+          state.entities[from].data.outputs.push(relation)
+          state.entities[to].data.inputs.push(relation)
         })
       }
     },

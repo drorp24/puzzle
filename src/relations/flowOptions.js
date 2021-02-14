@@ -31,11 +31,12 @@ export const makeNode = ({
     width,
     height,
     ...nodeStyle,
-    borderColor: entityTypes[type].color,
+    background: 'none',
+    border: `1px solid ${entityTypes[type].color}`,
   },
   sourcePosition: 'right',
   targetPosition: 'left',
-  data: { ...data, editRelations },
+  data: { ...data, editRelations, type },
 })
 
 export const relationOptions = type => ({

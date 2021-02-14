@@ -12,7 +12,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
 import { EntityDetails } from './EntityDetails'
 
-import entityTypes, { entityStyle } from './entityTypes'
+import entityTypes, { entityStyle, entityIconStyle } from './entityTypes'
 
 export const TextSpan = type => ({ children }) => (
   <span css={entityStyle(type)}>{children}</span>
@@ -88,7 +88,8 @@ const Entity = memo(
     const entity = contentState.getEntity(entityKey)
     const { type } = entity
     const { icon } = entityTypes[type]
-    const css = entityStyle(type)
+    const entityS = entityStyle(type)
+    const iconS = entityIconStyle(type)
 
     return (
       <Tooltip
@@ -98,8 +99,8 @@ const Entity = memo(
         disableFocusListener={true}
         placement="left"
       >
-        <span {...(tags && { css})} ref={ref}>
-          {tags && icon}
+        <span ref={ref} {...(tags && { style: entityS })}>
+          <span style={iconS}>{tags && icon}</span>
           {children}
         </span>
       </Tooltip>

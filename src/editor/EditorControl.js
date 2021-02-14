@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { view } from '../redux/app'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
+
 import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
 import AccountTreeIcon from '@material-ui/icons/AccountTreeOutlined'
 import LabelIcon from '@material-ui/icons/LabelOutlined'
@@ -20,20 +21,23 @@ const styles = {
   buttonGroup: theme => ({
     border: `3px solid rgba(0, 0, 0, 0.15)`,
   }),
-  button: {
+  off: {
     backgroundColor: 'white',
-    color: 'rgba(0, 0, 0, 0.5)',
+    color: 'rgba(0, 0, 0, 0.7)',
   },
-  selected: {
+  on: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     color: 'white',
     borderColor: 'white',
   },
   disabled: {
-    color: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'white',
+    color: 'rgba(0, 0, 0, 0.1)',
+    pointerEvents: 'none',
   },
 }
 
+// ToDo: enable to start with ['editors'] only
 const EditorControl = () => {
   const [selected, setSelected] = useState(['editor', 'tags'])
   const dispatch = useDispatch()
@@ -61,7 +65,6 @@ const EditorControl = () => {
         connections: connectionsSelected,
       })
     )
-    setConnectionsDisabled(!relationsSelected)
   }, [
     editorSelected,
     tagsSelected,
@@ -72,12 +75,34 @@ const EditorControl = () => {
 
   useEffect(() => {
     dispatchSelected()
-  }, [dispatchSelected])
+
+    setTagsDisabled(!editorSelected)
+    if (!editorSelected && tagsSelected)
+      setSelected(selected => selected.filter(i => i !== 'tags'))
+
+    if (editorSelected && !tagsSelected)
+      setSelected(selected => [...selected, 'tags'])
+    // setRelationsDisabled(!tagsSelected)
+    // if (!tagsSelected && relationsSelected)
+    //   setSelected(selected => selected.filter(i => i !== 'editor'))
+
+    setConnectionsDisabled(!relationsSelected)
+    if (!relationsSelected && connectionsSelected)
+      setSelected(selected => selected.filter(i => i !== 'connections'))
+  }, [
+    editorSelected,
+    tagsSelected,
+    relationsSelected,
+    connectionsSelected,
+    dispatchSelected,
+  ])
 
   const handleDisplay = (event, newSelected) => {
     setSelected(newSelected)
     dispatchSelected()
   }
+
+  const { on, off, disabled } = styles
 
   return (
     <div css={styles.root}>
@@ -91,15 +116,8 @@ const EditorControl = () => {
         <Tooltip title="Show text" placement="left">
           <ToggleButton
             value="editor"
-            disabled={editorDisabled}
             selected={editorSelected}
-            style={
-              editorSelected
-                ? styles.selected
-                : editorDisabled
-                ? styles.disabled
-                : styles.button
-            }
+            style={editorDisabled ? disabled : editorSelected ? on : off}
           >
             <TextIcon />
           </ToggleButton>
@@ -108,15 +126,8 @@ const EditorControl = () => {
         <Tooltip title="Show tags" placement="left">
           <ToggleButton
             value="tags"
-            disabled={tagsDisabled}
             selected={tagsSelected}
-            style={
-              tagsSelected
-                ? styles.selected
-                : tagsDisabled
-                ? styles.diabled
-                : styles.button
-            }
+            style={tagsDisabled ? disabled : tagsSelected ? on : off}
           >
             <LabelIcon />
           </ToggleButton>
@@ -125,15 +136,8 @@ const EditorControl = () => {
         <Tooltip title="Show relations" placement="left">
           <ToggleButton
             value="relations"
-            disabled={relationsDisabled}
             selected={relationsSelected}
-            style={
-              relationsSelected
-                ? styles.selected
-                : relationsDisabled
-                ? styles.disabled
-                : styles.button
-            }
+            style={relationsDisabled ? disabled : relationsSelected ? on : off}
           >
             <AccountTreeIcon />
           </ToggleButton>
@@ -142,14 +146,9 @@ const EditorControl = () => {
         <Tooltip title="Edit relations" placement="left">
           <ToggleButton
             value="connections"
-            disabled={connectionsDisabled}
             selected={connectionsSelected}
             style={
-              connectionsSelected
-                ? styles.selected
-                : connectionsDisabled
-                ? styles.disabled
-                : styles.button
+              connectionsDisabled ? disabled : connectionsSelected ? on : off
             }
           >
             <BorderColorOutlinedIcon />

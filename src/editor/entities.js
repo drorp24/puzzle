@@ -63,7 +63,6 @@ export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
   return newEditorState
 }
 
-
 export const createEntitiesFromContent = content => {
   const entities = {}
 
@@ -91,6 +90,7 @@ export const createEntitiesFromContent = content => {
           const entityToJs = entity.toJS()
           entityToJs.entityKey = entityKey
           entityToJs.entityRanges = []
+          entityToJs.data = { ...entityToJs.data, inputs: [], outputs: [] }
           entities[entityKey] = entityToJs
         }
 

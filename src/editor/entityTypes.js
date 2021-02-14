@@ -89,16 +89,17 @@ const entityTypes = keyProxy({
 export const entityStyle = entityType => ({
   backgroundColor: entityTypes[entityType].color,
   borderRadius: '1rem',
-  padding: '0.1rem 0.5rem',
+  // padding: '0.1rem 0.5rem',
   display: 'inline-flex',
   alignItems: 'center',
-  position: entityTypes[entityType].icon ? 'relative' : 'static',
+  // position: entityTypes[entityType].icon ? 'relative' : 'static',
   top: '0.2rem',
-  '& > svg': {
-    marginRight: '0.25rem',
-    fontSize: '1.25rem',
-    color: 'rgba(0, 0, 0, 0.5)',
-  },
+  left: '0',
+})
+export const entityIconStyle = entityType => ({
+  marginRight: '0.25rem',
+  fontSize: '1.25rem',
+  color: 'rgba(0, 0, 0, 0.5)',
 })
 
 export default entityTypes
