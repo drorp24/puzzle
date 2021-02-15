@@ -61,9 +61,6 @@ const contentSlice = createSlice({
       { payload: { id, entityRangeIndex, position } }
     ) => {
       // Immer to the rescue
-      state.entities[id].entityRanges = state.entities[id].entityRanges || []
-      state.entities[id].entityRanges[entityRangeIndex] =
-        state.entities[id].entityRanges[entityRangeIndex] || {}
       state.entities[id].entityRanges[entityRangeIndex].position = position
     },
   },

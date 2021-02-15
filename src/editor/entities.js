@@ -16,6 +16,7 @@ export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
     anchorKey,
     anchorOffset,
     focusOffset,
+    selectedText,
   } = parseSelection(editorState)
 
   const blockKey = anchorKey
@@ -28,6 +29,7 @@ export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
       offset,
       length,
       position,
+      text: selectedText,
     },
   ]
 
@@ -36,7 +38,7 @@ export const createEntityFromSelection = ({ editorState, data, dispatch }) => {
   const entityKey = contentWithNewEntity.getLastCreatedEntityKey()
   const contentWithUpdatedEntity = contentWithNewEntity.mergeEntityData(
     entityKey,
-    { id: entityKey }
+    { id: entityKey, entityRanges }
   )
 
   const contentWithAppliedEntity = Modifier.applyEntity(
@@ -70,6 +72,7 @@ export const createEntitiesFromContent = content => {
 
   content.getBlockMap().forEach(block => {
     const blockKey = block.getKey()
+    const blockText = block.getText()
     block.findEntityRanges(
       character => {
         entityKey = character.getEntity()
@@ -80,12 +83,6 @@ export const createEntitiesFromContent = content => {
         }
       },
       (from, to) => {
-        const entityRange = {
-          blockKey,
-          offset: from,
-          length: to - from,
-        }
-
         if (!entities[entityKey]) {
           const entityToJs = entity.toJS()
           entityToJs.entityKey = entityKey
@@ -94,7 +91,25 @@ export const createEntitiesFromContent = content => {
           entities[entityKey] = entityToJs
         }
 
+        const index = entities[entityKey].entityRanges.length
+
+        // Offset and length will change if user is allowed to edit.
+        // They are kept for reconciliation and export.
+        // index on the other hand will remain intact.
+        // Every entityRange is uniquely identified by the entity ID + entityRange's index.
+        const entityRange = {
+          blockKey,
+          offset: from,
+          length: to - from,
+          text: blockText.substring(from, to),
+          index,
+        }
+
         entities[entityKey].entityRanges.push(entityRange)
+
+        content.mergeEntityData(entityKey, {
+          entityRanges: entities[entityKey].entityRanges,
+        })
       }
     )
   })

@@ -23,6 +23,7 @@ export const makeNode = ({
   height,
   nodeStyle,
   editRelations,
+  text,
 }) => ({
   id: `${id}-${index}`,
   type: 'node',
@@ -31,18 +32,15 @@ export const makeNode = ({
     width,
     height,
     ...nodeStyle,
-    background: 'none',
-    border: `1px solid ${entityTypes[type].color}`,
   },
   sourcePosition: 'right',
   targetPosition: 'left',
-  data: { ...data, editRelations, type },
+  data: { ...data, editRelations, type, index, text },
 })
 
 export const relationOptions = type => ({
   label: type,
   type: 'smoothstep',
-  // arrowHeadType: 'arrowclosed',
   style: {
     stroke: entityTypes[relationTypes[type].entity].color,
     strokeWidth: '4',
@@ -53,9 +51,6 @@ export const relationOptions = type => ({
     fontWeight: '400',
   },
   labelBgStyle: {
-    // fill: 'black',
-    // stroke: entityTypes[relationTypes[type].entity].color,
-    // strokeWidth: '3',
     textAlign: 'center',
   },
   labelBgPadding: [4, 4],

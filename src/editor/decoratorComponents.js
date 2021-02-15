@@ -18,6 +18,21 @@ export const TextSpan = type => ({ children }) => (
   <span css={entityStyle(type)}>{children}</span>
 )
 
+// ! entities & ranges
+// draft's text entities and reactflow's nodes are unaware of each other and render separately.
+// In order to bring them together into one view, reactflow's nodes must follow the x/y coordinates of the entities.
+//
+// To achieve that, EntitySpan calls getBoundingClientRect on the ref of the native span whenever any of the useEffect's dependencies change,
+// and reports it on the entity's respective entityRange.
+// reactflow's nodes are built by scanning those entityRanges and then listen to their position changes, so that
+// every change in each of the useEffect's dependencies will make the affected nodes move along with the respective text entity.
+//
+// The challenge is that draft doesnt maintain any id to uniquely identify an entityRange (occurrence) within an entity,
+// so the only way of telling which entityRange is it whose position we need to update is by looking at the passed-in 'start' and 'end' props,
+// and find the entityRange with the same start and end - but these change as soon as edit is allowed.
+//
+// This limitation of draft is a small price to pay for an otherwise very efficient character - entity - styling solution,
+// and since no editing will probably ever be required, I disabled it, so that entityRanges would be found by their original offsets.
 export const EntitySpan = ({
   contentState,
   entityKey,
@@ -28,10 +43,10 @@ export const EntitySpan = ({
 }) => {
   const ref = useRef()
   const entity = contentState.getEntity(entityKey)
-  const id = entity.data.id || entityKey // see note on content.js
+  const { id } = entity.data
 
   const selectorEntity = useSelector(selectEntityById(id))
-  const contentLoaded = useSelector(store => selectContent(store).loaded)
+  const { loaded, entities } = useSelector(selectContent)
   const contentChanges = useSelector(store => store.content.changes)
   const { tags } = useSelector(store => store.app.view)
   const { height: windowHeight, width: windowWidth } = useSelector(
@@ -44,6 +59,7 @@ export const EntitySpan = ({
     item.offset === start &&
     item.length === end - start
 
+  // if editing is ever allowed, this will break
   const entityRangeIndex =
     selectorEntity &&
     selectorEntity.entityRanges?.length &&
@@ -51,7 +67,7 @@ export const EntitySpan = ({
 
   useEffect(() => {
     if (
-      !contentLoaded ||
+      !loaded ||
       selectorEntity === undefined ||
       entityRangeIndex === undefined
     )
@@ -67,15 +83,16 @@ export const EntitySpan = ({
       dispatch(updatePosition({ id, entityRangeIndex, position }))
     }
   }, [
-    contentLoaded,
+    loaded,
+    entities.length,
     contentChanges,
     windowHeight,
     windowWidth,
-    dispatch,
-    entityKey,
     id,
     entityRangeIndex,
     selectorEntity,
+    tags,
+    dispatch,
   ])
 
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />
@@ -88,8 +105,9 @@ const Entity = memo(
     const entity = contentState.getEntity(entityKey)
     const { type } = entity
     const { icon } = entityTypes[type]
-    const entityS = entityStyle(type)
-    const iconS = entityIconStyle(type)
+    const role = 'text'
+    const entityS = entityStyle({ type, role })
+    const iconS = entityIconStyle({ type, role })
 
     return (
       <Tooltip

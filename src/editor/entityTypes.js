@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { keyProxy } from '../utility/proxies'
 
-import Person from '@material-ui/icons/Person'
-import LocationCity from '@material-ui/icons/LocationCity'
-import AccessTime from '@material-ui/icons/WatchLater'
-import Phone from '@material-ui/icons/Phone'
+import PersonIcon from '@material-ui/icons/PermIdentityOutlined'
+import PlaceIcon from '@material-ui/icons/PlaceOutlined'
+import TimeIcon from '@material-ui/icons/AccessTimeOutlined'
+import DeviceIcon from '@material-ui/icons/PhoneOutlined'
 import NotListedIcon from '@material-ui/icons/HelpOutlined'
 
 export const useColor = relationType =>
@@ -40,28 +40,28 @@ const entityTypes = keyProxy({
   Person: {
     name: 'Person',
     mutability: 'IMMUTABLE',
-    icon: <Person />,
+    icon: <PersonIcon />,
     selector: true,
     color: 'orange',
   },
   Place: {
     name: 'Place',
     mutability: 'IMMUTABLE',
-    icon: <LocationCity />,
+    icon: <PlaceIcon />,
     selector: true,
     color: 'deepskyblue',
   },
   Time: {
     name: 'Time',
     mutability: 'IMMUTABLE',
-    icon: <AccessTime />,
+    icon: <TimeIcon />,
     selector: true,
     color: 'aquamarine',
   },
   Device: {
     name: 'Device',
     mutability: 'IMMUTABLE',
-    icon: <Phone />,
+    icon: <DeviceIcon />,
     selector: true,
     color: 'coral',
   },
@@ -86,20 +86,24 @@ const entityTypes = keyProxy({
   },
 })
 
-export const entityStyle = entityType => ({
-  backgroundColor: entityTypes[entityType].color,
+export const entityStyle = ({ type, role }) => ({
+  backgroundColor: role === 'text' ? entityTypes[type].color : 'none',
+  border: role === 'text' ? 'none' : `1px solid ${entityTypes[type].color}`,
   borderRadius: '1rem',
-  // padding: '0.1rem 0.5rem',
   display: 'inline-flex',
+  justifyContent: 'center',
+  padding: '0.1rem 0.5rem',
   alignItems: 'center',
-  // position: entityTypes[entityType].icon ? 'relative' : 'static',
-  top: '0.2rem',
-  left: '0',
+  ...(role === 'text' && {
+    transform: `translateY(${entityTypes[type].icon ? '0.4rem' : '0'}`,
+  }),
+  whiteSpace: 'nowrap',
 })
-export const entityIconStyle = entityType => ({
+export const entityIconStyle = ({ type, role }) => ({
+  display: 'inline-flex',
   marginRight: '0.25rem',
-  fontSize: '1.25rem',
-  color: 'rgba(0, 0, 0, 0.5)',
+  fontSize: '1rem',
+  color: 'rgba(0, 0, 0, 0.6)',
 })
 
 export default entityTypes

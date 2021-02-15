@@ -37,13 +37,12 @@ const styles = {
   },
 }
 
-// ToDo: enable to start with ['editors'] only
 const EditorControl = () => {
-  const [selected, setSelected] = useState(['editor', 'tags'])
+  const [selected, setSelected] = useState(['editor'])
   const dispatch = useDispatch()
 
-  const [editorDisabled, setEditorDisabled] = useState(false)
-  const [tagsDisabled, setTagsDisabled] = useState(false)
+  const [editorDisabled] = useState(false)
+  const [tagsDisabled] = useState(false)
   const [relationsDisabled, setRelationsDisabled] = useState(false)
   const [connectionsDisabled, setConnectionsDisabled] = useState(false)
 
@@ -76,15 +75,9 @@ const EditorControl = () => {
   useEffect(() => {
     dispatchSelected()
 
-    setTagsDisabled(!editorSelected)
-    if (!editorSelected && tagsSelected)
-      setSelected(selected => selected.filter(i => i !== 'tags'))
-
-    if (editorSelected && !tagsSelected)
-      setSelected(selected => [...selected, 'tags'])
-    // setRelationsDisabled(!tagsSelected)
-    // if (!tagsSelected && relationsSelected)
-    //   setSelected(selected => selected.filter(i => i !== 'editor'))
+    setRelationsDisabled(!tagsSelected)
+    if (!tagsSelected && relationsSelected)
+      setSelected(selected => selected.filter(i => i !== 'relations'))
 
     setConnectionsDisabled(!relationsSelected)
     if (!relationsSelected && connectionsSelected)

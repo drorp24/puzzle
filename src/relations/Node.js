@@ -8,12 +8,11 @@ import { styles } from './Relations'
 
 export const Node = ({
   id,
-  data: { name, inputs, outputs, editRelations, type },
+  data: { inputs, outputs, editRelations, type, text },
 }) => {
   const visibility = editRelations ? 'visible' : 'hidden'
   const { icon } = entityTypes[type]
-  console.log('type: ', type)
-  //   const css = entityStyle(type)
+  const role = 'node'
 
   return (
     <>
@@ -39,9 +38,9 @@ export const Node = ({
         style={{ ...styles.handleStyle, backgroundColor: 'green', visibility }}
       />
       {!editRelations && (
-        <span style={entityStyle(type)}>
+        <span style={entityStyle({ type, role })}>
           <span style={entityIconStyle(type)}>{icon}</span>
-          <span>{name}</span>
+          <span>{text}</span>
         </span>
       )}
       {inputs &&

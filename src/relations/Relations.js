@@ -22,12 +22,6 @@ export const styles = {
   editMode: {
     zIndex: '1',
   },
-  nodeStyle: {
-    borderRadius: '1rem',
-    padding: '0 1rem',
-    border: '1px solid',
-    color: 'rgba(0, 0, 0, 0.65)',
-  },
   relationStyle: {
     color: 'black',
   },
@@ -68,8 +62,8 @@ const Relations = memo(() => {
 
     entityEntries.forEach(([id, { type, data, entityRanges }]) => {
       entityRanges.forEach(
-        ({ position: { x, y, width, height } = {} }, index) => {
-          // const nodeStyle = entityStyle(type)
+        ({ position: { x, y, width, height } = {}, text }, index) => {
+          const role = 'node'
           const node = makeNode({
             id,
             type,
@@ -79,8 +73,9 @@ const Relations = memo(() => {
             y,
             width,
             height,
-            nodeStyle: entityStyle(type),
+            nodeStyle: entityStyle({ type, role }),
             editRelations,
+            text,
           })
           nodes.push(node)
         }

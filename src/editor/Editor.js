@@ -4,7 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
 
-import { Editor, EditorState, convertFromRaw } from 'draft-js'
+import {
+  Editor,
+  EditorState,
+  convertFromRaw,
+  RichUtils,
+  getDefaultKeyBinding,
+} from 'draft-js'
 import 'draft-js/dist/Draft.css'
 import Relations from '../relations/Relations'
 
@@ -66,6 +72,29 @@ const MyEditor = () => {
     if (selectionExists) setSelectorOpen(true)
   }
 
+  // ! No editing
+  // Editing is probably not required.
+  // However if it is ever required, then every key stroke would have to update all entityRanges in redux, or alternatively
+  // decoratorComponents (dc) would have to find another way to find the index of the proper entityRange to update.
+  // That update is required to keep reactflow's nodes on the same x/y coordinates of draft-js' entities.
+  //
+  // Failing to update their up-to-date offsets in redux will make cd's 'find' return -1 and content.js to throw,
+  // since offsets *will* change in strategies.js.
+  const myKeyBindingFn = e => {
+    if (e.keyCode < 90) return 'editing'
+    return getDefaultKeyBinding(e)
+  }
+  const handleKeyCommand = (command, editorState) => {
+    const newState = RichUtils.handleKeyCommand(editorState, command)
+
+    if (newState) {
+      this.onChange(newState)
+      return 'handled'
+    }
+
+    return 'not-handled'
+  }
+
   // conversion
   useEffect(() => {
     const convertContent = rawContent => convertFromRaw(rawContent)
@@ -111,6 +140,8 @@ const MyEditor = () => {
           <Editor
             editorState={editorState}
             onChange={handleChange}
+            keyBindingFn={myKeyBindingFn}
+            handleKeyCommand={handleKeyCommand}
             css={styles.editor}
           />
         </div>
