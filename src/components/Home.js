@@ -1,58 +1,70 @@
 /** @jsxImportSource @emotion/react */
 
-// ToDo: look at the 'Responsive Routes' example at the react-router documentation and do what they do
-// https://reactrouter.com/web/guides/philosophy/responsive-routes
+import { Switch, Route, NavLink, useRouteMatch } from 'react-router-dom'
 
-import { Switch, Route, NavLink } from 'react-router-dom'
-
+import Page from '../layout/Page'
 import Dashboard from './Dashboard'
-import Editor from '../editor/Editor'
+import Locations from './Locations'
 
 const styles = {
   root: {
     display: 'grid',
-    gridTemplateColumns: '[menu] 3fr [dmz] 1fr [info] 6fr',
-  },
-  dmz: {
-    gridArea: 'dmz',
-    backgroundColor: 'pink',
+    gridTemplateColumns: '1fr  12fr',
   },
   menu: {
-    gridArea: 'menu',
+    border: '1px solid',
   },
   info: {
-    gridArea: 'info',
+    border: '1px solid',
+    '& > div': {
+      height: '100%',
+    },
+  },
+  activeStyle: {
+    color: 'red',
+    border: '1px solid',
   },
 }
 
-const Home = () => (
-  <div css={styles.root}>
-    <div css={styles.menu}>
-      <nav>
-        <p>
-          <NavLink to="/home/editor" activeStyle={{ color: 'red' }}>
-            Editor
-          </NavLink>
-        </p>
-        <p>
-          <NavLink to="/home/dashboard" activeStyle={{ color: 'red' }}>
-            Dashboard
-          </NavLink>
-        </p>
-      </nav>
-    </div>
-    <div draggable="true" />
-    <div css={styles.info}>
-      <Switch>
-        <Route path="/home/dashboard">
-          <Dashboard />
-        </Route>
-        <Route path="/home/editor">
-          <Editor />
-        </Route>
-      </Switch>
-    </div>
-  </div>
-)
+const routes = [
+  {
+    path: 'locations',
+    menu: 'Locations',
+    component: <Locations />,
+  },
+  {
+    path: 'dashboard',
+    menu: 'Dashboard',
+    component: <Dashboard />,
+  },
+]
+
+const Home = () => {
+  const { url } = useRouteMatch()
+  return (
+    <Page css={styles.root}>
+      <div css={styles.menu}>
+        <nav>
+          {routes.map(({ path, menu }) => (
+            <p key={path}>
+              <NavLink to={`${url}/${path}`} activeStyle={styles.activeStyle}>
+                {menu}
+              </NavLink>
+            </p>
+          ))}
+        </nav>
+      </div>
+      <div css={styles.info}>
+        <Switch>
+          {routes.map(({ path, component }) => (
+            <Route path={`${url}/${path}`} key={path}>
+              {component}
+            </Route>
+          ))}
+        </Switch>
+      </div>
+    </Page>
+  )
+}
 
 export default Home

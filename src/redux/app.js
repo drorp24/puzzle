@@ -24,6 +24,10 @@ const appSlice = createSlice({
         width,
       },
     }),
+    setAppProp: (state, { payload }) => ({
+      ...state,
+      ...payload,
+    }),
     view: (state, { payload }) => ({
       ...state,
       view: {
@@ -40,4 +44,10 @@ const appSlice = createSlice({
 const { actions, reducer } = appSlice
 
 export default reducer
-export const { toggleMode, toggleLocale, setDimensions, view } = actions
+export const {
+  toggleMode,
+  toggleLocale,
+  setDimensions,
+  view,
+  setAppProp,
+} = actions

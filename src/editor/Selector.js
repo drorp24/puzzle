@@ -68,7 +68,7 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
         onOpen={handleOpen}
         open={uSelectorOpen}
         direction="down"
-        FabProps={{ style: { backgroundColor: 'black' } }}
+        FabProps={{ style: { backgroundColor: 'black' }, size: 'small' }}
       >
         {selectedTypes.map(({ name, icon }) => (
           <SpeedDialAction

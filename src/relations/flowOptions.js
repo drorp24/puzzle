@@ -24,6 +24,7 @@ export const makeNode = ({
   nodeStyle,
   editRelations,
   text,
+  isHidden,
 }) => ({
   id: `${id}-${index}`,
   type: 'node',
@@ -36,6 +37,7 @@ export const makeNode = ({
   sourcePosition: 'right',
   targetPosition: 'left',
   data: { ...data, editRelations, type, index, text },
+  isHidden,
 })
 
 export const relationOptions = type => ({

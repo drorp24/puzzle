@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
+import { setAppProp } from '../redux/app'
 
 import {
   Editor,
@@ -18,29 +19,41 @@ import Selector, { emptyData } from './Selector'
 import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
-import Page from '../layout/Page'
 import EditorControl from './EditorControl'
 
 const styles = {
   container: theme => ({
     height: '100%',
     display: 'grid',
-    gridTemplateColumns: '8.5fr 1.5fr',
-    gridTemplateRows: '8.5fr 1.5fr',
+    gridTemplateColumns: '85% 5% 10%',
+    gridTemplateRows: '50% 50%',
     gridTemplateAreas: `
-      "editor selector"
-      "editor control"
+      "editor space selector"
+      "editor space control"
       `,
+    overflow: 'hidden',
     padding: '1rem',
   }),
   editor: {
     gridArea: 'editor',
+    overflow: 'scroll',
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+  },
+  space: {
+    gridArea: 'space',
   },
   selector: {
     gridArea: 'selector',
   },
   control: {
     gridArea: 'control',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
   },
   relations: {},
 }
@@ -51,8 +64,9 @@ const MyEditor = () => {
   )
   const [data, setData] = useState(emptyData)
   const [selectorOpen, setSelectorOpen] = useState(false)
+  const ref = useRef()
 
-  const { editor } = useSelector(store => store.app.view)
+  const { editor, relations } = useSelector(store => store.app.view)
   const dispatch = useDispatch()
 
   const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
@@ -130,41 +144,45 @@ const MyEditor = () => {
     }
   }, [dispatch, editorState, data])
 
+  // editor position
+  useEffect(() => {
+    const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
+    const position = { x, y, width, height }
+    dispatch(setAppProp({ editor: position }))
+  }, [dispatch, relations])
+
   return (
-    <Page>
-      <div css={styles.container}>
-        <div
+    <div css={styles.container}>
+      <div
+        css={styles.editor}
+        style={{ visibility: editor ? 'visible' : 'hidden' }}
+        ref={ref}
+      >
+        <Editor
+          editorState={editorState}
+          onChange={handleChange}
+          keyBindingFn={myKeyBindingFn}
+          handleKeyCommand={handleKeyCommand}
           css={styles.editor}
-          style={{ visibility: editor ? 'visible' : 'hidden' }}
-        >
-          <Editor
-            editorState={editorState}
-            onChange={handleChange}
-            keyBindingFn={myKeyBindingFn}
-            handleKeyCommand={handleKeyCommand}
-            css={styles.editor}
-          />
-        </div>
-
-        <div css={styles.selector}>
-          <Selector
-            {...{
-              selectorOpen,
-              uSetSelectorOpen,
-              uSetData,
-            }}
-          />
-        </div>
-
-        <div css={styles.relations}>
-          <Relations />
-        </div>
-
-        <div css={styles.control}>
-          <EditorControl />
-        </div>
+        />
       </div>
-    </Page>
+      <div css={styles.space} />
+      <div css={styles.selector}>
+        <Selector
+          {...{
+            selectorOpen,
+            uSetSelectorOpen,
+            uSetData,
+          }}
+        />
+      </div>
+      <div css={styles.relations}>
+        <Relations />
+      </div>
+      <div css={styles.control}>
+        <EditorControl />
+      </div>
+    </div>
   )
 }
 export default MyEditor

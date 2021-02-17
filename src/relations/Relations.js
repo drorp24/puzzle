@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { memo } from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { useSelector } from 'react-redux'
 import { selectEntities } from '../redux/content'
 import ReactFlow, { removeElements, addEdge } from 'react-flow-renderer'
@@ -9,6 +8,7 @@ import { options, makeNode, makeRelation, relationOptions } from './flowOptions'
 import { entityStyle } from '../editor/entityTypes'
 
 import { Node } from './Node'
+import { inside } from '../../src/utility/appUtilities'
 
 export const styles = {
   container: {
@@ -42,6 +42,7 @@ const Relations = memo(() => {
     connections: editRelations,
     exclusiveRelations,
   } = useSelector(store => store.app.view)
+  const { editor: editorBox } = useSelector(store => store.app)
   const { selected } = useSelector(store => store.content)
 
   const nodeTypes = { node: Node }
@@ -61,25 +62,27 @@ const Relations = memo(() => {
     const edges = []
 
     entityEntries.forEach(([id, { type, data, entityRanges }]) => {
-      entityRanges.forEach(
-        ({ position: { x, y, width, height } = {}, text }, index) => {
-          const role = 'node'
-          const node = makeNode({
-            id,
-            type,
-            data,
-            index,
-            x,
-            y,
-            width,
-            height,
-            nodeStyle: entityStyle({ type, role }),
-            editRelations,
-            text,
-          })
-          nodes.push(node)
-        }
-      )
+      entityRanges.forEach(({ position = {}, text }, index) => {
+        const { x, y, width, height } = position
+        const isHidden = !inside(editorBox, { ...position })
+        const role = 'node'
+        const nodeStyle = entityStyle({ type, role })
+        const node = makeNode({
+          id,
+          type,
+          data,
+          index,
+          x,
+          y,
+          width,
+          height,
+          nodeStyle,
+          editRelations,
+          text,
+          isHidden,
+        })
+        nodes.push(node)
+      })
     })
 
     relations &&
@@ -101,7 +104,14 @@ const Relations = memo(() => {
       })
 
     setElements([...nodes, ...edges])
-  }, [editRelations, entities, exclusiveRelations, relations, selected])
+  }, [
+    editRelations,
+    editorBox,
+    entities,
+    exclusiveRelations,
+    relations,
+    selected,
+  ])
 
   return (
     <div
