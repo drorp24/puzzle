@@ -17,7 +17,7 @@ import { directionByLocale } from './utility/appUtilities'
 
 import ProtectedRoute from './auth/ProtectedRoute'
 import Login from './auth/Login'
-import Home from './components/Home'
+import Home from './routes/Home'
 import Editor from './editor/Editor'
 
 import Direction from './layout/Direction'
