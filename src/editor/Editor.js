@@ -37,11 +37,6 @@ const styles = {
   editor: {
     gridArea: 'editor',
     overflow: 'scroll',
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    },
-    msOverflowStyle: 'none',
-    scrollbarWidth: 'none',
   },
   space: {
     gridArea: 'space',
@@ -90,7 +85,7 @@ const MyEditor = () => {
   // Editing is probably not required.
   // However if it is ever required, then every key stroke would have to update all entityRanges in redux, or alternatively
   // decoratorComponents (dc) would have to find another way to find the index of the proper entityRange to update.
-  // That update is required to keep reactflow's nodes on the same x/y coordinates of draft-js' entities.
+  // That update is required to keep reactflow's nodes on the same x/y coordinates as draft-js' entities.
   //
   // Failing to update their up-to-date offsets in redux will make cd's 'find' return -1 and content.js to throw,
   // since offsets *will* change in strategies.js.

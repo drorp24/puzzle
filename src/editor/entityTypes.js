@@ -55,7 +55,7 @@ const entityTypes = keyProxy({
     name: 'Time',
     mutability: 'IMMUTABLE',
     icon: <TimeIcon />,
-    selector: true,
+    selector: false,
     color: 'aquamarine',
   },
   Device: {

@@ -1,45 +1,56 @@
 /** @jsxImportSource @emotion/react */
 import { useSelector } from 'react-redux'
 
-import Editor from '../editor/Editor'
+import Paper from '@material-ui/core/Paper'
+import Divider from '@material-ui/core/Divider'
 
+import Editor from '../editor/Editor'
+import Map from '../map/Map'
+
+const heights = {
+  search: 6,
+  editor: 57,
+}
 const Locations = () => {
   const { relations } = useSelector(store => store.app.view)
   const styles = {
     container: {
       display: 'grid',
       gridTemplateColumns: '40% 60%',
-      overflow: 'hidden', // ToDo: remove
+      overflow: 'scroll',
     },
-
+    paper: {
+      height: '100%',
+      zIndex: '401',
+    },
     input: {
-      border: '1px solid',
-      height: '10%',
+      height: `${heights.search}%`,
     },
     editor: {
-      border: '1px solid',
-      height: relations ? '90%' : '50%',
-      transition: 'height 0.5s',
+      height: relations ? `${100 - heights.search}%` : `${heights.editor}%`,
+      transition: 'height 0.3s',
     },
     table: {
-      border: '1px solid',
-      height: relations ? '0' : '40%',
+      height: `${100 - heights.search - heights.editor}%`,
+      display: relations ? 'none' : 'flex',
     },
-    map: {
-      border: '1px solid',
-    },
+    map: {},
   }
 
   return (
     <div css={styles.container}>
-      <div>
+      <Paper elevation={4} css={styles.paper}>
         <div css={styles.input}>input</div>
+        <Divider />
         <div css={styles.editor}>
           <Editor />
+          <Divider />
         </div>
-        {relations && <div css={styles.table}>table</div>}
+        <div css={styles.table}>table</div>
+      </Paper>
+      <div css={styles.map}>
+        <Map />
       </div>
-      <div css={styles.map}>map</div>
     </div>
   )
 }
