@@ -44,6 +44,7 @@ export const tileProviders = [
   },
   {
     name: 'osmBright',
+    checked: true,
     args: {
       url: 'https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png',
       attribution:
@@ -60,7 +61,6 @@ export const tileProviders = [
   },
   {
     name: 'cyclOsm',
-    checked: true,
     args: {
       url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
       attribution:

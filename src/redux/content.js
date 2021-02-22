@@ -63,6 +63,10 @@ const contentSlice = createSlice({
       // Immer to the rescue
       state.entities[id].entityRanges[entityRangeIndex].position = position
     },
+    updateTag: (state, { payload: { id, tag } }) => {
+      // Immer again
+      state.entities[id].data.tag = tag
+    },
   },
   extraReducers: {
     [fetchContent.pending]: (state, { meta: { requestId } }) => {
@@ -137,6 +141,7 @@ export const {
   changes,
   updatePosition,
   selected,
+  updateTag,
 } = actions
 
 export default reducer

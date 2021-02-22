@@ -6,8 +6,8 @@ import { view } from '../redux/app'
 import entityTypes from './entityTypes'
 import useTheme from '../styling/useTheme'
 import {
-  directionByLocale,
-  otherMode,
+  useDirection,
+  useOtherMode,
   useLocalDate,
 } from '../utility/appUtilities'
 
@@ -25,10 +25,9 @@ import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
 
 export const EntityDetails = ({ entity: { type, data } }) => {
-  const { mode, locale } = useSelector(store => store.app)
-  const direction = directionByLocale(locale)
-  const inverseMode = otherMode(mode)
-  const theme = useTheme({ mode: inverseMode, direction })
+  const direction = useDirection()
+  const otherMode = useOtherMode()
+  const theme = useTheme({ mode: otherMode, direction })
   const dispatch = useDispatch(0)
 
   const { name, icon, color } = entityTypes[type]

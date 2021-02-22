@@ -44,6 +44,11 @@
 // entity represented by that point, using the original key again.
 // I am sure there will be several more use cases going forward for this kind of keying.
 //
+
+import telAviv from '../map/telAviv'
+import benYehuda from '../map/benYehuda'
+import metzitzim from '../map/metzitzim'
+
 const timeout = 100
 
 const rawContent = {
@@ -146,6 +151,7 @@ const rawContent = {
 
   entityMap: {
     firstEntity: {
+      willbeIgnored: 'ignored',
       type: 'Person',
       mutability: 'IMMUTABLE',
       data: {
@@ -153,7 +159,6 @@ const rawContent = {
         name: 'Uri',
         score: 9.99,
         subTypes: ['A', 'B', 'C'],
-        location: 'Tel aviv',
       },
     },
     secondEntity: {
@@ -164,7 +169,16 @@ const rawContent = {
         name: 'beach',
         score: 9.99,
         subTypes: ['A', 'B', 'C'],
-        location: 'Tel aviv',
+        geoLocation: {
+          type: 'Feature',
+          properties: {
+            name: 'Metzitzim',
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: metzitzim,
+          },
+        },
       },
     },
     thirdEntity: {
@@ -173,21 +187,29 @@ const rawContent = {
       data: {
         id: 'thirdEntity',
         name: 'Saturday morning',
-        score: 9.99,
+        score: 100.99,
         subTypes: ['A', 'B', 'C'],
-        location: 'Tel aviv',
+        tag: 'maybe',
       },
     },
     fourthEntity: {
-      willbeIgnored: 'youWillSee',
       type: 'Place',
       mutability: 'IMMUTABLE',
       data: {
         id: 'fourthEntity',
         name: 'Tel Aviv',
-        score: 9.99,
+        score: 12.99,
         subTypes: ['A', 'B', 'C'],
-        location: 'Tel aviv',
+        geoLocation: {
+          type: 'Feature',
+          properties: {
+            name: 'TelAviv',
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: telAviv,
+          },
+        },
       },
     },
     fifthEntity: {
@@ -198,6 +220,16 @@ const rawContent = {
         name: 'Ben Yehuda',
         score: 10.99,
         subTypes: ['A', 'B'],
+        geoLocation: {
+          type: 'Feature',
+          properties: {
+            name: 'Ben Yehuda',
+          },
+          geometry: {
+            type: 'lineString',
+            coordinates: benYehuda,
+          },
+        },
       },
     },
     sixthEntity: {

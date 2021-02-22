@@ -1,7 +1,14 @@
 import { useSelector } from 'react-redux'
 
-export const directionByLocale = locale => (locale === 'he' ? 'rtl' : 'ltr')
-export const otherMode = mode => (mode === 'light' ? 'dark' : 'light')
+export const useDirection = () => {
+  const locale = useSelector(store => store.app.locale)
+  return locale === 'he' ? 'rtl' : 'ltr'
+}
+
+export const useOtherMode = () => {
+  const mode = useSelector(store => store.app.mode)
+  return mode === 'light' ? 'dark' : 'light'
+}
 
 const dateTimeOptions = {
   year: 'numeric',

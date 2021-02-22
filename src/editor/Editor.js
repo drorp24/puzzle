@@ -25,14 +25,13 @@ const styles = {
   container: theme => ({
     height: '100%',
     display: 'grid',
-    gridTemplateColumns: '85% 5% 10%',
+    gridTemplateColumns: '80% 5% 15%',
     gridTemplateRows: '50% 50%',
     gridTemplateAreas: `
       "editor space selector"
       "editor space control"
       `,
     overflow: 'hidden',
-    padding: '1rem',
   }),
   editor: {
     gridArea: 'editor',

@@ -54,6 +54,7 @@ export const relationOptions = type => ({
   },
   labelBgStyle: {
     textAlign: 'center',
+    fill: 'rgba(0, 0, 0, 0.5)',
   },
   labelBgPadding: [4, 4],
   animated: true,

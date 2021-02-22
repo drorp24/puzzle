@@ -11,18 +11,15 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: '1fr  12fr',
   },
-  menu: {
-    border: '1px solid',
-  },
+  menu: {},
   info: {
-    border: '1px solid',
+    border: '1px solid #eee',
     '& > div': {
       height: '100%',
     },
   },
   activeStyle: {
     color: 'red',
-    border: '1px solid',
   },
 }
 
