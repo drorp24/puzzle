@@ -157,7 +157,7 @@ const rawContent = {
       data: {
         id: 'firstEntity',
         name: 'Uri',
-        score: 9.99,
+        score: 19.99,
         subTypes: ['A', 'B', 'C'],
       },
     },
@@ -167,7 +167,7 @@ const rawContent = {
       data: {
         id: 'secondEntity',
         name: 'beach',
-        score: 9.99,
+        score: 12.99,
         subTypes: ['A', 'B', 'C'],
         geoLocation: {
           type: 'Feature',
@@ -187,7 +187,7 @@ const rawContent = {
       data: {
         id: 'thirdEntity',
         name: 'Saturday morning',
-        score: 100.99,
+        score: 10.99,
         subTypes: ['A', 'B', 'C'],
         tag: 'maybe',
       },
@@ -198,7 +198,7 @@ const rawContent = {
       data: {
         id: 'fourthEntity',
         name: 'Tel Aviv',
-        score: 12.99,
+        score: 11.99,
         subTypes: ['A', 'B', 'C'],
         geoLocation: {
           type: 'Feature',

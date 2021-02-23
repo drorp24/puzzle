@@ -7,13 +7,11 @@ import { useDirection } from '../utility/appUtilities'
 import { FixedSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 
-import IconButton from '@material-ui/core/IconButton'
+import ToggleButton from '@material-ui/core/ToggleButton'
+import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
 import Yes from '@material-ui/icons/ThumbUpOutlined'
 import Maybe from '@material-ui/icons/HelpOutlineOutlined'
 import No from '@material-ui/icons/ThumbDownOutlined'
-import red from '@material-ui/core/colors/red'
-import lightGreen from '@material-ui/core/colors/lightGreen'
-import orange from '@material-ui/core/colors/orange'
 
 import entityTypes from '../editor/entityTypes'
 
@@ -25,7 +23,7 @@ const styles = {
   },
   row: {
     display: 'grid',
-    gridTemplateColumns: '7% 25% auto 10% 25%',
+    gridTemplateColumns: '7% 23% auto 10% 27%',
     columnGap: '0.5rem',
     boxSizing: 'border-box',
   },
@@ -40,39 +38,33 @@ const styles = {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    // border: '1px solid',
   },
   typeIcon: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    padding: '0 1rem',
   },
-  tag: {
+  tagHeader: {
     textAlign: 'center',
   },
-  tagCell: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    // border: '1px solid blue',
+  buttonGroup: {
+    height: '2rem',
+    justifySelf: 'end',
+    alignSelf: 'center',
+    padding: '0 1rem',
   },
-  tagButton: {
+  selected: {
     backgroundColor: 'rgba(0, 0, 0, 0.6) !important',
-    // opacity: '0.5 !important',
-    padding: '0.4rem !important',
-    '&:hover': {
-      opacity: '0.8',
-    },
+    color: '#fff !important',
+  },
+  unselected: {
+    color: 'rgba(0, 0, 0, 0.1) !important',
   },
   tagIcon: {
-    fontSize: '1.35rem',
+    fontSize: '1rem',
   },
-  // flexContainer: {
-  //   display: 'flex',
-  //   alignItems: 'center',
-  //   boxSizing: 'border-box',
-  // },
   table: theme => ({
     // temporary right-to-left patch, waiting for
     // https://github.com/bvaughn/react-virtualized/issues/454
@@ -137,47 +129,52 @@ const Row = memo(({ index, style }) => {
 
   const [tag, setTag] = useState(currentTag)
 
-  const { icon } = entityTypes[type]
+  const { icon, color } = entityTypes[type]
   const { text } = entityRanges[0]
   const place = geoLocation?.properties?.name || ''
   const bg = index % 2 ? styles.odd : styles.even
   const line = { lineHeight: `${style.height}px` }
 
-  const noOpacity = { opacity: 0 }
-  const opacity = { yes: noOpacity, maybe: noOpacity, no: noOpacity }
-  opacity[tag] = { opacity: 0.8 }
+  const selectionState = {
+    yes: 'unselected',
+    maybe: 'unselected',
+    no: 'unselected',
+  }
+  selectionState[tag] = 'selected'
 
-  const tagClick = ({ id, tag }) => e => {
+  const tagClick = id => (e, tag) => {
     dispatch(updateTag({ id, tag }))
     setTag(tag)
   }
 
   return (
     <div style={{ ...style, ...styles.row, ...bg, ...line }}>
-      <Cell value={type} icon={icon} cellStyle={styles.typeIcon} />
+      <Cell
+        value={type}
+        icon={icon}
+        cellStyle={{ ...styles.typeIcon, color }}
+      />
       <Cell value={text} />
       <Cell value={place} />
       <Cell value={score} />
-      <div style={styles.tagCell}>
-        <IconButton
-          css={{ ...styles.tagButton, ...opacity.yes }}
-          onClick={tagClick({ id, tag: 'yes' })}
-        >
-          <Yes style={{ ...styles.tagIcon, color: lightGreen[300] }} />
-        </IconButton>
-        <IconButton
-          css={{ ...styles.tagButton, ...opacity.maybe }}
-          onClick={tagClick({ id, tag: 'maybe' })}
-        >
-          <Maybe style={{ ...styles.tagIcon, color: orange['A200'] }} />
-        </IconButton>
-        <IconButton
-          css={{ ...styles.tagButton, ...opacity.no }}
-          onClick={tagClick({ id, tag: 'no' })}
-        >
-          <No style={{ ...styles.tagIcon, color: red['A200'] }} />
-        </IconButton>
-      </div>
+
+      <ToggleButtonGroup
+        value={tag}
+        exclusive
+        onChange={tagClick(id)}
+        size="small"
+        css={styles.buttonGroup}
+      >
+        <ToggleButton value="yes" css={styles[selectionState['yes']]}>
+          <Yes css={styles.tagIcon} />
+        </ToggleButton>
+        <ToggleButton value="maybe" css={styles[selectionState['maybe']]}>
+          <Maybe css={styles.tagIcon} />
+        </ToggleButton>
+        <ToggleButton value="no" css={styles[selectionState['no']]}>
+          <No css={styles.tagIcon} />
+        </ToggleButton>
+      </ToggleButtonGroup>
     </div>
   )
 })
@@ -190,13 +187,13 @@ const Header = memo(({ style }) => {
       <Cell value={'Entity'} />
       <Cell value={'Place'} />
       <Cell value={'Score'} cellStyle={{ textAlign: 'right' }} />
-      <Cell value={'Tag'} cellStyle={styles.tag} />
+      <Cell value={'Tag'} cellStyle={styles.tagHeader} />
     </div>
   )
 })
 
 const Cell = ({ value, icon, cellStyle }) => {
-  const alignment = typeof value === 'number' ? { textAlign: 'right' } : []
+  const alignment = typeof value === 'number' ? { textAlign: 'right' } : {}
   return (
     <div style={{ ...styles.cell, ...cellStyle, ...alignment }} title={value}>
       {icon || value}
