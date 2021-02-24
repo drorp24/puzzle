@@ -25,6 +25,7 @@ import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
 
 export const EntityDetails = ({ entity: { type, data } }) => {
+  const { tags: tagsShown } = useSelector(store => store.app.view)
   const direction = useDirection()
   const otherMode = useOtherMode()
   const theme = useTheme({ mode: otherMode, direction })
@@ -70,6 +71,10 @@ export const EntityDetails = ({ entity: { type, data } }) => {
     dispatch(view({ exclusiveRelations: true }))
   }
 
+  const markSelected = id => () => {
+    dispatch(selected(id))
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Card elevation={0} css={styles.root}>
@@ -101,10 +106,10 @@ export const EntityDetails = ({ entity: { type, data } }) => {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton onClick={showRelationsOf(id)}>
+          <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>
             <AccountTreeIcon />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={markSelected(id)}>
             <RoomIcon />
           </IconButton>
           <IconButton>

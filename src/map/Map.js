@@ -1,7 +1,14 @@
 /** @jsxImportSource @emotion/react */
+import { useSelector } from 'react-redux'
+import { selectEntityById } from '../redux/content'
 
 import 'leaflet/dist/leaflet.css'
-import { MapContainer, WMSTileLayer, LayersControl } from 'react-leaflet'
+import {
+  MapContainer,
+  WMSTileLayer,
+  LayersControl,
+  Polygon,
+} from 'react-leaflet'
 import { tileProviders, locations } from './config'
 
 // fixing https://github.com/PaulLeCam/react-leaflet/issues/453
@@ -23,6 +30,16 @@ const styles = {
 }
 
 const Map = () => {
+  const geoEntity = useSelector(({ content }) => {
+    const { selected } = content
+    if (!selected) return null
+    const selectedEntity = selectEntityById(selected)({ content })
+    const { geoLocation } = selectedEntity.data
+    if (!geoLocation) return null
+    return { geoLocation }
+  })
+  const polygon = geoEntity?.geoLocation.geometry.coordinates
+  console.log('polygon: ', polygon)
   return (
     <MapContainer
       center={locations.home}
@@ -37,6 +54,7 @@ const Map = () => {
           </LayersControl.BaseLayer>
         ))}
       </LayersControl>
+      {polygon && <Polygon positions={polygon} />}
     </MapContainer>
   )
 }

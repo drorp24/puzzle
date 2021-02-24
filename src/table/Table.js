@@ -12,8 +12,13 @@ import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
 import Yes from '@material-ui/icons/ThumbUpOutlined'
 import Maybe from '@material-ui/icons/HelpOutlineOutlined'
 import No from '@material-ui/icons/ThumbDownOutlined'
+import Tooltip from '@material-ui/core/Tooltip'
+import Zoom from '@material-ui/core/Zoom'
+import Info from '@material-ui/icons/InfoOutlined'
+import IconButton from '@material-ui/core/IconButton'
 
 import entityTypes from '../editor/entityTypes'
+import { EntityDetails } from '../editor/EntityDetails'
 
 import usePixels from '../utility/usePixels'
 
@@ -23,9 +28,10 @@ const styles = {
   },
   row: {
     display: 'grid',
-    gridTemplateColumns: '7% 23% auto 10% 27%',
+    gridTemplateColumns: '7% 23% auto 7% 7% 23%',
     columnGap: '0.5rem',
     boxSizing: 'border-box',
+    cursor: 'pointer',
   },
   even: {
     backgroundColor: '#eee',
@@ -34,10 +40,22 @@ const styles = {
   header: {
     fontWeight: '500',
   },
+  rowHover: {
+    border: '3px solid rgba(0, 0, 0, 0.2)',
+  },
   cell: {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    // border: '1px solid',
+  },
+  icon: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '3rem',
+    width: '3rem',
+    alignSelf: 'center',
   },
   typeIcon: {
     display: 'flex',
@@ -54,6 +72,7 @@ const styles = {
     justifySelf: 'end',
     alignSelf: 'center',
     padding: '0 1rem',
+    // border: '1px solid',
   },
   selected: {
     backgroundColor: 'rgba(0, 0, 0, 0.6) !important',
@@ -73,23 +92,10 @@ const styles = {
       paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
     },
   }),
-  // tableRow: {
-  //   cursor: 'pointer',
-  // },
-  // tableRowHover: theme => ({
-  //   '&:hover': {
-  //     backgroundColor: theme.palette.grey[200],
-  //   },
-  // }),
-  // tableCell: {
-  //   flex: 1,
-  // },
-  // noClick: {
-  //   cursor: 'initial',
-  // },
 }
 
 // ToDo: ask Shay to include properties.name in the geoLocation when populated
+// ToDo: make ToggleButtonGroup responsive
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
@@ -121,11 +127,12 @@ const Row = memo(({ index, style }) => {
   const { entities } = useSelector(selectContent)
   const dispatch = useDispatch()
 
+  const entity = entities[index]
   const {
     type,
     data: { id, score, geoLocation, tag: currentTag },
     entityRanges,
-  } = entities[index]
+  } = entity
 
   const [tag, setTag] = useState(currentTag)
 
@@ -148,7 +155,14 @@ const Row = memo(({ index, style }) => {
   }
 
   return (
-    <div style={{ ...style, ...styles.row, ...bg, ...line }}>
+    <div
+      css={{
+        ...style,
+        ...styles.row,
+        ...bg,
+        ...line,
+      }}
+    >
       <Cell
         value={type}
         icon={icon}
@@ -157,6 +171,17 @@ const Row = memo(({ index, style }) => {
       <Cell value={text} />
       <Cell value={place} />
       <Cell value={score} />
+      <Tooltip
+        title={<EntityDetails {...{ entity }} />}
+        arrow
+        TransitionComponent={Zoom}
+        disableFocusListener={true}
+        placement="right"
+      >
+        <IconButton css={styles.icon}>
+          <Info />
+        </IconButton>
+      </Tooltip>
 
       <ToggleButtonGroup
         value={tag}
@@ -183,11 +208,12 @@ const Header = memo(({ style }) => {
   const line = { lineHeight: `${style.height}px` }
   return (
     <div style={{ ...style, ...line }}>
-      <Cell value={'Type'} cellStyle={styles.icon} />
-      <Cell value={'Entity'} />
-      <Cell value={'Place'} />
-      <Cell value={'Score'} cellStyle={{ textAlign: 'right' }} />
-      <Cell value={'Tag'} cellStyle={styles.tagHeader} />
+      <Cell value="Type" />
+      <Cell value="Entity" />
+      <Cell value="Place" />
+      <Cell value="Score" cellStyle={{ textAlign: 'right' }} />
+      <Cell value="Info" cellStyle={{ textAlign: 'center' }} />
+      <Cell value="Tag" cellStyle={styles.tagHeader} />
     </div>
   )
 })

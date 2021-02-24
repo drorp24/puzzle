@@ -175,7 +175,7 @@ const rawContent = {
             name: 'Metzitzim',
           },
           geometry: {
-            type: 'Point',
+            type: 'Polygon',
             coordinates: metzitzim,
           },
         },
