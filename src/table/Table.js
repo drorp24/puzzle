@@ -21,6 +21,7 @@ import entityTypes from '../editor/entityTypes'
 import { EntityDetails } from '../editor/EntityDetails'
 
 import usePixels from '../utility/usePixels'
+import noScrollbar from '../styling/noScrollbar'
 
 const styles = {
   autoSizer: {
@@ -84,7 +85,7 @@ const styles = {
   tagIcon: {
     fontSize: '1rem',
   },
-  table: theme => ({
+  table1: theme => ({
     // temporary right-to-left patch, waiting for
     // https://github.com/bvaughn/react-virtualized/issues/454
     '& .ReactVirtualized__Table__headerRow': {
@@ -94,7 +95,6 @@ const styles = {
   }),
 }
 
-// ToDo: ask Shay to include properties.name in the geoLocation when populated
 // ToDo: make ToggleButtonGroup responsive
 
 const Table = () => {
@@ -113,7 +113,10 @@ const Table = () => {
             <Header
               style={{ ...styles.row, ...styles.header, height: itemSize }}
             />
-            <List {...{ height, width, itemCount, itemSize, direction }}>
+            <List
+              css={noScrollbar}
+              {...{ height, width, itemCount, itemSize, direction }}
+            >
               {Row}
             </List>
           </>

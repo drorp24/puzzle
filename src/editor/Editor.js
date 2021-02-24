@@ -20,6 +20,7 @@ import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
 import EditorControl from './EditorControl'
+import noScrollbar from '../styling/noScrollbar'
 
 const styles = {
   container: theme => ({
@@ -36,6 +37,7 @@ const styles = {
   editor: {
     gridArea: 'editor',
     overflow: 'scroll',
+    ...noScrollbar,
   },
   space: {
     gridArea: 'space',

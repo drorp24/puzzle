@@ -45,6 +45,10 @@
 // I am sure there will be several more use cases going forward for this kind of keying.
 //
 
+// ToDo: ask Shay to provide
+// - properties.name in the geoLocation when populated, and let it be unique
+// - when the geo objec tis a Polygon, to provide its center too (if possible)
+
 import telAviv from '../map/telAviv'
 import benYehuda from '../map/benYehuda'
 import metzitzim from '../map/metzitzim'

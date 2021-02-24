@@ -28,6 +28,7 @@ export const tileProviders = [
   },
   {
     name: 'osm',
+    checked: true,
     args: {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
@@ -44,7 +45,6 @@ export const tileProviders = [
   },
   {
     name: 'osmBright',
-    checked: true,
     args: {
       url: 'https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png',
       attribution:
@@ -80,4 +80,9 @@ export const tileProviders = [
 export const locations = {
   home: [32.1249061, 34.8286079],
   away: [31.4388035, 34.3936352],
+}
+
+export const flyToOptions = {
+  maxZoom: 16,
+  duration: 1,
 }

@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { selectEntityById } from '../redux/content'
 
@@ -8,9 +9,11 @@ import {
   WMSTileLayer,
   LayersControl,
   Polygon,
+  useMap,
 } from 'react-leaflet'
-import { tileProviders, locations } from './config'
+import { tileProviders, locations, flyToOptions } from './config'
 
+// ToDo: wrap and import
 // fixing https://github.com/PaulLeCam/react-leaflet/issues/453
 import L from 'leaflet'
 delete L.Icon.Default.prototype._getIconUrl
@@ -30,21 +33,49 @@ const styles = {
 }
 
 const Map = () => {
+  const [map, setMap] = useState()
+  console.log('Map rendered')
   const geoEntity = useSelector(({ content }) => {
     const { selected } = content
     if (!selected) return null
     const selectedEntity = selectEntityById(selected)({ content })
-    const { geoLocation } = selectedEntity.data
+    const {
+      data: { geoLocation },
+    } = selectedEntity
     if (!geoLocation) return null
     return { geoLocation }
   })
-  const polygon = geoEntity?.geoLocation.geometry.coordinates
-  console.log('polygon: ', polygon)
+
+  const {
+    geoLocation: {
+      properties: { name } = {},
+      geometry: { type, coordinates } = {},
+    } = {},
+  } = geoEntity || {}
+
+  useEffect(() => {
+    if (!map || !coordinates) return
+
+    switch (type) {
+      case 'Polygon':
+        map.flyToBounds(L.polygon(coordinates).getBounds(), flyToOptions)
+        break
+      case 'Point':
+        map.flyTo(coordinates, flyToOptions)
+        break
+      default:
+        map.flyTo(coordinates, flyToOptions)
+    }
+  }, [coordinates, map, type])
+
   return (
     <MapContainer
       center={locations.home}
       zoom={11}
       scrollWheelZoom={false}
+      whenCreated={createdMap => {
+        setMap(createdMap)
+      }}
       css={styles.map}
     >
       <LayersControl>
@@ -54,7 +85,7 @@ const Map = () => {
           </LayersControl.BaseLayer>
         ))}
       </LayersControl>
-      {polygon && <Polygon positions={polygon} />}
+      {coordinates && <Polygon positions={coordinates} />}
     </MapContainer>
   )
 }
