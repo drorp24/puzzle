@@ -1,4 +1,4 @@
-const byCo = [
+const rByCo = [
   [34.7760404, 32.0960932],
   [34.7760249, 32.0959828],
   [34.7760078, 32.0959227],
@@ -45,5 +45,7 @@ const byCo = [
   [34.7683743, 32.0730857],
   [34.7683209, 32.0728773],
 ]
+
+const byCo = rByCo.map(([lng, lat]) => [lat, lng])
 
 export default byCo

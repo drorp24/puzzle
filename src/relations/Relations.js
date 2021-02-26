@@ -33,6 +33,9 @@ export const styles = {
 }
 
 // ToDo: spread the handles so they don't overlap
+
+// ToDo: makes edges connect to the handles
+// ToDo: when 'editRelations' is on and 'showText' is off, text inside pills disappears
 const Relations = memo(() => {
   const [elements, setElements] = useState([])
 
@@ -77,7 +80,6 @@ const Relations = memo(() => {
           width,
           height,
           nodeStyle,
-          editRelations,
           text,
           isHidden,
         })
@@ -102,6 +104,7 @@ const Relations = memo(() => {
           })
         })
       })
+    console.log('edges: ', edges)
 
     setElements([...nodes, ...edges])
   }, [

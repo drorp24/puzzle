@@ -56,12 +56,16 @@ const Map = () => {
   useEffect(() => {
     if (!map || !coordinates) return
 
+    // ToDo: make 'house', 'street', 'city', 'area' sub-types of Place, and change Tooltip to show sub-types (pills).
     switch (type) {
       case 'Polygon':
         map.flyToBounds(L.polygon(coordinates).getBounds(), flyToOptions)
         break
       case 'Point':
         map.flyTo(coordinates, flyToOptions)
+        break
+      case 'LineString':
+        map.flyToBounds(L.polyline(coordinates).getBounds(), flyToOptions)
         break
       default:
         map.flyTo(coordinates, flyToOptions)

@@ -1,5 +1,5 @@
 import entityTypes, { relationTypes } from '../editor/entityTypes'
-import ConnectionLine from './ConnectionLine'
+// import ConnectionLine from './ConnectionLine'
 
 export const options = {
   nodesDraggable: false,
@@ -9,7 +9,7 @@ export const options = {
   connectionMode: 'loose',
   connectionLineType: 'smoothstep',
   deleteKeyCode: 46,
-  connectionLineComponent: ConnectionLine,
+  // connectionLineComponent: ConnectionLine,
 }
 
 export const makeNode = ({
@@ -54,9 +54,10 @@ export const relationOptions = type => ({
   },
   labelBgStyle: {
     textAlign: 'center',
-    fill: 'rgba(0, 0, 0, 0.5)',
+    fill: 'rgba(0, 0, 0, 0.6)',
   },
-  labelBgPadding: [4, 4],
+  labelBgBorderRadius: '4',
+  labelBgPadding: [5, 2],
   animated: true,
 })
 

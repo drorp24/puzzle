@@ -117,9 +117,9 @@ const contentSelectors = contentAdapter.getSelectors()
 // 'entities' in this selector are returned as a sorted array rather than keyed
 export const selectContent = ({ content }) => {
   const entities = contentSelectors.selectAll(content)
-  const { loading, error, relations } = content
+  const { loading, error, relations, selected } = content
   const loaded = entities.length > 0 && loading === 'idle' && !error
-  return { entities, relations, loading, error, loaded }
+  return { entities, relations, selected, loading, error, loaded }
 }
 
 // this will return entities keyed, as they naturally appear in redux
@@ -131,6 +131,8 @@ export const selectEntities = ({ content: { entities, relations } }) => ({
 
 export const selectEntityById = id => ({ content }) =>
   contentSelectors.selectById(content, id)
+
+export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
 const { reducer, actions } = contentSlice
 export const {

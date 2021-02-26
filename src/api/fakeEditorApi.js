@@ -89,7 +89,7 @@ const rawContent = {
     {
       key: 'b4',
       text:
-        'He lives in Tel Aviv, and the beach is right across Ben Yehuda street where he lives.',
+        'He lives in Tel Aviv, and the beach is right across Ben Yehuda street where his home is.',
       entityRanges: [
         {
           offset: 0,
@@ -105,6 +105,11 @@ const rawContent = {
           offset: 52,
           length: 10,
           key: 'fifthEntity',
+        },
+        {
+          offset: 80,
+          length: 4,
+          key: 'eighthEntity',
         },
       ],
     },
@@ -230,7 +235,7 @@ const rawContent = {
             name: 'Ben Yehuda',
           },
           geometry: {
-            type: 'lineString',
+            type: 'LineString',
             coordinates: benYehuda,
           },
         },
@@ -257,11 +262,11 @@ const rawContent = {
       },
     },
     eighthEntity: {
-      type: 'Device',
+      type: 'Place',
       mutability: 'SEGMENTED',
       data: {
         id: 'eighthEntity',
-        name: 'Android',
+        name: 'home',
         score: 8.99,
         subTypes: [],
       },
@@ -285,6 +290,11 @@ const rawContent = {
       from: 'seventhEntity',
       to: 'firstEntity',
       type: 'girlfriend',
+    },
+    {
+      from: 'eighthEntity',
+      to: 'fifthEntity',
+      type: 'in',
     },
   ],
 }

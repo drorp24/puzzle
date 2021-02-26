@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { memo, useState } from 'react'
+import { memo, useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectContent, updateTag } from '../redux/content'
+import { selectContent, updateTag, selectIds } from '../redux/content'
 import { useDirection } from '../utility/appUtilities'
 
 import { FixedSizeList as List } from 'react-window'
@@ -99,10 +99,21 @@ const styles = {
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
-  const { entities } = useSelector(selectContent)
+  const { entities, selected } = useSelector(selectContent)
+  const ids = useSelector(selectIds)
   const itemCount = entities.length
   const itemSize = usePixels(4)
   const direction = useDirection()
+  const outerRef = useRef()
+
+  useEffect(() => {
+    const scrollTo = entityId => {
+      const index = ids.findIndex(id => id === entityId)
+      const top = index * itemSize
+      outerRef.current.scrollTo({ top, behavior: 'smooth' })
+    }
+    if (selected) scrollTo(selected)
+  }, [ids, itemSize, selected])
 
   return (
     <AutoSizer style={styles.autoSizer}>
@@ -114,6 +125,7 @@ const Table = () => {
               style={{ ...styles.row, ...styles.header, height: itemSize }}
             />
             <List
+              outerRef={outerRef}
               css={noScrollbar}
               {...{ height, width, itemCount, itemSize, direction }}
             >
@@ -127,7 +139,7 @@ const Table = () => {
 }
 
 const Row = memo(({ index, style }) => {
-  const { entities } = useSelector(selectContent)
+  const { entities, selected } = useSelector(selectContent)
   const dispatch = useDispatch()
 
   const entity = entities[index]
@@ -144,6 +156,8 @@ const Row = memo(({ index, style }) => {
   const place = geoLocation?.properties?.name || ''
   const bg = index % 2 ? styles.odd : styles.even
   const line = { lineHeight: `${style.height}px` }
+  const selectedEntity =
+    id === selected ? { border: '5px solid lightblue' } : {}
 
   const selectionState = {
     yes: 'unselected',
@@ -164,6 +178,7 @@ const Row = memo(({ index, style }) => {
         ...styles.row,
         ...bg,
         ...line,
+        ...selectedEntity,
       }}
     >
       <Cell
@@ -193,13 +208,21 @@ const Row = memo(({ index, style }) => {
         size="small"
         css={styles.buttonGroup}
       >
-        <ToggleButton value="yes" css={styles[selectionState['yes']]}>
+        <ToggleButton
+          value="yes"
+          title="Yes"
+          css={styles[selectionState['yes']]}
+        >
           <Yes css={styles.tagIcon} />
         </ToggleButton>
-        <ToggleButton value="maybe" css={styles[selectionState['maybe']]}>
+        <ToggleButton
+          value="maybe"
+          title="Maybe"
+          css={styles[selectionState['maybe']]}
+        >
           <Maybe css={styles.tagIcon} />
         </ToggleButton>
-        <ToggleButton value="no" css={styles[selectionState['no']]}>
+        <ToggleButton value="no" title="No" css={styles[selectionState['no']]}>
           <No css={styles.tagIcon} />
         </ToggleButton>
       </ToggleButtonGroup>

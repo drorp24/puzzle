@@ -17,7 +17,7 @@ const Locations = () => {
   const styles = {
     container: {
       display: 'grid',
-      gridTemplateColumns: '45% 55%',
+      gridTemplateColumns: '50% 50%',
       overflow: 'scroll',
     },
     paper: {

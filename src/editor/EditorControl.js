@@ -37,8 +37,9 @@ const styles = {
   },
 }
 
+// ToDo: find out why leaving 'editor' alone in the initial state makes reactflow's edges wrongly positioned
 const EditorControl = () => {
-  const [selected, setSelected] = useState(['editor'])
+  const [selected, setSelected] = useState(['editor', 'tags'])
   const dispatch = useDispatch()
 
   const [editorDisabled] = useState(false)
