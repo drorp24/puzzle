@@ -104,7 +104,6 @@ const Relations = memo(() => {
           })
         })
       })
-    console.log('edges: ', edges)
 
     setElements([...nodes, ...edges])
   }, [

@@ -52,6 +52,7 @@
 import telAviv from '../map/telAviv'
 import benYehuda from '../map/benYehuda'
 import metzitzim from '../map/metzitzim'
+import urisHome from '../map/urisHome'
 
 const timeout = 100
 
@@ -269,6 +270,16 @@ const rawContent = {
         name: 'home',
         score: 8.99,
         subTypes: [],
+        geoLocation: {
+          type: 'Feature',
+          properties: {
+            name: 'Uris home',
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: urisHome,
+          },
+        },
       },
     },
   },
