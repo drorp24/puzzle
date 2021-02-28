@@ -58,6 +58,10 @@ const styles = {
     width: '3rem',
     alignSelf: 'center',
   },
+
+  selectedInfo: {
+    color: '#fff',
+  },
   typeIcon: {
     display: 'flex',
     flexDirection: 'column',
@@ -79,11 +83,21 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.6) !important',
     color: '#fff !important',
   },
-  unselected: {
+  on: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6) !important',
+    color: '#fff !important',
+  },
+  off: {
     color: 'rgba(0, 0, 0, 0.1) !important',
   },
   tagIcon: {
     fontSize: '1rem',
+  },
+  selectedTagIcon: {
+    color: 'rgba(256, 256, 256, 0.2)',
+  },
+  selectedTagIconOn: {
+    color: 'white !important',
   },
   table1: theme => ({
     // temporary right-to-left patch, waiting for
@@ -138,6 +152,8 @@ const Table = () => {
   )
 }
 
+// ToDo: style tag buttons properly when row is selected
+
 const Row = memo(({ index, style }) => {
   const { entities, selected } = useSelector(selectContent)
   const dispatch = useDispatch()
@@ -156,15 +172,17 @@ const Row = memo(({ index, style }) => {
   const place = geoLocation?.properties?.name || ''
   const bg = index % 2 ? styles.odd : styles.even
   const line = { lineHeight: `${style.height}px` }
-  const selectedEntity =
-    id === selected ? { border: '5px solid lightblue' } : {}
 
-  const selectionState = {
-    yes: 'unselected',
-    maybe: 'unselected',
-    no: 'unselected',
+  const selectedRow = id === selected ? styles.selected : {}
+  const selectedTagIcon = id === selected ? styles.selectedTagIcon : {}
+  const selectedInfo = id === selected ? styles.selectedInfo : {}
+
+  const tagState = {
+    yes: 'off',
+    maybe: 'off',
+    no: 'off',
   }
-  selectionState[tag] = 'selected'
+  tagState[tag] = 'on'
 
   const tagClick = id => (e, tag) => {
     dispatch(updateTag({ id, tag }))
@@ -178,7 +196,7 @@ const Row = memo(({ index, style }) => {
         ...styles.row,
         ...bg,
         ...line,
-        ...selectedEntity,
+        ...selectedRow,
       }}
     >
       <Cell
@@ -196,7 +214,7 @@ const Row = memo(({ index, style }) => {
         disableFocusListener={true}
         placement="right"
       >
-        <IconButton css={styles.icon}>
+        <IconButton style={{ ...styles.icon, ...selectedInfo }}>
           <Info />
         </IconButton>
       </Tooltip>
@@ -208,22 +226,18 @@ const Row = memo(({ index, style }) => {
         size="small"
         css={styles.buttonGroup}
       >
-        <ToggleButton
-          value="yes"
-          title="Yes"
-          css={styles[selectionState['yes']]}
-        >
-          <Yes css={styles.tagIcon} />
+        <ToggleButton value="yes" title="Yes" css={styles[tagState['yes']]}>
+          <Yes css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
         <ToggleButton
           value="maybe"
           title="Maybe"
-          css={styles[selectionState['maybe']]}
+          css={styles[tagState['maybe']]}
         >
-          <Maybe css={styles.tagIcon} />
+          <Maybe css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
-        <ToggleButton value="no" title="No" css={styles[selectionState['no']]}>
-          <No css={styles.tagIcon} />
+        <ToggleButton value="no" title="No" css={styles[tagState['no']]}>
+          <No css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
       </ToggleButtonGroup>
     </div>

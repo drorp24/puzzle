@@ -23,16 +23,18 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree'
 import RoomIcon from '@material-ui/icons/Room'
 import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
+import Avatar from '@material-ui/core/Avatar'
 
-export const EntityDetails = ({ entity: { type, data } }) => {
+export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
   const { tags: tagsShown } = useSelector(store => store.app.view)
   const direction = useDirection()
   const otherMode = useOtherMode()
   const theme = useTheme({ mode: otherMode, direction })
   const dispatch = useDispatch(0)
 
-  const { name, icon, color } = entityTypes[type]
-  const { id, created, user, comment } = data
+  const { icon, color } = entityTypes[type]
+  const { id, name, created, user, comment, subTypes } = data
+  const title = name || entityRanges[0].text
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}
@@ -42,10 +44,18 @@ export const EntityDetails = ({ entity: { type, data } }) => {
       color: 'rgba(0, 0, 0, 0.4)',
     },
     label: {
-      color: 'rgba(0, 0, 0, 0.5)',
+      color: 'rgba(0, 0, 0, 0.6)',
     },
     deleteIcon: {
       color: 'rgba(0, 0, 0, 0.4)',
+    },
+    title: {
+      color: `${color} !important`,
+      fontWeight: '500',
+    },
+    content: {
+      display: 'flex',
+      flexDirection: 'column-reverse',
     },
   }))
 
@@ -54,15 +64,33 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const styles = {
     root: {
       backgroundColor: 'transparent !important',
+      minWidth: '15rem',
     },
-
     entityType: {
       backgroundColor: `${color} !important`,
+    },
+    avatar: {
+      backgroundColor: `${color} !important`,
+      color: 'rgba(0, 0, 0, 1)',
     },
     details: {
       fontWeight: '100',
       fontSize: '0.8rem',
       textAlign: 'center',
+    },
+    divider: {
+      backgroundColor: `${color} !important`,
+    },
+    subTypes: {
+      padding: '1rem',
+      '& > div': {
+        margin: '0 0.5rem',
+      },
+    },
+    explainer: {
+      height: '8rem',
+      backgroundColor: 'rgba(256, 256, 256, 0.1)',
+      marginTop: '1rem',
     },
   }
 
@@ -79,31 +107,32 @@ export const EntityDetails = ({ entity: { type, data } }) => {
     <ThemeProvider theme={theme}>
       <Card elevation={0} css={styles.root}>
         <CardHeader
-          // avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
-          title={
-            <Chip
-              icon={icon}
-              size="small"
-              label={name}
-              css={styles.entityType}
-              onDelete={handleDelete}
-              classes={{
-                icon: classes.icon,
-                label: classes.label,
-                deleteIcon: classes.deleteIcon,
-              }}
-            />
-          }
-          subheader={useLocalDate(created)}
+          avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
+          title={type}
+          subheader={title}
+          classes={{ title: classes.title, content: classes.content }}
         />
-        <Divider />
+        <Divider css={styles.divider} />
+        <div css={styles.subTypes}>
+          {subTypes &&
+            subTypes.map(subType => (
+              <Chip
+                // icon={icon}
+                size="small"
+                label={subType}
+                css={styles.entityType}
+                onDelete={handleDelete}
+                classes={{
+                  icon: classes.icon,
+                  label: classes.label,
+                  deleteIcon: classes.deleteIcon,
+                }}
+              />
+            ))}
+        </div>
         <CardContent>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {comment || 'No information recorded'}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {user || 'No user recorded'}
-          </Typography>
+          <Divider>Explainer</Divider>
+          <div css={styles.explainer}></div>
         </CardContent>
         <CardActions disableSpacing>
           <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>

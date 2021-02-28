@@ -111,6 +111,7 @@ const Entity = memo(
 
     return (
       <Tooltip
+        // open={true}
         title={<EntityDetails {...{ entity }} />}
         arrow
         TransitionComponent={Zoom}

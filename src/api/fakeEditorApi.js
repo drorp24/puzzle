@@ -168,7 +168,7 @@ const rawContent = {
         id: 'firstEntity',
         name: 'Uri',
         score: 19.99,
-        subTypes: ['A', 'B', 'C'],
+        subTypes: ['Young', 'Male'],
       },
     },
     secondEntity: {
@@ -178,7 +178,7 @@ const rawContent = {
         id: 'secondEntity',
         name: 'beach',
         score: 12.99,
-        subTypes: ['A', 'B', 'C'],
+        subTypes: ['Area'],
         geoLocation: {
           type: 'Feature',
           properties: {
@@ -198,7 +198,7 @@ const rawContent = {
         id: 'thirdEntity',
         name: 'Saturday morning',
         score: 10.99,
-        subTypes: ['A', 'B', 'C'],
+        subTypes: ['Day off'],
         tag: 'maybe',
       },
     },
@@ -209,7 +209,7 @@ const rawContent = {
         id: 'fourthEntity',
         name: 'Tel Aviv',
         score: 11.99,
-        subTypes: ['A', 'B', 'C'],
+        subTypes: ['City'],
         geoLocation: {
           type: 'Feature',
           properties: {
@@ -229,7 +229,7 @@ const rawContent = {
         id: 'fifthEntity',
         name: 'Ben Yehuda',
         score: 10.99,
-        subTypes: ['A', 'B'],
+        subTypes: ['Street'],
         geoLocation: {
           type: 'Feature',
           properties: {
@@ -249,7 +249,7 @@ const rawContent = {
         id: 'sixthEntity',
         name: 'iPhone',
         score: 10.99,
-        subTypes: ['A', 'B'],
+        subTypes: ['Communication'],
       },
     },
     seventhEntity: {
@@ -259,7 +259,7 @@ const rawContent = {
         id: 'seventhEntity',
         name: 'Vered',
         score: 8.99,
-        subTypes: [],
+        subTypes: ['Developer', 'Female'],
       },
     },
     eighthEntity: {
@@ -269,7 +269,7 @@ const rawContent = {
         id: 'eighthEntity',
         name: 'home',
         score: 8.99,
-        subTypes: [],
+        subTypes: ['Apartment'],
         geoLocation: {
           type: 'Feature',
           properties: {
