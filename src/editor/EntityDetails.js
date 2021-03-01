@@ -8,7 +8,7 @@ import useTheme from '../styling/useTheme'
 import {
   useDirection,
   useOtherMode,
-  useLocalDate,
+  // useLocalDate,
 } from '../utility/appUtilities'
 
 import { ThemeProvider, makeStyles } from '@material-ui/core/styles'
@@ -18,7 +18,6 @@ import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
 import AccountTreeIcon from '@material-ui/icons/AccountTree'
 import RoomIcon from '@material-ui/icons/Room'
 import TableIcon from '@material-ui/icons/TableChartOutlined'
@@ -33,8 +32,8 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
   const dispatch = useDispatch(0)
 
   const { icon, color } = entityTypes[type]
-  const { id, name, created, user, comment, subTypes } = data
-  const title = name || entityRanges[0].text
+  const { id, name, subTypes } = data
+  const title = name || entityRanges[0]?.text
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}
@@ -117,11 +116,11 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
           {subTypes &&
             subTypes.map(subType => (
               <Chip
-                // icon={icon}
                 size="small"
                 label={subType}
                 css={styles.entityType}
                 onDelete={handleDelete}
+                key={subType}
                 classes={{
                   icon: classes.icon,
                   label: classes.label,

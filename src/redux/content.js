@@ -4,6 +4,7 @@ import {
   createEntityAdapter,
   // current,
 } from '@reduxjs/toolkit'
+import { createSelector } from 'reselect'
 
 import { getContent } from '../api/fakeEditorApi'
 import { createEntitiesFromContent } from '../../src/editor/entities'
@@ -134,6 +135,27 @@ export const selectEntityById = id => ({ content }) =>
 
 export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
+export const selectSelectedId = ({ content: { selected } }) => selected
+
+export const selectSelectedEntity = ({ content }) => {
+  const { selected } = content
+  if (!selected) return null
+
+  const selectedE = selectEntityById(selected)({ content })
+  if (!selectedE?.data?.geoLocation) return null
+  const id = selected
+
+  const {
+    data: {
+      geoLocation: {
+        properties: { name },
+        geometry: { type, coordinates },
+      },
+    },
+  } = selectedE
+  return { id, name, type, coordinates }
+}
+
 const { reducer, actions } = contentSlice
 export const {
   clear,
@@ -147,3 +169,48 @@ export const {
 } = actions
 
 export default reducer
+
+// ! reselect
+// Following is a failed attempt to have reselect return an identical selectedEntity *reference* with every call,
+// so long as the selectedId has been cached already.
+//
+// Since selectSelectedEntity returns a partial object rather than the entire entity,
+// I was hoping that reselect would return the same reference when other, irrelevant changes were made to the entity.
+//
+// That didn't happen. Maybe because of the dependency on 'entities'.
+//
+// Whatever the reason, instead of forcing reselect to return an identical entity reference, I ended up
+// using useMemo in SelectedGeo to coerce the selected entity record to remain identical in spite of the deep change.
+
+const selectOnlyEntities = ({ content: { entities } }) => entities
+
+const reselectSelected = createSelector(
+  [selectSelectedId],
+  selected => selected
+)
+
+const reselectOnlyEntities = createSelector([selectOnlyEntities], entities => {
+  console.log('in the reselector')
+  return entities
+})
+
+export const selectSelectedEntity1 = createSelector(
+  [reselectSelected, reselectOnlyEntities],
+  (selectedId, entities) => {
+    if (!selectedId) return null
+
+    console.log('selectedId, entities: ', selectedId, entities)
+    const id = selectedId
+    const {
+      data: {
+        geoLocation: {
+          properties: { name },
+          geometry: { type, coordinates },
+        },
+      },
+    } = entities[id]
+    return { id, name, type, coordinates }
+  }
+)
+
+// ! reselect end

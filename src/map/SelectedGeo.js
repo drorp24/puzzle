@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { selectEntityById } from '../redux/content'
+import { selectSelectedId, selectSelectedEntity } from '../redux/content'
 
 import { useMap, Polygon, Polyline, Marker } from 'react-leaflet'
 import { flyToOptions } from './config'
@@ -13,59 +13,54 @@ import * as L from 'leaflet'
 import 'leaflet-defaulticon-compatibility'
 
 const styles = {
-  root: theme => ({}),
+  pathOptions: { color: 'deepskyblue' },
 }
 
-// ToDo: make 'house', 'street', 'city', 'area' sub-types of Place, and change Tooltip to show sub-types (pills).
+// ! Preventing unnecessary re-rendering
+// Since selectedEntity somehow gets a new reference even though neither of its 4 properties changed,
+// I cheat useMemo here to depend only on selectedId in spite of returning the selectedEntity object.
+// This forces memoizedSelectedEntity to maintain the same reference, dependent only on selectedId.
+//
+// It's done to avoid re-rendering SelectedGeo unless selected entity has changed;
+// which, besides being wasteful, makes the map shiver.
 
 const SelectedGeo = () => {
   const map = useMap()
-
-  const selectedEntity = useSelector(({ content }) => {
-    const { selected } = content
-    if (!selected) return null
-    const selectedE = selectEntityById(selected)({ content })
-    if (!selectedE?.data?.geoLocation) return null
-    const id = selected
-
-    const {
-      data: {
-        geoLocation: {
-          properties: { name },
-          geometry: { type, coordinates },
-        },
-      },
-    } = selectedE
-    return { id, name, type, coordinates }
-  })
+  const selectedId = useSelector(selectSelectedId)
+  const selectedEntity = useSelector(selectSelectedEntity)
+  const memoizedSelectedEntity = useMemo(() => selectedEntity, [selectedId])
 
   useEffect(() => {
-    if (!map || !selectedEntity) return
+    if (!map || !selectedId) return
+    console.log('useEffect entered') // This should happen only when a different entity is selected
 
-    const { type, coordinates } = selectedEntity
+    const { type, coordinates } = memoizedSelectedEntity
     const polygon = type === 'Point' ? [coordinates] : coordinates
 
     map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
-  }, [map, selectedEntity])
+  }, [map, selectedId, memoizedSelectedEntity])
 
   if (!selectedEntity) return null
-  const { id, name, type, coordinates } = selectedEntity
+  const { id, type, coordinates } = selectedEntity
+
   const positions = coordinates
+
   const eventHandlers = {
     click: () => {
       console.log(`${id} clicked`)
     },
   }
+  const { pathOptions } = styles
 
   switch (type) {
     case 'Polygon':
-      return <Polygon {...{ positions, eventHandlers }} />
+      return <Polygon {...{ positions, eventHandlers, pathOptions }} />
     case 'Point':
-      return <Marker {...{ position: positions, eventHandlers }} />
+      return <Marker {...{ position: positions, eventHandlers, pathOptions }} />
     case 'LineString':
-      return <Polyline {...{ positions, eventHandlers }} />
+      return <Polyline {...{ positions, eventHandlers, pathOptions }} />
     default:
-      return <Polygon {...{ positions, eventHandlers }} />
+      return <Polygon {...{ positions, eventHandlers, pathOptions }} />
   }
 }
 
