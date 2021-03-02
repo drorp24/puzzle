@@ -169,6 +169,7 @@ const rawContent = {
         name: 'Uri',
         score: 19.99,
         subTypes: ['Young', 'Male'],
+        tag: 'yes',
       },
     },
     secondEntity: {
@@ -199,7 +200,6 @@ const rawContent = {
         name: 'Saturday morning',
         score: 10.99,
         subTypes: ['Day off'],
-        tag: 'maybe',
       },
     },
     fourthEntity: {

@@ -51,6 +51,8 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
     title: {
       color: `${color} !important`,
       fontWeight: '500',
+      textTransform: 'uppercase',
+      fontStretch: 'extra-expanded',
     },
     content: {
       display: 'flex',
