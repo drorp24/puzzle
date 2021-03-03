@@ -21,6 +21,11 @@ const styles = {
   buttonGroup: theme => ({
     border: `3px solid rgba(0, 0, 0, 0.15)`,
   }),
+  button: {
+    '& svg': {
+      fontSize: '1.2rem',
+    },
+  },
   off: {
     backgroundColor: 'white',
     color: 'rgba(0, 0, 0, 0.7)',
@@ -111,6 +116,7 @@ const EditorControl = () => {
           <ToggleButton
             value="editor"
             selected={editorSelected}
+            css={styles.button}
             style={editorDisabled ? disabled : editorSelected ? on : off}
           >
             <TextIcon />
@@ -121,6 +127,7 @@ const EditorControl = () => {
           <ToggleButton
             value="tags"
             selected={tagsSelected}
+            css={styles.button}
             style={tagsDisabled ? disabled : tagsSelected ? on : off}
           >
             <LabelIcon />
@@ -131,6 +138,7 @@ const EditorControl = () => {
           <ToggleButton
             value="relations"
             selected={relationsSelected}
+            css={styles.button}
             style={relationsDisabled ? disabled : relationsSelected ? on : off}
           >
             <AccountTreeIcon />
@@ -141,6 +149,7 @@ const EditorControl = () => {
           <ToggleButton
             value="connections"
             selected={connectionsSelected}
+            css={styles.button}
             style={
               connectionsDisabled ? disabled : connectionsSelected ? on : off
             }

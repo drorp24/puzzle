@@ -15,6 +15,8 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import Button from '@material-ui/core/Button'
 import Divider from '@material-ui/core/Divider'
 
+import { FormattedMessage } from 'react-intl'
+
 import Page from '../layout/Page'
 import Dashboard from './Dashboard'
 import Locations from './Locations'
@@ -22,13 +24,11 @@ import Locations from './Locations'
 const routes = [
   {
     path: 'locations',
-    title: 'Chat',
     component: <Locations />,
     icon: <ChatOutlinedIcon />,
   },
   {
     path: 'dashboard',
-    title: 'Dashboard',
     component: <Dashboard />,
     icon: <DashboardOutlinedIcon />,
   },
@@ -60,6 +60,9 @@ const Home = () => {
       width: open ? drawerWidth.open : drawerWidth.close,
       transition: 'width 0.5s',
       backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    },
+    link: {
+      textDecoration: 'none',
     },
     chevronItem: theme => ({
       display: 'flex',
@@ -111,6 +114,7 @@ const Home = () => {
     }),
     title: {
       margin: '0 2px',
+      fontSize: direction === 'rtl' ? '1.2rem' : 'inherit',
     },
     route: {
       width: open ? routeWidth.open : routeWidth.close,
@@ -125,7 +129,6 @@ const Home = () => {
   const toggles = [
     {
       key: 'lang',
-      title: 'Language',
       icon: <SwitchRightOutlinedIcon />,
       onClick: () => {
         setDir(dir => (dir === 'ltr' ? 'rtl' : 'ltr'))
@@ -134,7 +137,6 @@ const Home = () => {
     },
     {
       key: 'mode',
-      title: 'Mode',
       icon:
         mode === 'light' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon />,
       onClick: () => dispatch(toggleMode()),
@@ -155,12 +157,19 @@ const Home = () => {
             </div>
           </Button>
           {routes.map(({ path, title, icon }) => (
-            <Button fullWidth css={styles.drawerItem} key={path} title={title}>
-              <Link to={`${url}/${path}`}>
+            <Link to={`${url}/${path}`} css={styles.link}>
+              <Button
+                fullWidth
+                css={styles.drawerItem}
+                key={path}
+                title={title}
+              >
                 <div css={styles.iconWrapper}>{icon}</div>
-              </Link>
-              <div css={styles.title}>{title}</div>
-            </Button>
+                <div css={styles.title}>
+                  <FormattedMessage id={path} />
+                </div>
+              </Button>
+            </Link>
           ))}
           {toggles.map(({ key, title, icon, onClick }) => (
             <Button
@@ -169,7 +178,9 @@ const Home = () => {
               {...{ key, onClick, title }}
             >
               <div css={styles.iconWrapper}>{icon}</div>
-              <div css={styles.title}>{title}</div>
+              <div css={styles.title}>
+                <FormattedMessage id={key} />
+              </div>
             </Button>
           ))}
         </nav>

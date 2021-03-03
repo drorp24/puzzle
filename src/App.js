@@ -11,8 +11,8 @@ import { debounce } from './utility/debounce'
 
 import { Helmet } from 'react-helmet'
 import { IntlProvider } from 'react-intl'
-import he from './i18n/he'
-import en from './i18n/en'
+import he from './i18n/he.json'
+import en from './i18n/en.json'
 import { useDirection } from './utility/appUtilities'
 
 import ProtectedRoute from './auth/ProtectedRoute'

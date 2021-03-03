@@ -11,7 +11,7 @@ import noScrollbar from '../styling/noScrollbar'
 
 const heights = {
   search: 6,
-  editor: 57,
+  editor: 50,
 }
 const Locations = () => {
   const { relations } = useSelector(store => store.app.view)
@@ -29,7 +29,10 @@ const Locations = () => {
     },
     input: {
       height: `${heights.search}%`,
-      padding: '1rem',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     editor: {
       height: relations ? `${100 - heights.search}%` : `${heights.editor}%`,
@@ -39,7 +42,7 @@ const Locations = () => {
     },
     table: {
       height: `${100 - heights.search - heights.editor}%`,
-      padding: '1rem',
+      padding: '0 1rem',
     },
     map: {},
   }

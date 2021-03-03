@@ -17,6 +17,8 @@ import Zoom from '@material-ui/core/Zoom'
 import Info from '@material-ui/icons/InfoOutlined'
 import IconButton from '@material-ui/core/IconButton'
 
+import { useIntl } from 'react-intl'
+
 import entityTypes from '../editor/entityTypes'
 import { EntityDetails } from '../editor/EntityDetails'
 
@@ -256,15 +258,29 @@ const Row = memo(({ index, style }) => {
 })
 
 const Header = memo(({ style }) => {
+  const intl = useIntl()
   const line = { lineHeight: `${style.height}px` }
+
   return (
     <div style={{ ...style, ...line }}>
-      <Cell value="Type" />
-      <Cell value="Entity" />
-      <Cell value="Place" />
-      <Cell value="Score" cellStyle={{ textAlign: 'right' }} />
-      <Cell value="Info" cellStyle={{ textAlign: 'center' }} />
-      <Cell value="Tag" cellStyle={styles.tagHeader} />
+      <Cell
+        value={intl.formatMessage({ id: 'type' })}
+        cellStyle={{ textAlign: 'center' }}
+      />
+      <Cell value={intl.formatMessage({ id: 'entity' })} />
+      <Cell value={intl.formatMessage({ id: 'place' })} />
+      <Cell
+        value={intl.formatMessage({ id: 'score' })}
+        cellStyle={{ textAlign: 'right' }}
+      />
+      <Cell
+        value={intl.formatMessage({ id: 'info' })}
+        cellStyle={{ textAlign: 'center' }}
+      />
+      <Cell
+        value={intl.formatMessage({ id: 'tag' })}
+        cellStyle={styles.tagHeader}
+      />
     </div>
   )
 })

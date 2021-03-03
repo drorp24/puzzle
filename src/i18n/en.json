@@ -1,0 +1,12 @@
+{
+  "locations": "Chat",
+  "dashboard": "Dashboard",
+  "lang": "Language",
+  "mode": "Mode",
+  "type": "Type",
+  "entity": "Entity",
+  "place": "Place",
+  "score": "Score",
+  "info": "Info",
+  "tag": "Tag"
+}
