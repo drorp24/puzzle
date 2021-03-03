@@ -48,7 +48,16 @@ export const EntitySpan = ({
   const selectorEntity = useSelector(selectEntityById(id))
   const { loaded, entities } = useSelector(selectContent)
   const contentChanges = useSelector(store => store.content.changes)
-  const { tags } = useSelector(store => store.app.view)
+  const { tags, relations } = useSelector(store => store.app.view)
+  const {
+    drawerOpen,
+    editor: {
+      x: editorX,
+      y: editorY,
+      width: editorWidth,
+      height: editorHeight,
+    },
+  } = useSelector(store => store.app)
   const { height: windowHeight, width: windowWidth } = useSelector(
     store => store.app.window
   )
@@ -73,14 +82,36 @@ export const EntitySpan = ({
     )
       return
 
-    const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
+    const reportIfPositionShifted = () => {
+      const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
 
-    // only report position changes, keeping previous position in ref
-    if (x !== ref.current?.position?.x || y !== ref.current?.position?.y) {
-      const position = { x, y, width, height }
-      ref.current.position = position
+      if (x !== ref.current?.position?.x || y !== ref.current?.position?.y) {
+        // keep prev position so only position changes would be reported
+        const position = { x, y, width, height }
+        ref.current.position = position
 
-      dispatch(updatePosition({ id, entityRangeIndex, position }))
+        // keep prev drawerOpen state and editor dimensions to detect changes that require setTimeout
+        ref.current.drawerOpen = drawerOpen
+        ref.current.editorX = editorX
+        ref.current.editorY = editorY
+        ref.current.editorWidth = editorWidth
+        ref.current.editorHeight = editorHeight
+
+        dispatch(updatePosition({ id, entityRangeIndex, position }))
+      }
+    }
+
+    reportIfPositionShifted()
+
+    if (
+      relations && // delayed check is required only when relations is viewed
+      (drawerOpen !== ref.current.drawerOpen ||
+        editorX !== ref.current.editorX ||
+        editorY !== ref.current.editorY ||
+        editorWidth !== ref.current.editorWidth ||
+        editorHeight !== ref.current.editorHeight)
+    ) {
+      setTimeout(reportIfPositionShifted, 500)
     }
   }, [
     loaded,
@@ -92,7 +123,13 @@ export const EntitySpan = ({
     entityRangeIndex,
     selectorEntity,
     tags,
+    drawerOpen,
+    editorX,
+    editorY,
+    editorWidth,
+    editorHeight,
     dispatch,
+    relations,
   ])
 
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />

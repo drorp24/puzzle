@@ -27,6 +27,7 @@ import Avatar from '@material-ui/core/Avatar'
 export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
   const { tags: tagsShown } = useSelector(store => store.app.view)
   const direction = useDirection()
+  const { mode } = useSelector(store => store.app)
   const otherMode = useOtherMode()
   const theme = useTheme({ mode: otherMode, direction })
   const dispatch = useDispatch(0)
@@ -57,6 +58,9 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
     content: {
       display: 'flex',
       flexDirection: 'column-reverse',
+    },
+    subheader: {
+      color: 'white',
     },
   }))
 
@@ -93,6 +97,9 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
       backgroundColor: 'rgba(256, 256, 256, 0.1)',
       marginTop: '1rem',
     },
+    modeColor: {
+      color: mode === 'dark' ? 'white !important' : 'inherit',
+    },
   }
 
   const showRelationsOf = id => () => {
@@ -104,6 +111,8 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
     dispatch(selected(id))
   }
 
+  const { title: ctitle, content, subheader } = classes
+
   return (
     <ThemeProvider theme={theme}>
       <Card elevation={0} css={styles.root}>
@@ -111,7 +120,7 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
           avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
           title={type}
           subheader={title}
-          classes={{ title: classes.title, content: classes.content }}
+          classes={{ title: ctitle, content, subheader }}
         />
         <Divider css={styles.divider} />
         <div css={styles.subTypes}>
@@ -132,17 +141,21 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
             ))}
         </div>
         <CardContent>
-          <Divider>Explainer</Divider>
+          <Divider css={styles.modeColor}>Explainer</Divider>
           <div css={styles.explainer}></div>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>
+          <IconButton
+            onClick={showRelationsOf(id)}
+            disabled={!tagsShown}
+            css={styles.modeColor}
+          >
             <AccountTreeIcon />
           </IconButton>
-          <IconButton onClick={markSelected(id)}>
+          <IconButton onClick={markSelected(id)} css={styles.modeColor}>
             <RoomIcon />
           </IconButton>
-          <IconButton>
+          <IconButton css={styles.modeColor}>
             <TableIcon />
           </IconButton>
         </CardActions>

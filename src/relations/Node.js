@@ -48,7 +48,7 @@ export const Node = ({ id, data: { inputs, outputs, type, text } }) => {
       />
       {showText && (
         <span style={entityStyle({ type, role })}>
-          <span style={entityIconStyle(type)}>{icon}</span>
+          <span style={entityIconStyle({ type, role })}>{icon}</span>
           <span>{text}</span>
         </span>
       )}

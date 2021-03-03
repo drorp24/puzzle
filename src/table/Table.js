@@ -34,8 +34,11 @@ const styles = {
     boxSizing: 'border-box',
     cursor: 'pointer',
   },
-  even: {
-    backgroundColor: '#eee',
+  lightEven: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  darkEven: {
+    backgroundColor: 'rgba(256, 256, 256, 0.3)',
   },
   odd: {},
   header: {
@@ -91,7 +94,7 @@ const styles = {
     color: 'rgba(0, 0, 0, 0.1) !important',
   },
   tagIcon: {
-    fontSize: '1rem',
+    fontSize: '1rem !important',
   },
   selectedTagIcon: {
     color: 'rgba(256, 256, 256, 0.2)',
@@ -122,6 +125,8 @@ const Table = () => {
 
   useEffect(() => {
     const scrollTo = entityId => {
+      if (!outerRef || !outerRef.current) return
+
       const index = ids.findIndex(id => id === entityId)
       const top = index * itemSize
       outerRef.current.scrollTo({ top, behavior: 'smooth' })
@@ -156,6 +161,7 @@ const Table = () => {
 
 const Row = memo(({ index, style }) => {
   const { entities, selected } = useSelector(selectContent)
+  const { mode } = useSelector(store => store.app)
   const dispatch = useDispatch()
 
   const entity = entities[index]
@@ -170,7 +176,12 @@ const Row = memo(({ index, style }) => {
   const { icon, color } = entityTypes[type]
   const { text } = entityRanges[0]
   const place = geoLocation?.properties?.name || ''
-  const bg = index % 2 ? styles.odd : styles.even
+  const bg =
+    index % 2
+      ? styles.odd
+      : mode === 'light'
+      ? styles.lightEven
+      : styles.darkEven
   const line = { lineHeight: `${style.height}px` }
 
   const selectedRow = id === selected ? styles.selected : {}

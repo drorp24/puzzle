@@ -7,6 +7,7 @@ import Divider from '@material-ui/core/Divider'
 import Editor from '../editor/Editor'
 import Table from '../table/Table'
 import Map from '../map/Map'
+import noScrollbar from '../styling/noScrollbar'
 
 const heights = {
   search: 6,
@@ -19,6 +20,7 @@ const Locations = () => {
       display: 'grid',
       gridTemplateColumns: '50% 50%',
       overflow: 'scroll',
+      ...noScrollbar,
     },
     paper: {
       height: '100%',
@@ -44,7 +46,7 @@ const Locations = () => {
 
   return (
     <div css={styles.container}>
-      <Paper elevation={4} css={styles.paper}>
+      <Paper square elevation={4} css={styles.paper}>
         <div css={styles.input}>search</div>
         <Divider />
         <div css={styles.editor}>

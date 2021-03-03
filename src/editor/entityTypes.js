@@ -103,7 +103,7 @@ export const entityIconStyle = ({ type, role }) => ({
   display: 'inline-flex',
   marginRight: '0.25rem',
   fontSize: '1rem',
-  color: 'rgba(0, 0, 0, 0.6)',
+  color: role === 'text' ? 'rgba(0, 0, 0, 0.6)' : entityTypes[type].color,
 })
 
 export default entityTypes

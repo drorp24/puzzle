@@ -62,7 +62,11 @@ const MyEditor = () => {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const ref = useRef()
 
-  const { editor, relations } = useSelector(store => store.app.view)
+  const {
+    view: { editor, relations },
+    drawerOpen,
+  } = useSelector(store => store.app)
+
   const dispatch = useDispatch()
 
   const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
@@ -145,7 +149,7 @@ const MyEditor = () => {
     const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
     const position = { x, y, width, height }
     dispatch(setAppProp({ editor: position }))
-  }, [dispatch, relations])
+  }, [dispatch, relations, drawerOpen])
 
   return (
     <div css={styles.container}>

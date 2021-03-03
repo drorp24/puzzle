@@ -12,6 +12,7 @@ import { inside } from '../../src/utility/appUtilities'
 
 export const styles = {
   container: {
+    direction: 'ltr !important',
     height: '100%',
     width: '100%',
     position: 'fixed',

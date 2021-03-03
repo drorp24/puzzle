@@ -31,7 +31,7 @@ const SelectedGeo = () => {
   const memoizedSelectedEntity = useMemo(() => selectedEntity, [selectedId])
 
   useEffect(() => {
-    if (!map || !selectedId) return
+    if (!map || !selectedId || !memoizedSelectedEntity) return
     console.log('useEffect entered') // This should happen only when a different entity is selected
 
     const { type, coordinates } = memoizedSelectedEntity

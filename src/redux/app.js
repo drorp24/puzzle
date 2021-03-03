@@ -5,6 +5,7 @@ const appSlice = createSlice({
   initialState: {
     mode: 'light',
     locale: 'en',
+    drawerOpen: true,
     window: {},
     view: { tags: true },
   },
@@ -16,6 +17,10 @@ const appSlice = createSlice({
     toggleLocale: state => ({
       ...state,
       locale: state.locale === 'en' ? 'he' : 'en',
+    }),
+    toggleDrawer: state => ({
+      ...state,
+      drawerOpen: !state.drawerOpen,
     }),
     setDimensions: (state, { payload: { height, width } }) => ({
       ...state,
@@ -47,6 +52,7 @@ export default reducer
 export const {
   toggleMode,
   toggleLocale,
+  toggleDrawer,
   setDimensions,
   view,
   setAppProp,
