@@ -1,5 +1,8 @@
 {
-  "locations": "Chat",
+  "file": "File",
+  "fileId": "File details",
+  "userId": "User details",
+  "locations": "Text",
   "dashboard": "Dashboard",
   "lang": "Language",
   "mode": "Mode",
@@ -8,5 +11,6 @@
   "place": "Place",
   "score": "Score",
   "info": "Info",
-  "tag": "Tag"
+  "tag": "Tag",
+  "logout": "Log out"
 }

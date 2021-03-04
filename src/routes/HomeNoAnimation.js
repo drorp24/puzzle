@@ -6,22 +6,20 @@ import { useDirection } from '../utility/appUtilities'
 
 import { Switch, Route, Link, useRouteMatch } from 'react-router-dom'
 
-import Folder from '@material-ui/icons/FolderOpenOutlined'
+import Open from '@material-ui/icons/FolderOpenOutlined'
 import ChatOutlinedIcon from '@material-ui/icons/ChatOutlined'
 import SwitchRightOutlinedIcon from '@material-ui/icons/SwitchRightOutlined'
 import DarkModeOutlinedIcon from '@material-ui/icons/DarkModeOutlined'
 import LightModeOutlinedIcon from '@material-ui/icons/LightModeOutlined'
 import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import Logout from '@material-ui/icons/PowerSettingsNewOutlined'
 import Button from '@material-ui/core/Button'
 import Divider from '@material-ui/core/Divider'
 
-import { useIntl } from 'react-intl'
+import { FormattedMessage } from 'react-intl'
 
 import Page from '../layout/Page'
 import Dashboard from './Dashboard'
-import File from './File'
 import Locations from './Locations'
 
 const Home = () => {
@@ -33,8 +31,6 @@ const Home = () => {
   const [dir, setDir] = useState(direction)
   const rtl = dir === 'rtl'
   const ltr = dir === 'ltr'
-  const intl = useIntl()
-  const t = phrase => intl.formatMessage({ id: phrase })
 
   const drawerWidth = {}
   const routeWidth = {}
@@ -43,8 +39,6 @@ const Home = () => {
   const menuItem = { padding: 1, icon: 1.5 }
   drawerWidth.close = `calc(2*${menuItem.padding}rem + ${menuItem.icon}rem)`
   routeWidth.close = `calc(100vw - (2*${menuItem.padding}rem + ${menuItem.icon}rem))`
-
-  const greyShade = '600'
 
   const styles = {
     root: {
@@ -69,7 +63,7 @@ const Home = () => {
         fontSize: '2rem !important',
         transform: `rotate(${(open && ltr) || (!open && rtl) ? 0 : 180}deg)`,
         transition: 'transform 0.5s',
-        color: theme.palette.grey[greyShade],
+        color: theme.palette.grey['A700'],
       },
       '&:hover': {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
@@ -84,7 +78,7 @@ const Home = () => {
       padding: `${menuItem.padding}rem`,
       '& svg': {
         fontSize: `${menuItem.icon}rem`,
-        color: theme.palette.grey[greyShade],
+        color: theme.palette.grey['A700'],
       },
       '& svg[data-testid="SwitchRightOutlinedIcon"]': {
         transform: `rotate(${dir === 'rtl' ? 180 : 0}deg)`,
@@ -97,7 +91,7 @@ const Home = () => {
       justifyContent: 'flex-start',
       borderRadius: '0',
       padding: '0',
-      color: theme.palette.grey[greyShade],
+      color: theme.palette.grey['A700'],
       '&:hover': {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
         color: 'white',
@@ -120,50 +114,48 @@ const Home = () => {
     },
   }
 
-  const routes = [
+  const menu = [
     {
-      path: 'file',
-      component: <File />,
-      icon: <Folder />,
-      title: t('file'),
+      id: 'open',
+      icon: <Open />,
+      onClick: () => {},
     },
     {
+      id: 'locations',
       path: 'locations',
       component: <Locations />,
       icon: <ChatOutlinedIcon />,
-      title: t('locations'),
     },
     {
+      id: 'dashboard',
       path: 'dashboard',
       component: <Dashboard />,
       icon: <DashboardOutlinedIcon />,
-      title: t('dashboard'),
     },
-  ]
-  const toggles = [
     {
-      key: 'lang',
+      id: 'lang',
       icon: <SwitchRightOutlinedIcon />,
       onClick: () => {
         setDir(dir => (dir === 'ltr' ? 'rtl' : 'ltr'))
         setTimeout(() => dispatch(toggleLocale()), 0)
       },
-      title: t('lang'),
     },
     {
-      key: 'mode',
+      id: 'mode',
       icon:
         mode === 'light' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon />,
       onClick: () => dispatch(toggleMode()),
-      title: t('mode'),
-    },
-    {
-      key: 'logout',
-      icon: <Logout />,
-      onClick: () => {},
-      title: t('logout'),
     },
   ]
+
+  const MenuItem = ({ id, icon, onClick }) => (
+    <Button fullWidth css={styles.drawerItem} key={id} onClick={onClick}>
+      <div css={styles.iconWrapper}>{icon}</div>
+      <div css={styles.title}>
+        <FormattedMessage id={id} />
+      </div>
+    </Button>
+  )
 
   return (
     <Page css={styles.root}>
@@ -178,34 +170,29 @@ const Home = () => {
               <ChevronLeftIcon />
             </div>
           </Button>
-          {routes.map(({ path, title, icon }) => (
-            <Link to={`${url}/${path}`} css={styles.link} key={path}>
-              <Button fullWidth css={styles.drawerItem} title={title}>
-                <div css={styles.iconWrapper}>{icon}</div>
-                <div css={styles.title}>{title}</div>
-              </Button>
-            </Link>
-          ))}
-          {toggles.map(({ key, title, icon, onClick }) => (
-            <Button
-              fullWidth
-              css={styles.drawerItem}
-              {...{ key, onClick, title }}
-            >
-              <div css={styles.iconWrapper}>{icon}</div>
-              <div css={styles.title}>{title}</div>
-            </Button>
-          ))}
+          {menu.map(({ id, path, icon, onClick }) =>
+            path ? (
+              <Link to={`${url}/${path}`} css={styles.link} key={id}>
+                <MenuItem {...{ id, icon }} />
+              </Link>
+            ) : (
+              <MenuItem {...{ id, icon, onClick }} key={id} />
+            )
+          )}
         </nav>
       </div>
+
       <Divider orientation="vertical" />
+
       <div css={styles.route}>
         <Switch>
-          {routes.map(({ path, component }) => (
-            <Route path={`${url}/${path}`} key={path}>
-              {component}
-            </Route>
-          ))}
+          {menu
+            .filter(({ path }) => path)
+            .map(({ path, component }) => (
+              <Route path={`${url}/${path}`} key={path}>
+                {component}
+              </Route>
+            ))}
         </Switch>
       </div>
     </Page>

@@ -29,6 +29,10 @@ const styles = {
   autoSizer: {
     width: '100%',
   },
+  header: {
+    fontWeight: '700',
+    padding: '0 1rem',
+  },
   row: {
     display: 'grid',
     gridTemplateColumns: '7% 23% auto 7% 7% 23%',
@@ -43,9 +47,6 @@ const styles = {
     backgroundColor: 'rgba(256, 256, 256, 0.3)',
   },
   odd: {},
-  header: {
-    fontWeight: '500',
-  },
   rowHover: {
     border: '3px solid rgba(0, 0, 0, 0.2)',
   },
@@ -263,10 +264,7 @@ const Header = memo(({ style }) => {
 
   return (
     <div style={{ ...style, ...line }}>
-      <Cell
-        value={intl.formatMessage({ id: 'type' })}
-        cellStyle={{ textAlign: 'center' }}
-      />
+      <Cell value={intl.formatMessage({ id: 'type' })} />
       <Cell value={intl.formatMessage({ id: 'entity' })} />
       <Cell value={intl.formatMessage({ id: 'place' })} />
       <Cell

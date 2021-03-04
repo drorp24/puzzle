@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux'
 import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
 
+import { FormattedMessage } from 'react-intl'
+
 import Editor from '../editor/Editor'
 import Table from '../table/Table'
 import Map from '../map/Map'
@@ -30,9 +32,9 @@ const Locations = () => {
     input: {
       height: `${heights.search}%`,
       display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
+      justifyContent: 'space-between',
       alignItems: 'center',
+      padding: '0 1.5rem',
     },
     editor: {
       height: relations ? `${100 - heights.search}%` : `${heights.editor}%`,
@@ -50,7 +52,14 @@ const Locations = () => {
   return (
     <div css={styles.container}>
       <Paper square elevation={4} css={styles.paper}>
-        <div css={styles.input}>search</div>
+        <div css={styles.input}>
+          <div>
+            <FormattedMessage id="fileId" />
+          </div>
+          <div>
+            <FormattedMessage id="userId" />
+          </div>
+        </div>
         <Divider />
         <div css={styles.editor}>
           <Editor />
