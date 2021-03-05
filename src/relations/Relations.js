@@ -8,11 +8,10 @@ import { options, makeNode, makeRelation, relationOptions } from './flowOptions'
 import { entityStyle } from '../editor/entityTypes'
 
 import { Node } from './Node'
-import { inside } from '../../src/utility/appUtilities'
+import { inside, useOtherDirection } from '../../src/utility/appUtilities'
 
 export const styles = {
   container: {
-    direction: 'ltr !important',
     height: '100%',
     width: '100%',
     position: 'fixed',
@@ -100,6 +99,7 @@ const Relations = memo(() => {
               type,
               exclusiveRelations,
               selected,
+              entityFromType: entities[from].type,
             })
             edges.push(relation)
           })
@@ -116,11 +116,14 @@ const Relations = memo(() => {
     selected,
   ])
 
+  const otherDirection = useOtherDirection()
+
   return (
     <div
       css={styles.container}
       style={{
         visibility: showRelations || exclusiveRelations ? 'visible' : 'hidden',
+        direction: `${otherDirection} !important`,
         ...(editRelations && styles.editMode),
       }}
     >

@@ -24,7 +24,7 @@ import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
 import Avatar from '@material-ui/core/Avatar'
 
-export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
+export const EntityDetails = ({ entity: { type, data } }) => {
   const { tags: tagsShown } = useSelector(store => store.app.view)
   const direction = useDirection()
   const { mode } = useSelector(store => store.app)
@@ -33,8 +33,7 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
   const dispatch = useDispatch(0)
 
   const { icon, color } = entityTypes[type]
-  const { id, name, subTypes } = data
-  const title = name || entityRanges[0]?.text
+  const { id, subTypes, word } = data
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}
@@ -61,6 +60,7 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
     },
     subheader: {
       color: 'white',
+      fontSize: '1.5rem',
     },
   }))
 
@@ -111,7 +111,7 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
     dispatch(selected(id))
   }
 
-  const { title: ctitle, content, subheader } = classes
+  const { title, content, subheader } = classes
 
   return (
     <ThemeProvider theme={theme}>
@@ -119,8 +119,8 @@ export const EntityDetails = ({ entity: { type, data, entityRanges } }) => {
         <CardHeader
           avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
           title={type}
-          subheader={title}
-          classes={{ title: ctitle, content, subheader }}
+          subheader={word}
+          classes={{ title, content, subheader }}
         />
         <Divider css={styles.divider} />
         <div css={styles.subTypes}>

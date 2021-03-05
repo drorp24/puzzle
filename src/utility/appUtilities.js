@@ -5,6 +5,11 @@ export const useDirection = () => {
   return locale === 'he' ? 'rtl' : 'ltr'
 }
 
+export const useOtherDirection = () => {
+  const locale = useSelector(store => store.app.locale)
+  return locale === 'he' ? 'ltr' : 'trl'
+}
+
 export const useOtherMode = () => {
   const mode = useSelector(store => store.app.mode)
   return mode === 'light' ? 'dark' : 'light'

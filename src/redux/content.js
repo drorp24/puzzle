@@ -8,6 +8,7 @@ import { createSelector } from 'reselect'
 
 import { getContent } from '../api/fakeEditorApi'
 import { createEntitiesFromContent } from '../../src/editor/entities'
+import realEditorApi from '../api/realEditorApi'
 
 // * normalization
 const contentAdapter = createEntityAdapter({
@@ -20,7 +21,8 @@ export const fetchContent = createAsyncThunk(
   'content/fetch',
   async ({ convertContent, showContent }, thunkAPI) => {
     try {
-      const rawContent = await getContent()
+      // const rawContent = await getContent()
+      const rawContent = await realEditorApi('doc_80')
       if (!rawContent) throw new Error('No rawContent returned')
       if (rawContent.error)
         throw new Error(rawContent.error.message?.toString())
@@ -148,12 +150,11 @@ export const selectSelectedEntity = ({ content }) => {
   const {
     data: {
       geoLocation: {
-        properties: { name },
         geometry: { type, coordinates },
       },
     },
   } = selectedE
-  return { id, name, type, coordinates }
+  return { id, type, coordinates }
 }
 
 const { reducer, actions } = contentSlice
@@ -204,12 +205,11 @@ export const selectSelectedEntity1 = createSelector(
     const {
       data: {
         geoLocation: {
-          properties: { name },
           geometry: { type, coordinates },
         },
       },
     } = entities[id]
-    return { id, name, type, coordinates }
+    return { id, type, coordinates }
   }
 )
 

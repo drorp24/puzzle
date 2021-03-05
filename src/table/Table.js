@@ -44,7 +44,7 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   darkEven: {
-    backgroundColor: 'rgba(256, 256, 256, 0.3)',
+    backgroundColor: 'rgba(256, 256, 256, 0.05)',
   },
   odd: {},
   rowHover: {

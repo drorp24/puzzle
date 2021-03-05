@@ -10,8 +10,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: '3em',
-    minWidth: '15vw',
   },
   username: {
     marginRight: '1em',
@@ -26,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const Logout = () => {
+const Logout = ({ noButton }) => {
   const username = useSelector(store => store.users.loggedIn.username)
   const dispatch = useDispatch()
   const classes = useStyles()
@@ -40,7 +38,7 @@ const Logout = () => {
       <span className={classes.username}>
         {username || 'No user logged in'}
       </span>
-      {username && (
+      {!noButton && username && (
         <Button
           className={classes.button}
           size="small"

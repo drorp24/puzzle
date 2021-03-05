@@ -1,3 +1,4 @@
+import * as dotenv from 'dotenv'
 import { StrictMode } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
 import store from './redux/store'
@@ -6,6 +7,8 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+
+dotenv.config()
 
 ReactDOM.render(
   <StrictMode>

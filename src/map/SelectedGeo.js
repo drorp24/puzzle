@@ -17,7 +17,7 @@ const styles = {
 }
 
 // ! Preventing unnecessary re-rendering
-// Since selectedEntity somehow gets a new reference even though neither of its 4 properties changed,
+// Since selectedEntity somehow gets a new reference even though neither of its 3 properties changed,
 // I cheat useMemo here to depend only on selectedId in spite of returning the selectedEntity object.
 // This forces memoizedSelectedEntity to maintain the same reference, dependent only on selectedId.
 //
@@ -32,7 +32,6 @@ const SelectedGeo = () => {
 
   useEffect(() => {
     if (!map || !selectedId || !memoizedSelectedEntity) return
-    console.log('useEffect entered') // This should happen only when a different entity is selected
 
     const { type, coordinates } = memoizedSelectedEntity
     const polygon = type === 'Point' ? [coordinates] : coordinates

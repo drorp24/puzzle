@@ -40,16 +40,17 @@ export const makeNode = ({
   isHidden,
 })
 
-export const relationOptions = type => ({
+export const relationOptions = ({ type, entityFromType }) => ({
   label: type,
-  type: 'smoothstep',
+  // type: 'smoothstep',
   style: {
-    stroke: entityTypes[relationTypes[type].entity].color,
+    stroke: entityTypes[entityFromType].color,
     strokeWidth: '4',
   },
   labelStyle: {
-    fill: entityTypes[relationTypes[type].entity].color,
-    fontSize: '1.1rem',
+    // fill: entityTypes[relationTypes[type].entity].color,
+    fill: 'yellow',
+    fontSize: '0.8rem',
     fontWeight: '400',
   },
   labelBgStyle: {
@@ -69,6 +70,7 @@ export const makeRelation = ({
   type,
   exclusiveRelations,
   selected,
+  entityFromType,
 }) => {
   const source = `${from}-${fromEntityRangeIndex}`
   const target = `${to}-${toEntityRangeIndex}`
@@ -81,7 +83,7 @@ export const makeRelation = ({
     target: `${target}`,
     targetHandle: `${to}-${from}-${type}`,
     isHidden,
-    ...relationOptions(type),
+    ...relationOptions({ type, entityFromType }),
   }
   return relation
 }

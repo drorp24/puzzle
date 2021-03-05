@@ -14,70 +14,70 @@ export const useColor = relationType =>
 
 export const relationTypes = keyProxy({
   son: {
-    entity: 'Person',
+    entity: 'PERSON',
   },
   brother: {
-    entity: 'Person',
+    entity: 'PERSON',
   },
   girlfriend: {
-    entity: 'Person',
+    entity: 'PERSON',
   },
   in: {
-    entity: 'Place',
+    entity: 'LOCATION',
   },
   near: {
-    entity: 'Place',
+    entity: 'LOCATION',
   },
   uses: {
-    entity: 'Place',
+    entity: 'LOCATION',
   },
-  Undefined: {
-    entity: 'Undefined',
+  UNDEFINED: {
+    entity: 'UNDEFINED',
   },
 })
 
 const entityTypes = keyProxy({
-  Person: {
-    name: 'Person',
+  PERSON: {
+    name: 'PERSON',
     mutability: 'IMMUTABLE',
     icon: <PersonIcon />,
     selector: true,
     color: 'orange',
   },
-  Place: {
-    name: 'Place',
+  LOCATION: {
+    name: 'LOCATION',
     mutability: 'IMMUTABLE',
     icon: <PlaceIcon />,
     selector: true,
     color: 'deepskyblue',
   },
-  Time: {
-    name: 'Time',
+  TIME: {
+    name: 'TIME',
     mutability: 'IMMUTABLE',
     icon: <TimeIcon />,
     selector: false,
     color: 'aquamarine',
   },
-  Device: {
-    name: 'Device',
+  DEVICE: {
+    name: 'DEVICE',
     mutability: 'IMMUTABLE',
     icon: <DeviceIcon />,
     selector: true,
     color: 'coral',
   },
-  Mention: {
-    name: 'Mention',
+  MENTION: {
+    name: 'MENTION',
     mutability: 'IMMUTABLE',
     selector: false,
     color: 'lightgreen',
   },
-  Hashtag: {
-    name: 'Hashtag',
+  HASHTAG: {
+    name: 'HASHTAG',
     mutability: 'IMMUTABLE',
     selector: false,
     color: 'pink',
   },
-  Undefined: {
+  UNDEFINED: {
     name: 'Not listed',
     mutability: 'IMMUTABLE',
     icon: <NotListedIcon />,
@@ -94,6 +94,7 @@ export const entityStyle = ({ type, role }) => ({
   justifyContent: 'center',
   padding: '0.1rem 0.5rem',
   alignItems: 'center',
+  lineHeight: '1',
   ...(role === 'text' && {
     transform: `translateY(${entityTypes[type].icon ? '0.4rem' : '0'}`,
   }),

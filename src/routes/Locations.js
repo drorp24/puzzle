@@ -9,6 +9,7 @@ import { FormattedMessage } from 'react-intl'
 import Editor from '../editor/Editor'
 import Table from '../table/Table'
 import Map from '../map/Map'
+import Logout from '../auth/Logout'
 import noScrollbar from '../styling/noScrollbar'
 
 const heights = {
@@ -16,7 +17,12 @@ const heights = {
   editor: 50,
 }
 const Locations = () => {
-  const { relations } = useSelector(store => store.app.view)
+  const {
+    view: { relations },
+    mode,
+    locale,
+  } = useSelector(store => store.app)
+
   const styles = {
     container: {
       display: 'grid',
@@ -29,15 +35,22 @@ const Locations = () => {
       zIndex: '401',
       overflow: 'hidden',
     },
-    input: {
+    input: theme => ({
       height: `${heights.search}%`,
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: '0 1.5rem',
-    },
+      backgroundColor:
+        mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)',
+      color: mode === 'light' ? 'white' : theme.palette.grey[500],
+      fontWeight: '100',
+      textTransform: 'uppercase',
+      fontSize: locale === 'he' ? '1rem' : '0.8125rem',
+    }),
     editor: {
       height: relations ? `${100 - heights.search}%` : `${heights.editor}%`,
+      lineHeight: relations ? '6' : '3',
       transition: 'height 0.7s',
       padding: '1rem',
       backgroundColor: 'rgba(0, 0, 0, 0.05)',
@@ -45,6 +58,7 @@ const Locations = () => {
     table: {
       height: `${100 - heights.search - heights.editor}%`,
       padding: '0 1rem',
+      backgroundColor: mode === 'light' ? 'inherit' : 'rgba(0, 0, 0, 0.2)',
     },
     map: {},
   }
@@ -57,7 +71,7 @@ const Locations = () => {
             <FormattedMessage id="fileId" />
           </div>
           <div>
-            <FormattedMessage id="userId" />
+            <Logout noButton />
           </div>
         </div>
         <Divider />

@@ -45,14 +45,10 @@
 // I am sure there will be several more use cases going forward for this kind of keying.
 //
 
-// ToDo: ask Shay to provide
-// - properties.name in the geoLocation when populated, and let it be unique
-// - when the geo objec tis a Polygon, to provide its center too (if possible)
-
-import telAviv from '../map/telAviv'
-import benYehuda from '../map/benYehuda'
-import metzitzim from '../map/metzitzim'
-import urisHome from '../map/urisHome'
+import telAviv from './telAviv'
+import benYehuda from './benYehuda'
+import metzitzim from './metzitzim'
+import urisHome from './urisHome'
 
 const timeout = 100
 
@@ -162,7 +158,7 @@ const rawContent = {
   entityMap: {
     firstEntity: {
       willbeIgnored: 'ignored',
-      type: 'Person',
+      type: 'PERSON',
       mutability: 'IMMUTABLE',
       data: {
         id: 'firstEntity',
@@ -173,7 +169,7 @@ const rawContent = {
       },
     },
     secondEntity: {
-      type: 'Place',
+      type: 'LOCATION',
       mutability: 'IMMUTABLE',
       data: {
         id: 'secondEntity',
@@ -193,7 +189,7 @@ const rawContent = {
       },
     },
     thirdEntity: {
-      type: 'Time',
+      type: 'TIME',
       mutability: 'IMMUTABLE',
       data: {
         id: 'thirdEntity',
@@ -203,7 +199,7 @@ const rawContent = {
       },
     },
     fourthEntity: {
-      type: 'Place',
+      type: 'LOCATION',
       mutability: 'IMMUTABLE',
       data: {
         id: 'fourthEntity',
@@ -223,7 +219,7 @@ const rawContent = {
       },
     },
     fifthEntity: {
-      type: 'Place',
+      type: 'LOCATION',
       mutability: 'MUTABLE',
       data: {
         id: 'fifthEntity',
@@ -243,7 +239,7 @@ const rawContent = {
       },
     },
     sixthEntity: {
-      type: 'Device',
+      type: 'DEVICE',
       mutability: 'MUTABLE',
       data: {
         id: 'sixthEntity',
@@ -253,7 +249,7 @@ const rawContent = {
       },
     },
     seventhEntity: {
-      type: 'Person',
+      type: 'PERSON',
       mutability: 'SEGMENTED',
       data: {
         id: 'seventhEntity',
@@ -263,7 +259,7 @@ const rawContent = {
       },
     },
     eighthEntity: {
-      type: 'Place',
+      type: 'LOCATION',
       mutability: 'SEGMENTED',
       data: {
         id: 'eighthEntity',

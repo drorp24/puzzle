@@ -2,8 +2,8 @@ const undefinedKeyHandler = {
   get(target, property) {
     return target[property]
       ? target[property]
-      : target['Undefined']
-      ? target['Undefined']
+      : target['UNDEFINED']
+      ? target['UNDEFINED']
       : undefined
   },
 }
