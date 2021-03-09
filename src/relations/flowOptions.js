@@ -7,9 +7,7 @@ export const options = {
   zoomOnDoubleClick: false,
   paneMoveable: false,
   connectionMode: 'loose',
-  connectionLineType: 'smoothstep',
   deleteKeyCode: 46,
-  // connectionLineComponent: ConnectionLine,
 }
 
 export const makeNode = ({
@@ -24,7 +22,6 @@ export const makeNode = ({
   nodeStyle,
   editRelations,
   text,
-  isHidden,
 }) => ({
   id: `${id}-${index}`,
   type: 'node',
@@ -37,12 +34,10 @@ export const makeNode = ({
   sourcePosition: 'right',
   targetPosition: 'left',
   data: { ...data, editRelations, type, index, text },
-  isHidden,
 })
 
 export const relationOptions = ({ type, entityFromType }) => ({
   label: type,
-  // type: 'smoothstep',
   style: {
     stroke: entityTypes[entityFromType].color,
     strokeWidth: '4',

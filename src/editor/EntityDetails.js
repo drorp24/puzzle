@@ -125,20 +125,23 @@ export const EntityDetails = ({ entity: { type, data } }) => {
         <Divider css={styles.divider} />
         <div css={styles.subTypes}>
           {subTypes &&
-            subTypes.map(subType => (
-              <Chip
-                size="small"
-                label={subType}
-                css={styles.entityType}
-                onDelete={handleDelete}
-                key={subType}
-                classes={{
-                  icon: classes.icon,
-                  label: classes.label,
-                  deleteIcon: classes.deleteIcon,
-                }}
-              />
-            ))}
+            subTypes.map(
+              subType =>
+                subType && (
+                  <Chip
+                    size="small"
+                    label={subType}
+                    css={styles.entityType}
+                    onDelete={handleDelete}
+                    key={subType}
+                    classes={{
+                      icon: classes.icon,
+                      label: classes.label,
+                      deleteIcon: classes.deleteIcon,
+                    }}
+                  />
+                )
+            )}
         </div>
         <CardContent>
           <Divider css={styles.modeColor}>Explainer</Divider>

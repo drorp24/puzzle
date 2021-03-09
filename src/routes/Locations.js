@@ -41,18 +41,17 @@ const Locations = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: '0 1.5rem',
-      backgroundColor:
-        mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.2)',
+      backgroundColor: mode === 'light' ? '#616161' : '#333',
       color: mode === 'light' ? 'white' : theme.palette.grey[500],
       fontWeight: '100',
-      textTransform: 'uppercase',
+      textTransform: 'capitalize',
       fontSize: locale === 'he' ? '1rem' : '0.8125rem',
     }),
     editor: {
       height: relations ? `${100 - heights.search}%` : `${heights.editor}%`,
       lineHeight: relations ? '6' : '3',
       transition: 'height 0.7s',
-      padding: '1rem',
+      padding: '0 1rem',
       backgroundColor: 'rgba(0, 0, 0, 0.05)',
     },
     table: {

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
-import { setAppProp } from '../redux/app'
+import { setAppProp, scrolling } from '../redux/app'
 
 import {
   Editor,
@@ -13,46 +13,18 @@ import {
   getDefaultKeyBinding,
 } from 'draft-js'
 import 'draft-js/dist/Draft.css'
-import Relations from '../relations/Relations'
 
+import CircularProgress from '@material-ui/core/CircularProgress'
+
+import Relations from '../relations/Relations'
 import Selector, { emptyData } from './Selector'
 import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
 import EditorControl from './EditorControl'
 import noScrollbar from '../styling/noScrollbar'
-
-const styles = {
-  container: theme => ({
-    height: '100%',
-    display: 'grid',
-    gridTemplateColumns: '85% 5% 10%',
-    gridTemplateRows: '50% 50%',
-    gridTemplateAreas: `
-      "editor space selector"
-      "editor space control"
-      `,
-    overflow: 'hidden',
-  }),
-  editor: {
-    gridArea: 'editor',
-    overflow: 'scroll',
-    ...noScrollbar,
-  },
-  space: {
-    gridArea: 'space',
-  },
-  selector: {
-    gridArea: 'selector',
-  },
-  control: {
-    gridArea: 'control',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-  },
-  relations: {},
-}
+import Scroller from './Scroller'
+import { throttleByFrame } from '../utility/debounce'
 
 const MyEditor = () => {
   const [editorState, setEditorState] = useState(() =>
@@ -62,10 +34,9 @@ const MyEditor = () => {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const ref = useRef()
 
-  const {
-    view: { editor, relations },
-    drawerOpen,
-  } = useSelector(store => store.app)
+  const { view, hide, drawerOpen, locale, mode } = useSelector(
+    store => store.app
+  )
 
   const dispatch = useDispatch()
 
@@ -109,6 +80,56 @@ const MyEditor = () => {
     return 'not-handled'
   }
 
+  const reportScrolling = () => {
+    dispatch(scrolling())
+  }
+
+  const styles = {
+    container: theme => ({
+      height: '100%',
+      display: 'grid',
+      gridTemplateColumns: '85% 5% 10%',
+      gridTemplateRows: '50% 50%',
+      gridTemplateAreas: `
+      "editor space selector"
+      "editor space control"
+      `,
+      overflow: 'hidden',
+    }),
+    editor: {
+      gridArea: 'editor',
+      overflow: 'scroll',
+      position: 'relative',
+      ...noScrollbar,
+    },
+    space: {
+      gridArea: 'space',
+    },
+    selector: {
+      gridArea: 'selector',
+    },
+    control: {
+      gridArea: 'control',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+    },
+    relations: {},
+    scroller: {
+      position: 'absolute',
+      bottom: '0',
+    },
+    circularProgress: theme => ({
+      position: 'fixed',
+      top: '50%',
+      left: locale === 'en' ? '30%' : '65%',
+      '& > span': {
+        color:
+          mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : theme.palette.grey[500],
+      },
+    }),
+  }
+
   // conversion
   useEffect(() => {
     const convertContent = rawContent => convertFromRaw(rawContent)
@@ -147,24 +168,48 @@ const MyEditor = () => {
   // editor position
   useEffect(() => {
     const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
-    const position = { x, y, width, height }
+    const position = { x, y, width, height, scrolling: 0 }
     dispatch(setAppProp({ editor: position }))
-  }, [dispatch, relations, drawerOpen])
+  }, [dispatch, view.relations, view.exclusiveRelations, drawerOpen])
+
+  // when view editor is off and relations are temporarily hidden (during scroll), text becomes empty
+  const temporarilyEmpty = !view.editor && hide.relations
+
+  // manual scroll prevention
+  // this useCallback is imperative for the remove to use the same fn reference
+  const preventManuallScrolling = useCallback(e => e.preventDefault(), [])
+  useEffect(() => {
+    const active = { passive: false }
+    const text = ref.current
+
+    if (view.relations || view.exclusiveRelations) {
+      text.addEventListener('wheel', preventManuallScrolling, active)
+    } else {
+      text.removeEventListener('wheel', preventManuallScrolling)
+    }
+  }, [preventManuallScrolling, view.exclusiveRelations, view.relations])
 
   return (
     <div css={styles.container}>
       <div
         css={styles.editor}
-        style={{ visibility: editor ? 'visible' : 'hidden' }}
         ref={ref}
+        onScroll={throttleByFrame(reportScrolling)}
       >
-        <Editor
-          editorState={editorState}
-          onChange={handleChange}
-          keyBindingFn={myKeyBindingFn}
-          handleKeyCommand={handleKeyCommand}
-          css={styles.editor}
-        />
+        <div style={{ visibility: view.editor ? 'visible' : 'hidden' }}>
+          <Editor
+            editorState={editorState}
+            onChange={handleChange}
+            keyBindingFn={myKeyBindingFn}
+            handleKeyCommand={handleKeyCommand}
+            css={styles.editor}
+          />
+        </div>
+        {temporarilyEmpty && (
+          <div css={styles.circularProgress}>
+            <CircularProgress />
+          </div>
+        )}
       </div>
       <div css={styles.space} />
       <div css={styles.selector}>
@@ -181,6 +226,9 @@ const MyEditor = () => {
       </div>
       <div css={styles.control}>
         <EditorControl />
+      </div>
+      <div css={styles.scroller}>
+        <Scroller textRef={ref} />
       </div>
     </div>
   )

@@ -15,7 +15,6 @@ const useStyles = makeStyles(theme => ({
     marginRight: '1em',
     lineHeight: '2',
     fontSize: '0.8125rem',
-    textTransform: 'uppercase',
   },
   button: {
     lineHeight: '2',
@@ -36,7 +35,7 @@ const Logout = ({ noButton }) => {
   return (
     <div className={classes.root}>
       <span className={classes.username}>
-        {username || 'No user logged in'}
+        {username || 'No user signed in'}
       </span>
       {!noButton && username && (
         <Button

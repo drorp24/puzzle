@@ -1,7 +1,8 @@
 // The debounce function receives our function as a parameter
 import _debounce from 'lodash/debounce'
 
-export const debounce = (fn, delay) => _debounce(fn, delay, { trailing: true })
+export const debounce = (fn, delay = 100) =>
+  _debounce(fn, delay, { trailing: true })
 
 export const throttleByFrame = fn => {
   // This holds the requestAnimationFrame reference, so we can cancel it if we wish

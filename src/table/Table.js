@@ -32,6 +32,7 @@ const styles = {
   header: {
     fontWeight: '700',
     padding: '0 1rem',
+    color: '#9e9e9e',
   },
   row: {
     display: 'grid',
@@ -104,6 +105,12 @@ const styles = {
   },
   selectedTagIconOn: {
     color: 'white !important',
+  },
+  dimText: {
+    color: '#9e9e9e',
+  },
+  centered: {
+    textAlign: 'center',
   },
   table1: theme => ({
     // temporary right-to-left patch, waiting for
@@ -218,9 +225,9 @@ const Row = memo(({ index, style }) => {
         icon={icon}
         cellStyle={{ ...styles.typeIcon, color }}
       />
-      <Cell value={text} />
+      <Cell value={text} cellStyle={{ ...styles.centered }} />
       <Cell value={place} />
-      <Cell value={score} />
+      <Cell value={score} cellStyle={{ ...styles.dimText }} />
       <Tooltip
         title={<EntityDetails {...{ entity }} />}
         arrow
@@ -228,7 +235,9 @@ const Row = memo(({ index, style }) => {
         disableFocusListener={true}
         placement="right"
       >
-        <IconButton style={{ ...styles.icon, ...selectedInfo }}>
+        <IconButton
+          style={{ ...styles.icon, ...selectedInfo, ...styles.dimText }}
+        >
           <Info />
         </IconButton>
       </Tooltip>
@@ -265,7 +274,10 @@ const Header = memo(({ style }) => {
   return (
     <div style={{ ...style, ...line }}>
       <Cell value={intl.formatMessage({ id: 'type' })} />
-      <Cell value={intl.formatMessage({ id: 'entity' })} />
+      <Cell
+        value={intl.formatMessage({ id: 'entity' })}
+        cellStyle={{ textAlign: 'center' }}
+      />
       <Cell value={intl.formatMessage({ id: 'place' })} />
       <Cell
         value={intl.formatMessage({ id: 'score' })}

@@ -56,6 +56,7 @@ export const EntitySpan = ({
       y: editorY,
       width: editorWidth,
       height: editorHeight,
+      scrolling,
     },
   } = useSelector(store => store.app)
   const { height: windowHeight, width: windowWidth } = useSelector(
@@ -130,6 +131,7 @@ export const EntitySpan = ({
     editorHeight,
     dispatch,
     relations,
+    scrolling,
   ])
 
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />

@@ -73,7 +73,7 @@ export default function Login() {
     <div className={classes.container}>
       <div className={classes.hero}>
         <img className={classes.logo} src={cards} alt="cards" />
-        <Typography variant="h3">Monthly</Typography>
+        <Typography variant="h3">Puzzle</Typography>
       </div>
 
       <div className={classes.formContainer}>

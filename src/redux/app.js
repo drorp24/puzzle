@@ -8,6 +8,8 @@ const appSlice = createSlice({
     drawerOpen: true,
     window: {},
     view: { tags: true },
+    hide: { relations: false },
+    editor: { scrolling: 0 },
   },
   reducers: {
     toggleMode: state => ({
@@ -33,6 +35,13 @@ const appSlice = createSlice({
       ...state,
       ...payload,
     }),
+    scrolling: state => ({
+      ...state,
+      editor: {
+        ...state.editor,
+        scrolling: state.editor.scrolling + 1,
+      },
+    }),
     view: (state, { payload }) => ({
       ...state,
       view: {
@@ -41,6 +50,13 @@ const appSlice = createSlice({
         exclusiveRelations: payload.relations
           ? false
           : payload.exclusiveRelations || state.view.exclusiveRelations,
+      },
+    }),
+    hide: (state, { payload }) => ({
+      ...state,
+      hide: {
+        ...state.hide,
+        ...payload,
       },
     }),
   },
@@ -55,5 +71,7 @@ export const {
   toggleDrawer,
   setDimensions,
   view,
+  hide,
   setAppProp,
+  scrolling,
 } = actions

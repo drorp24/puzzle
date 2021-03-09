@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
+    "concurrently": "^6.0.0",
     "draft-js": "^0.11.7",
     "jss-rtl": "^0.3.0",
     "leaflet": "^1.7.1",
@@ -39,7 +40,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "both": "concurrently \"react-scripts start\" \"python ../text_analysis/server.py\""
   },
   "eslintConfig": {
     "extends": [
