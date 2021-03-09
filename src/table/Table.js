@@ -154,6 +154,7 @@ const Table = () => {
               style={{ ...styles.row, ...styles.header, height: itemSize }}
             />
             <List
+              overscanCount="10"
               outerRef={outerRef}
               css={noScrollbar}
               {...{ height, width, itemCount, itemSize, direction }}
@@ -219,6 +220,7 @@ const Row = memo(({ index, style }) => {
         ...line,
         ...selectedRow,
       }}
+      style={style}
     >
       <Cell
         value={type}

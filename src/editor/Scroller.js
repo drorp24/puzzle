@@ -24,7 +24,10 @@ const Scroller = ({ textRef }) => {
 
   // allow the text box to open before checking if it is overflown
   useEffect(() => {
-    if (!(relations || exclusiveRelations) || !text) return
+    if (!(relations || exclusiveRelations) || !text) {
+      setShow(false)
+      return
+    }
 
     setTimeout(() => {
       if (isOverflown(text)) setShow(true)
