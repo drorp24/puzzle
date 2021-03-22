@@ -75,14 +75,7 @@ const rawContent = {
         },
       ],
     },
-    {
-      key: 'b2',
-      text: '',
-    },
-    {
-      key: 'b3',
-      text: '',
-    },
+
     {
       key: 'b4',
       text:
@@ -110,14 +103,7 @@ const rawContent = {
         },
       ],
     },
-    {
-      key: 'b5',
-      text: '',
-    },
-    {
-      key: 'b6',
-      text: '',
-    },
+
     {
       key: 'b7',
       text: "When he's there, Uri likes listening to music on his iPhone.",
@@ -134,14 +120,7 @@ const rawContent = {
         },
       ],
     },
-    {
-      key: 'b8',
-      text: '',
-    },
-    {
-      key: 'b9',
-      text: '',
-    },
+
     {
       key: 'b10',
       text: 'His girlfriend Vered usually joins.',

@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
 import { setAppProp, scrolling } from '../redux/app'
+import { useLocale } from '../utility/appUtilities'
 
 import {
   Editor,
@@ -37,6 +38,7 @@ const MyEditor = () => {
   const { view, hide, drawerOpen, locale, mode } = useSelector(
     store => store.app
   )
+  const { placement } = useLocale()
 
   const dispatch = useDispatch()
 
@@ -95,6 +97,7 @@ const MyEditor = () => {
       "editor space control"
       `,
       overflow: 'hidden',
+      color: theme.palette.text.contrast,
     }),
     editor: {
       gridArea: 'editor',
@@ -113,6 +116,8 @@ const MyEditor = () => {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'flex-end',
+      paddingBottom: '0.5rem',
+      [`padding-${placement}`]: '0.5rem',
     },
     relations: {},
     scroller: {
@@ -221,14 +226,14 @@ const MyEditor = () => {
           }}
         />
       </div>
-      <div css={styles.relations}>
-        <Relations />
-      </div>
       <div css={styles.control}>
         <EditorControl />
       </div>
       <div css={styles.scroller}>
         <Scroller textRef={ref} />
+      </div>
+      <div css={styles.relations}>
+        <Relations />
       </div>
     </div>
   )

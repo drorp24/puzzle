@@ -1,9 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { useEffect, useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import { selectSelectedId, selectSelectedEntity } from '../redux/content'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  selectSelectedId,
+  selectShowId,
+  selectSelectedEntity,
+  selectShowEntity,
+  selected,
+} from '../redux/content'
 
-import { useMap, Polygon, Polyline, Marker } from 'react-leaflet'
+import { capitalize } from '../utility/appUtilities'
+
+import { useMap, Polygon, Polyline, Marker, Popup } from 'react-leaflet'
 import { flyToOptions } from './config'
 
 // https://github.com/PaulLeCam/react-leaflet/issues/453
@@ -27,8 +35,20 @@ const styles = {
 const SelectedGeo = () => {
   const map = useMap()
   const selectedId = useSelector(selectSelectedId)
+  const showId = useSelector(selectShowId)
   const selectedEntity = useSelector(selectSelectedEntity)
+  const showEntity = useSelector(selectShowEntity)
   const memoizedSelectedEntity = useMemo(() => selectedEntity, [selectedId])
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (!map || !showId || !showEntity) return
+
+    const { type, coordinates } = showEntity
+    const polygon = type === 'Point' ? [coordinates] : coordinates
+
+    map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
+  }, [map, showEntity, showId])
 
   useEffect(() => {
     if (!map || !selectedId || !memoizedSelectedEntity) return
@@ -39,14 +59,15 @@ const SelectedGeo = () => {
     map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
   }, [map, selectedId, memoizedSelectedEntity])
 
-  if (!selectedEntity) return null
-  const { id, type, coordinates } = selectedEntity
+  if (!selectedEntity && !showEntity) return null
+  const { id, type, coordinates } = selectedEntity || showEntity
 
   const positions = coordinates
 
   const eventHandlers = {
     click: () => {
       console.log(`${id} clicked`)
+      dispatch(selected(id))
     },
   }
   const { pathOptions } = styles
@@ -55,7 +76,11 @@ const SelectedGeo = () => {
     case 'Polygon':
       return <Polygon {...{ positions, eventHandlers, pathOptions }} />
     case 'Point':
-      return <Marker {...{ position: positions, eventHandlers, pathOptions }} />
+      return (
+        <Marker {...{ position: positions, eventHandlers, pathOptions }}>
+          <Popup>{capitalize(showEntity?.name)}</Popup>
+        </Marker>
+      )
     case 'LineString':
       return <Polyline {...{ positions, eventHandlers, pathOptions }} />
     default:

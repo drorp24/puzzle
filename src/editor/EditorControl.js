@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { view } from '../redux/app'
+import { view, hide } from '../redux/app'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
 
@@ -62,6 +62,10 @@ const EditorControl = () => {
   ])
 
   const dispatchSelected = useCallback(() => {
+    if (relationsSelected) {
+      dispatch(hide({ relations: true }))
+      setTimeout(() => dispatch(hide({ relations: false })), 1000)
+    }
     dispatch(
       view({
         editor: editorSelected,

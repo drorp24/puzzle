@@ -1,4 +1,7 @@
 /** @jsxImportSource @emotion/react */
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { show } from '../redux/content'
 
 import SelectedGeo from './SelectedGeo'
 
@@ -13,22 +16,29 @@ const styles = {
   },
 }
 
-const Map = () => (
-  <MapContainer
-    center={locations.home}
-    zoom={11}
-    scrollWheelZoom={false}
-    css={styles.map}
-  >
-    <LayersControl>
-      {tileProviders.map(({ name, checked, args }) => (
-        <LayersControl.BaseLayer {...{ name, checked }} key={name}>
-          <WMSTileLayer {...{ ...args }} />
-        </LayersControl.BaseLayer>
-      ))}
-    </LayersControl>
-    <SelectedGeo />
-  </MapContainer>
-)
+const Map = () => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(show('eighthEntity'))
+  }, [dispatch])
+
+  return (
+    <MapContainer
+      center={locations.home}
+      zoom={11}
+      scrollWheelZoom={false}
+      css={styles.map}
+    >
+      <LayersControl>
+        {tileProviders.map(({ name, checked, args }) => (
+          <LayersControl.BaseLayer {...{ name, checked }} key={name}>
+            <WMSTileLayer {...{ ...args }} />
+          </LayersControl.BaseLayer>
+        ))}
+      </LayersControl>
+      <SelectedGeo />
+    </MapContainer>
+  )
+}
 
 export default Map

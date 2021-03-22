@@ -15,7 +15,6 @@ import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import Logout from '@material-ui/icons/PowerSettingsNewOutlined'
 import Button from '@material-ui/core/Button'
-import Divider from '@material-ui/core/Divider'
 
 import { useIntl } from 'react-intl'
 
@@ -54,6 +53,8 @@ const Home = () => {
       width: open ? drawerWidth.open : drawerWidth.close,
       transition: 'width 0.5s',
       backgroundColor: 'rgba(0, 0, 0, 0.05)',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
     },
     link: {
       textDecoration: 'none',
@@ -198,7 +199,6 @@ const Home = () => {
           ))}
         </nav>
       </div>
-      <Divider orientation="vertical" />
       <div css={styles.route}>
         <Switch>
           {routes.map(({ path, component }) => (

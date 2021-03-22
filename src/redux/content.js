@@ -21,8 +21,8 @@ export const fetchContent = createAsyncThunk(
   'content/fetch',
   async ({ convertContent, showContent }, thunkAPI) => {
     try {
-      // const rawContent = await getContent()
-      const rawContent = await realEditorApi('doc_80')
+      const rawContent = await getContent()
+      // const rawContent = await realEditorApi('doc_80')
       if (!rawContent) throw new Error('No rawContent returned')
       if (rawContent.error)
         throw new Error(rawContent.error.message?.toString())
@@ -58,6 +58,9 @@ const contentSlice = createSlice({
     changes: state => ({ ...state, changes: state.changes + 1 }),
     selected: (state, { payload }) => {
       state.selected = payload
+    },
+    show: (state, { payload }) => {
+      state.show = payload
     },
     updatePosition: (
       state,
@@ -138,6 +141,7 @@ export const selectEntityById = id => ({ content }) =>
 export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
 export const selectSelectedId = ({ content: { selected } }) => selected
+export const selectShowId = ({ content: { show } }) => show
 
 export const selectSelectedEntity = ({ content }) => {
   const { selected } = content
@@ -157,6 +161,25 @@ export const selectSelectedEntity = ({ content }) => {
   return { id, type, coordinates }
 }
 
+export const selectShowEntity = ({ content }) => {
+  const { show } = content
+  if (!show) return null
+
+  const showE = selectEntityById(show)({ content })
+  if (!showE?.data?.geoLocation) return null
+  const id = show
+
+  const {
+    data: {
+      name,
+      geoLocation: {
+        geometry: { type, coordinates },
+      },
+    },
+  } = showE
+  return { id, type, coordinates, name }
+}
+
 const { reducer, actions } = contentSlice
 export const {
   clear,
@@ -166,6 +189,7 @@ export const {
   changes,
   updatePosition,
   selected,
+  show,
   updateTag,
 } = actions
 

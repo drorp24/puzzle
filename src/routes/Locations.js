@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useSelector } from 'react-redux'
+import { useLocale, capitalize } from '../utility/appUtilities'
 
 import Paper from '@material-ui/core/Paper'
-import Divider from '@material-ui/core/Divider'
 
 import { FormattedMessage } from 'react-intl'
 
@@ -14,14 +14,12 @@ import noScrollbar from '../styling/noScrollbar'
 
 const heights = {
   search: 6,
-  editor: 50,
+  editor: 46,
+  gap: 4,
 }
 const Locations = () => {
-  const {
-    view: { relations },
-    mode,
-    locale,
-  } = useSelector(store => store.app)
+  const relations = useSelector(store => store.app.view.relations)
+  const { locale, placement } = useLocale()
 
   const styles = {
     container: {
@@ -30,37 +28,58 @@ const Locations = () => {
       overflow: 'scroll',
       ...noScrollbar,
     },
-    paper: {
+    paper: theme => ({
       height: '100%',
       zIndex: '401',
       overflow: 'hidden',
-    },
-    input: theme => ({
-      height: `${heights.search}%`,
       display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      paddingTop: relations ? 0 : '1rem',
+      [`padding${capitalize(placement)}`]: '1rem',
+      backgroundColor: `${theme.palette.background.backdrop} !important`,
+    }),
+    input: theme => ({
+      height: relations
+        ? `${heights.search + heights.gap}%`
+        : `${heights.search}%`,
+      display: 'flex',
+      border: theme.palette.border,
+      borderRadius: '3px',
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: '0 1.5rem',
-      backgroundColor: mode === 'light' ? '#616161' : '#333',
-      color: mode === 'light' ? 'white' : theme.palette.grey[500],
+      backgroundColor: theme.palette.background.paper,
+      zIndex: 1,
       fontWeight: '100',
       textTransform: 'capitalize',
       fontSize: locale === 'he' ? '1rem' : '0.8125rem',
     }),
-    editor: {
-      height: relations ? `${100 - heights.search}%` : `${heights.editor}%`,
-      lineHeight: relations ? '6' : '3',
+    editor: theme => ({
+      height: relations
+        ? `${100 - heights.search - heights.gap}%`
+        : `${heights.editor}%`,
       transition: 'height 0.7s',
+      border: theme.palette.border,
+      lineHeight: relations ? '6' : '3',
       padding: '0 1rem',
-      backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    },
-    table: {
-      height: `${100 - heights.search - heights.editor}%`,
+      backgroundColor: theme.palette.background.paper,
+      zIndex: 0,
+    }),
+    table: theme => ({
+      height: relations
+        ? 0
+        : `${100 - heights.search - heights.editor - heights.gap}%`,
+      transition: 'height 0.7s',
+      border: theme.palette.border,
       padding: '0 1rem',
-      backgroundColor: mode === 'light' ? 'inherit' : 'rgba(0, 0, 0, 0.2)',
-    },
+      backgroundColor: theme.palette.background.paper,
+      zIndex: 0,
+    }),
     map: {},
   }
+
+  // styles.paper[`padding${capitalize(placement)}`] = '1rem'
 
   return (
     <div css={styles.container}>
@@ -73,11 +92,9 @@ const Locations = () => {
             <Logout noButton />
           </div>
         </div>
-        <Divider />
         <div css={styles.editor}>
           <Editor />
         </div>
-        <Divider />
         <div css={styles.table}>
           <Table />
         </div>

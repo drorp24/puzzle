@@ -30,14 +30,13 @@ const styles = {
     width: '100%',
   },
   header: {
-    fontWeight: '700',
+    fontWeight: '400',
     padding: '0 1rem',
     color: '#9e9e9e',
   },
   row: {
-    display: 'grid',
-    gridTemplateColumns: '7% 23% auto 7% 7% 23%',
-    columnGap: '0.5rem',
+    display: 'flex',
+    justifyContent: 'space-between',
     boxSizing: 'border-box',
     cursor: 'pointer',
   },
@@ -55,6 +54,7 @@ const styles = {
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    flex: '1',
     // border: '1px solid',
   },
   icon: {
@@ -112,14 +112,6 @@ const styles = {
   centered: {
     textAlign: 'center',
   },
-  table1: theme => ({
-    // temporary right-to-left patch, waiting for
-    // https://github.com/bvaughn/react-virtualized/issues/454
-    '& .ReactVirtualized__Table__headerRow': {
-      flip: false,
-      paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
-    },
-  }),
 }
 
 // ToDo: make ToggleButtonGroup responsive
@@ -186,7 +178,7 @@ const Row = memo(({ index, style }) => {
 
   const { icon, color } = entityTypes[type]
   const { text } = entityRanges[0]
-  const place = geoLocation?.properties?.name || ''
+  // const place = geoLocation?.properties?.name || ''
   const bg =
     index % 2
       ? styles.odd
@@ -225,11 +217,11 @@ const Row = memo(({ index, style }) => {
       <Cell
         value={type}
         icon={icon}
-        cellStyle={{ ...styles.typeIcon, color }}
+        cellStyle={{ ...styles.cell, ...styles.typeIcon, color }}
       />
-      <Cell value={text} cellStyle={{ ...styles.centered }} />
-      <Cell value={place} />
-      <Cell value={score} cellStyle={{ ...styles.dimText }} />
+      <Cell value={text} cellStyle={{ ...styles.cell, ...styles.left }} />
+      {/* <Cell value={place} /> */}
+      <Cell value={score} cellStyle={{ ...styles.cell, ...styles.dimText }} />
       <Tooltip
         title={<EntityDetails {...{ entity }} />}
         arrow
@@ -274,16 +266,16 @@ const Header = memo(({ style }) => {
   const line = { lineHeight: `${style.height}px` }
 
   return (
-    <div style={{ ...style, ...line }}>
+    <div style={{ ...style, ...line, ...styles.row }}>
       <Cell value={intl.formatMessage({ id: 'type' })} />
       <Cell
         value={intl.formatMessage({ id: 'entity' })}
         cellStyle={{ textAlign: 'center' }}
       />
-      <Cell value={intl.formatMessage({ id: 'place' })} />
+      {/* <Cell value={intl.formatMessage({ id: 'place' })} /> */}
       <Cell
         value={intl.formatMessage({ id: 'score' })}
-        cellStyle={{ textAlign: 'right' }}
+        cellStyle={{ textAlign: 'center' }}
       />
       <Cell
         value={intl.formatMessage({ id: 'info' })}
@@ -298,9 +290,12 @@ const Header = memo(({ style }) => {
 })
 
 const Cell = ({ value, icon, cellStyle }) => {
-  const alignment = typeof value === 'number' ? { textAlign: 'right' } : {}
+  // const alignment = typeof value === 'number' ? { textAlign: 'right' } : {}
   return (
-    <div style={{ ...styles.cell, ...cellStyle, ...alignment }} title={value}>
+    <div
+      style={{ ...styles.cell, ...cellStyle /* ...alignment  */ }}
+      title={value}
+    >
       {icon || value}
     </div>
   )

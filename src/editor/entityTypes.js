@@ -82,7 +82,7 @@ const entityTypes = keyProxy({
     mutability: 'IMMUTABLE',
     icon: <NotListedIcon />,
     selector: false,
-    color: 'rgba(0, 0, 0, 0.5)',
+    color: '#76ff03',
   },
 })
 

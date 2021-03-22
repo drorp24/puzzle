@@ -112,7 +112,7 @@ export const EntitySpan = ({
         editorWidth !== ref.current.editorWidth ||
         editorHeight !== ref.current.editorHeight)
     ) {
-      setTimeout(reportIfPositionShifted, 500)
+      setTimeout(reportIfPositionShifted, 1000)
     }
   }, [
     loaded,

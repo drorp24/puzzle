@@ -1,34 +1,55 @@
 import { useSelector } from 'react-redux'
 
+// ! use these custom hooks, do not destructure
+// destructuring any { key } out of store.app will make the component re-render
+// every time *any* value in store.app changes
+
+export const useMode = () => {
+  const mode = useSelector(store => store.app.mode)
+  const otherMode = mode === 'light' ? 'dark' : 'light'
+  const light = mode === 'light'
+  return { mode, otherMode, light }
+}
+
+// deprecated
 export const useDirection = () => {
   const locale = useSelector(store => store.app.locale)
   return locale === 'he' ? 'rtl' : 'ltr'
 }
 
-export const useOtherDirection = () => {
+// use this intead
+export const useLocale = () => {
   const locale = useSelector(store => store.app.locale)
-  return locale === 'he' ? 'ltr' : 'trl'
+  const direction = locale === 'he' ? 'rtl' : 'ltr'
+  const rtl = direction === 'rtl'
+  const placement = rtl ? 'left' : 'right'
+  return { locale, direction, rtl, placement }
 }
 
-export const useOtherMode = () => {
-  const mode = useSelector(store => store.app.mode)
-  return mode === 'light' ? 'dark' : 'light'
-}
-
-const dateTimeOptions = {
+const dateOptions = {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
   year: 'numeric',
-  month: 'short',
-  day: '2-digit',
-  hour: 'numeric',
-  minute: 'numeric',
-  hour12: true,
 }
 
-export const useLocalDate = date => {
-  const { locale } = useSelector(store => store.app)
-  return /* date */ false // ToDo: fix. Throws for newly created entities.
-    ? new Intl.DateTimeFormat(locale, dateTimeOptions).format(date)
-    : 'no date recorded'
+// const dateTimeOptions = {
+//   ...dateOptions,
+//   hour: 'numeric',
+//   minute: 'numeric',
+//   hour12: true,
+// }
+
+export const useLocaleDate = date => {
+  const locale = useSelector(store => store.app.locale)
+  const dateFormat = new Date(date)
+
+  return dateFormat.toLocaleDateString(locale, dateOptions)
+}
+
+export const capitalize = s => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
 // assumption: element is smaller than box

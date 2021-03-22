@@ -7,8 +7,8 @@ import entityTypes from './entityTypes'
 import useTheme from '../styling/useTheme'
 import {
   useDirection,
-  useOtherMode,
-  // useLocalDate,
+  useMode,
+  // useLocaleDate,
 } from '../utility/appUtilities'
 
 import { ThemeProvider, makeStyles } from '@material-ui/core/styles'
@@ -28,7 +28,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const { tags: tagsShown } = useSelector(store => store.app.view)
   const direction = useDirection()
   const { mode } = useSelector(store => store.app)
-  const otherMode = useOtherMode()
+  const { otherMode } = useMode()
   const theme = useTheme({ mode: otherMode, direction })
   const dispatch = useDispatch(0)
 

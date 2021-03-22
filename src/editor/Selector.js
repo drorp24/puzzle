@@ -2,7 +2,7 @@ import React, { memo, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import entityTypes from './entityTypes'
-import { useLocalDate } from '../utility/appUtilities'
+import { useLocaleDate } from '../utility/appUtilities'
 
 import { makeStyles } from '@material-ui/core/styles'
 import SpeedDial from '@material-ui/core/SpeedDial'
@@ -17,6 +17,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     paddingTop: '0.5rem',
+    paddingRight: theme.direction === 'ltr' ? '0.5rem' : 'inherit',
+    paddingLeft: theme.direction === 'rtl' ? '0.5rem' : 'inherit',
   },
   speedDial: {},
   icon: {
@@ -35,7 +37,7 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
   const classes = useStyles()
 
   const user = useSelector(store => store.users.loggedIn.username)
-  const created = useLocalDate(new Date())
+  const created = useLocaleDate(new Date())
 
   const handleOpen = () => {
     uSetSelectorOpen(true)
