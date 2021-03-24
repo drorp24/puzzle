@@ -1,4 +1,11 @@
 {
+  "signUp": "Sign up",
+  "forgotPassword": "Forgot password?",
+  "rememberMe": "Remember me",
+  "password": "Password",
+  "username": "User name",
+  "signIn": "Sign in",
+  "appName": "Puzzle",
   "file": "File",
   "fileId": "File details",
   "userId": "User details",

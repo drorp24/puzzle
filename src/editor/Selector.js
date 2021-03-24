@@ -1,30 +1,13 @@
-import React, { memo, useMemo } from 'react'
+/** @jsxImportSource @emotion/react */
+import { memo, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import entityTypes from './entityTypes'
-import { useLocaleDate } from '../utility/appUtilities'
+import { useLocale, useLocaleDate, capitalize } from '../utility/appUtilities'
 
-import { makeStyles } from '@material-ui/core/styles'
 import SpeedDial from '@material-ui/core/SpeedDial'
 import SpeedDialIcon from '@material-ui/core/SpeedDialIcon'
 import SpeedDialAction from '@material-ui/core/SpeedDialAction'
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    paddingTop: '0.5rem',
-    paddingRight: theme.direction === 'ltr' ? '0.5rem' : 'inherit',
-    paddingLeft: theme.direction === 'rtl' ? '0.5rem' : 'inherit',
-  },
-  speedDial: {},
-  icon: {
-    backgroundColor: 'black',
-  },
-}))
 
 export const emptyData = {
   user: null,
@@ -34,7 +17,23 @@ export const emptyData = {
 }
 
 const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
-  const classes = useStyles()
+  const { placement } = useLocale()
+
+  const styles = {
+    root: {
+      height: '100%',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      paddingTop: '0.5rem',
+      [`padding${capitalize(placement)}`]: '0.5rem',
+    },
+    speedDial: {},
+    icon: {
+      backgroundColor: 'black',
+    },
+  }
 
   const user = useSelector(store => store.users.loggedIn.username)
   const created = useLocaleDate(new Date())
@@ -61,10 +60,10 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
   )
 
   return (
-    <div className={classes.root}>
+    <div css={styles.root}>
       <SpeedDial
         ariaLabel="SpeedDial uncontrolled open example"
-        className={classes.speedDial}
+        css={styles.speedDial}
         icon={<SpeedDialIcon />}
         onClose={handleClose(null)}
         onOpen={handleOpen}

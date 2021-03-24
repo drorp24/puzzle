@@ -1,4 +1,11 @@
 {
+  "signUp": "הרשמה",
+  "forgotPassword": "שכחת סיסמה?",
+  "rememberMe": "זכרו אותי",
+  "password": "סיסמה",
+  "username": "שם משתמש",
+  "signIn": "כניסה",
+  "appName": "פאזל",
   "file": "קובץ",
   "fileId": "פרטי קובץ",
   "userId": "פרטי משתמש",

@@ -22,8 +22,9 @@ export const useLocale = () => {
   const locale = useSelector(store => store.app.locale)
   const direction = locale === 'he' ? 'rtl' : 'ltr'
   const rtl = direction === 'rtl'
+  const ltr = direction === 'ltr'
   const placement = rtl ? 'left' : 'right'
-  return { locale, direction, rtl, placement }
+  return { locale, direction, rtl, ltr, placement }
 }
 
 const dateOptions = {

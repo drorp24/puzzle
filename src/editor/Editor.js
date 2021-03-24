@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
 import { setAppProp, scrolling } from '../redux/app'
-import { useLocale } from '../utility/appUtilities'
+import { useLocale, capitalize } from '../utility/appUtilities'
 
 import {
   Editor,
@@ -117,7 +117,7 @@ const MyEditor = () => {
       flexDirection: 'column',
       justifyContent: 'flex-end',
       paddingBottom: '0.5rem',
-      [`padding-${placement}`]: '0.5rem',
+      [`padding${capitalize(placement)}`]: '0.5rem',
     },
     relations: {},
     scroller: {

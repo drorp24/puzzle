@@ -26,7 +26,7 @@ import ErrorBoundary from './utility/ErrorBoundary'
 import { StylesProvider } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import useTheme from './styling/useNewTheme'
+import useTheme from './styling/useTheme'
 
 export default function App() {
   const { mode, locale } = useSelector(store => store.app)
@@ -57,9 +57,9 @@ export default function App() {
                   <ProtectedRoute exact path="/">
                     <Redirect to="/home" />
                   </ProtectedRoute>
-                  <Route path="/home">
+                  <ProtectedRoute path="/home">
                     <Home />
-                  </Route>
+                  </ProtectedRoute>
                   <Route path="/login">
                     <Login />
                   </Route>

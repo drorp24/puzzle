@@ -86,7 +86,7 @@ const entityTypes = keyProxy({
   },
 })
 
-export const entityStyle = ({ type, role }) => ({
+export const entityStyle = ({ type, role, mode }) => ({
   backgroundColor: role === 'text' ? entityTypes[type].color : 'none',
   border: role === 'text' ? 'none' : `1px solid ${entityTypes[type].color}`,
   borderRadius: '1rem',
@@ -100,11 +100,16 @@ export const entityStyle = ({ type, role }) => ({
   }),
   whiteSpace: 'nowrap',
 })
-export const entityIconStyle = ({ type, role }) => ({
+export const entityIconStyle = ({ type, role, mode }) => ({
   display: 'inline-flex',
   marginRight: '0.25rem',
   fontSize: '1rem',
-  color: role === 'text' ? 'rgba(0, 0, 0, 0.6)' : entityTypes[type].color,
+  color:
+    role === 'text'
+      ? mode === 'light'
+        ? 'rgba(0, 0, 0, 0.6)'
+        : 'white'
+      : entityTypes[type].color,
 })
 
 export default entityTypes

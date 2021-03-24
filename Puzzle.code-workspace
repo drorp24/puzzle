@@ -1,11 +1,15 @@
 {
   "folders": [
-	{
-		"path": "."
-	},
-	{
-		"path": "..\\text_analysis"
-	}
-],
-  "settings": {}
+    {
+      "path": "."
+    },
+    {
+      "path": "..\\text_analysis"
+    },
+    {
+      "path": "..\\schedule"
+    }
+  ],
+  "settings": {
+  }
 }

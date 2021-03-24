@@ -1,10 +1,19 @@
 /** @jsxImportSource @emotion/react */
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleDrawer, toggleLocale, toggleMode } from '../redux/app'
-import { useDirection } from '../utility/appUtilities'
+import { logout } from '../redux/users'
 
-import { Switch, Route, Link, useRouteMatch } from 'react-router-dom'
+import {
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useLocation,
+} from 'react-router-dom'
+
+import { useLocale, useMode } from '../utility/appUtilities'
+import useTheme from '../styling/useTheme'
 
 import Folder from '@material-ui/icons/FolderOpenOutlined'
 import ChatOutlinedIcon from '@material-ui/icons/ChatOutlined'
@@ -16,7 +25,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import Logout from '@material-ui/icons/PowerSettingsNewOutlined'
 import Button from '@material-ui/core/Button'
 
-import { useIntl } from 'react-intl'
+import useTranslation from '../i18n/useTranslation'
 
 import Page from '../layout/Page'
 import Dashboard from './Dashboard'
@@ -25,15 +34,15 @@ import Locations from './Locations'
 
 const Home = () => {
   const { url } = useRouteMatch()
+  const { pathname } = useLocation()
   const dispatch = useDispatch()
   const open = useSelector(store => store.app.drawerOpen)
-  const direction = useDirection()
-  const { mode } = useSelector(store => store.app)
+  const { mode } = useMode()
+  const { direction, rtl, ltr } = useLocale()
+  const theme = useTheme({ mode, direction })
+  const t = useTranslation()
+
   const [dir, setDir] = useState(direction)
-  const rtl = dir === 'rtl'
-  const ltr = dir === 'ltr'
-  const intl = useIntl()
-  const t = phrase => intl.formatMessage({ id: phrase })
 
   const drawerWidth = {}
   const routeWidth = {}
@@ -85,7 +94,6 @@ const Home = () => {
       padding: `${menuItem.padding}rem`,
       '& svg': {
         fontSize: `${menuItem.icon}rem`,
-        color: theme.palette.grey[greyShade],
       },
       '& svg[data-testid="SwitchRightOutlinedIcon"]': {
         transform: `rotate(${dir === 'rtl' ? 180 : 0}deg)`,
@@ -101,9 +109,9 @@ const Home = () => {
       color: theme.palette.grey[greyShade],
       '&:hover': {
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        color: 'white',
+        color: 'white !important',
         '& svg': {
-          color: 'white',
+          color: 'white !important',
         },
       },
     }),
@@ -127,18 +135,30 @@ const Home = () => {
       component: <File />,
       icon: <Folder />,
       title: t('file'),
+      color:
+        pathname === '/home/file'
+          ? theme.palette.menu.active
+          : theme.palette.menu.inactive,
     },
     {
       path: 'locations',
       component: <Locations />,
       icon: <ChatOutlinedIcon />,
       title: t('locations'),
+      color:
+        pathname === '/home/locations'
+          ? theme.palette.menu.active
+          : theme.palette.menu.inactive,
     },
     {
       path: 'dashboard',
       component: <Dashboard />,
       icon: <DashboardOutlinedIcon />,
       title: t('dashboard'),
+      color:
+        pathname === '/home/dashboard'
+          ? theme.palette.menu.active
+          : theme.palette.menu.inactive,
     },
   ]
   const toggles = [
@@ -147,7 +167,7 @@ const Home = () => {
       icon: <SwitchRightOutlinedIcon />,
       onClick: () => {
         setDir(dir => (dir === 'ltr' ? 'rtl' : 'ltr'))
-        setTimeout(() => dispatch(toggleLocale()), 0)
+        setTimeout(() => dispatch(toggleLocale()), 500)
       },
       title: t('lang'),
     },
@@ -161,7 +181,7 @@ const Home = () => {
     {
       key: 'logout',
       icon: <Logout />,
-      onClick: () => {},
+      onClick: () => dispatch(logout()),
       title: t('logout'),
     },
   ]
@@ -179,10 +199,17 @@ const Home = () => {
               <ChevronLeftIcon />
             </div>
           </Button>
-          {routes.map(({ path, title, icon }) => (
+          {routes.map(({ path, title, icon, color }) => (
             <Link to={`${url}/${path}`} css={styles.link} key={path}>
-              <Button fullWidth css={styles.drawerItem} title={title}>
-                <div css={styles.iconWrapper}>{icon}</div>
+              <Button
+                fullWidth
+                css={styles.drawerItem}
+                title={title}
+                style={{ color }}
+              >
+                <div css={styles.iconWrapper} style={{ color }}>
+                  {icon}
+                </div>
                 <div css={styles.title}>{title}</div>
               </Button>
             </Link>
@@ -212,4 +239,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default memo(Home)

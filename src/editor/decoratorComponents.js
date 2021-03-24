@@ -8,6 +8,8 @@ import {
   selectEntityById,
 } from '../redux/content'
 
+import { useMode } from '../utility/appUtilities'
+
 import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
 import { EntityDetails } from './EntityDetails'
@@ -145,12 +147,16 @@ const Entity = memo(
     const { type } = entity
     const { icon } = entityTypes[type]
     const role = 'text'
-    const entityS = entityStyle({ type, role })
-    const iconS = entityIconStyle({ type, role })
+    const { mode } = useMode()
+    const entityS = entityStyle({ type, role, mode })
+    const iconS = entityIconStyle({ type, role, mode })
 
     return (
       <Tooltip
-        // open={true}
+        // open={
+        //   entity.data.id === 'secondEntity' ||
+        //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
+        // }
         title={<EntityDetails {...{ entity }} />}
         arrow
         TransitionComponent={Zoom}
