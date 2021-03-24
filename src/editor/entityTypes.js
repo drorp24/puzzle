@@ -86,11 +86,16 @@ const entityTypes = keyProxy({
   },
 })
 
+// ToDo: double borders issue
+// Find out why the component renders (at least) twice,
+// in slight coordinate differences,
+// resulting in very noticeable double borders.
 export const entityStyle = ({ type, role, mode }) => ({
   backgroundColor: role === 'text' ? entityTypes[type].color : 'none',
   border: role === 'text' ? 'none' : `1px solid ${entityTypes[type].color}`,
   borderRadius: '1rem',
   display: 'inline-flex',
+  flexDirection: 'row-reverse', //ToDo: changed according to detected language
   justifyContent: 'center',
   padding: '0.1rem 0.5rem',
   alignItems: 'center',

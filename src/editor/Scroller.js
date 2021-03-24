@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { scrolling, hide } from '../redux/app'
 
+import { useMode } from '../utility/appUtilities'
+import useTheme from '../styling/useTheme'
+
 import bouncing from '../styling/bouncing'
 
 import More from '@material-ui/icons/ExpandMoreOutlined'
@@ -14,6 +17,8 @@ import { atScrollTop, atScrollBottom } from '../utility/scrollPositions'
 const Scroller = ({ textRef }) => {
   const [show, setShow] = useState()
   const [direction, setDirection] = useState('down')
+  const { otherMode } = useMode()
+  const theme = useTheme({ mode: otherMode })
 
   const {
     view: { relations, exclusiveRelations },
@@ -24,7 +29,7 @@ const Scroller = ({ textRef }) => {
 
   // allow the text box to open before checking if it is overflown
   useEffect(() => {
-    if (!(relations || exclusiveRelations) || !text) {
+    if (!text) {
       setShow(false)
       return
     }
@@ -72,7 +77,8 @@ const Scroller = ({ textRef }) => {
   const styles = {
     button: theme => ({
       visibility: show ? 'visible' : 'hidden',
-      backgroundColor: `${theme.palette.grey[500]} !important`,
+      backgroundColor: `${theme.palette.background.backdrop} !important`,
+      color: `${theme.palette.text.distinct} !important`,
       zIndex: '1',
       '& > span': {
         transform: `rotate(${direction === 'up' ? 180 : 0}deg)`,
@@ -80,7 +86,7 @@ const Scroller = ({ textRef }) => {
       },
       '& svg': {
         position: 'static',
-        color: 'rgba(256, 256, 256, 0.7) !important',
+        // color: 'rgba(256, 256, 256, 0.7) !important',
       },
     }),
     bounce: { ...(direction === 'down' && bouncing) },

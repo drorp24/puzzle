@@ -55,7 +55,7 @@ export default function App() {
               <Router>
                 <Switch>
                   <ProtectedRoute exact path="/">
-                    <Redirect to="/home" />
+                    <Redirect to="/home/locations" />
                   </ProtectedRoute>
                   <ProtectedRoute path="/home">
                     <Home />

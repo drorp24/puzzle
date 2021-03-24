@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { memo, forwardRef } from 'react'
+import { memo, forwardRef, useState } from 'react'
 import { useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -143,6 +143,7 @@ export const EntitySpan = ({
 // forwardRef enables using this component's ref in parent component
 const Entity = memo(
   forwardRef(({ contentState, entityKey, children, tags }, ref) => {
+    const [tooltipOpen, setTooltipOpen] = useState(false)
     const entity = contentState.getEntity(entityKey)
     const { type } = entity
     const { icon } = entityTypes[type]
@@ -151,19 +152,28 @@ const Entity = memo(
     const entityS = entityStyle({ type, role, mode })
     const iconS = entityIconStyle({ type, role, mode })
 
+    const toggleTooltip = () => {
+      setTooltipOpen(state => !state)
+    }
+
     return (
       <Tooltip
         // open={
         //   entity.data.id === 'secondEntity' ||
         //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
         // }
+        open={tooltipOpen}
         title={<EntityDetails {...{ entity }} />}
         arrow
         TransitionComponent={Zoom}
         disableFocusListener={true}
         placement="left"
       >
-        <span ref={ref} {...(tags && { style: entityS })}>
+        <span
+          ref={ref}
+          {...(tags && { style: entityS })}
+          onClick={toggleTooltip}
+        >
           <span style={iconS}>{tags && icon}</span>
           {children}
         </span>

@@ -6,7 +6,7 @@ import {
 } from '@reduxjs/toolkit'
 import { createSelector } from 'reselect'
 
-import { getContent } from '../api/fakeEditorApi'
+import { getContent } from '../api/fakeEditorApiHeb'
 import { createEntitiesFromContent } from '../../src/editor/entities'
 import realEditorApi from '../api/realEditorApi'
 

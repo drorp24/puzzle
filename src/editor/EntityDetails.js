@@ -28,7 +28,8 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const dispatch = useDispatch(0)
 
   const { icon, color } = entityTypes[type]
-  const { id, subTypes, word } = data
+  const { id, subTypes, word, entityRanges } = data
+  const name = word || entityRanges[0]?.text
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}
@@ -89,7 +90,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
       padding: '1rem',
       '& > div': {
         margin: '0 0.5rem',
-        direction: 'ltr',
+        direction,
       },
     },
     explainer: {
@@ -125,7 +126,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
         <CardHeader
           avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
           title={type}
-          subheader={word}
+          subheader={name}
           classes={{ title, content, subheader, avatar }}
         />
         <Divider css={styles.divider} />

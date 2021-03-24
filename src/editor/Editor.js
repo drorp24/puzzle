@@ -38,7 +38,7 @@ const MyEditor = () => {
   const { view, hide, drawerOpen, locale, mode } = useSelector(
     store => store.app
   )
-  const { placement } = useLocale()
+  const { placement, antiPlacement } = useLocale()
 
   const dispatch = useDispatch()
 
@@ -98,6 +98,7 @@ const MyEditor = () => {
       `,
       overflow: 'hidden',
       color: theme.palette.text.contrast,
+      position: 'relative',
     }),
     editor: {
       gridArea: 'editor',
@@ -122,7 +123,14 @@ const MyEditor = () => {
     relations: {},
     scroller: {
       position: 'absolute',
-      bottom: '0',
+      bottom: '1rem',
+      [`${antiPlacement}`]: '0.5rem',
+      outline: 'none',
+      display: 'flex',
+      borderRadius: '50%',
+      '&:focus': {
+        outline: 'none',
+      },
     },
     circularProgress: theme => ({
       position: 'fixed',

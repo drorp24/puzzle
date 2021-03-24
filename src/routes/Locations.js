@@ -61,7 +61,7 @@ const Locations = () => {
         : `${heights.editor}%`,
       transition: 'height 0.7s',
       border: theme.palette.border,
-      lineHeight: relations ? '6' : '3',
+      lineHeight: relations ? '5' : '3.5',
       padding: '0 1rem',
       backgroundColor: theme.palette.background.paper,
       zIndex: 0,

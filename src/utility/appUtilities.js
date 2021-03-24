@@ -24,7 +24,8 @@ export const useLocale = () => {
   const rtl = direction === 'rtl'
   const ltr = direction === 'ltr'
   const placement = rtl ? 'left' : 'right'
-  return { locale, direction, rtl, ltr, placement }
+  const antiPlacement = rtl ? 'right' : 'left'
+  return { locale, direction, rtl, ltr, placement, antiPlacement }
 }
 
 const dateOptions = {

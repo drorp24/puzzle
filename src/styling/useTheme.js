@@ -1,8 +1,15 @@
 import { useMemo } from 'react'
+import { useMode, useLocale } from '../utility/appUtilities'
 import { createMuiTheme } from '@material-ui/core/styles'
 
-const useTheme = ({ mode, direction }) =>
-  useMemo(() => {
+const useTheme = ({ mode, direction } = {}) => {
+  const { mode: currentMode } = useMode()
+  const { direction: currentDirection } = useLocale()
+
+  mode = mode || currentMode
+  direction = direction || currentDirection
+
+  return useMemo(() => {
     const colors = {
       light: {
         paper: '#fff',
@@ -52,5 +59,6 @@ const useTheme = ({ mode, direction }) =>
       },
     })
   }, [mode, direction])
+}
 
 export default useTheme
