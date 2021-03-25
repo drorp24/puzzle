@@ -21,8 +21,8 @@ export const fetchContent = createAsyncThunk(
   'content/fetch',
   async ({ convertContent, showContent }, thunkAPI) => {
     try {
-      const rawContent = await getContent()
-      // const rawContent = await realEditorApi('doc_80')
+      // const rawContent = await getContent()
+      const rawContent = await realEditorApi('doc_80')
       if (!rawContent) throw new Error('No rawContent returned')
       if (rawContent.error)
         throw new Error(rawContent.error.message?.toString())
