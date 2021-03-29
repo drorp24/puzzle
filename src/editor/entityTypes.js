@@ -103,7 +103,7 @@ export const entityStyle = ({ type, role, mode }) => ({
   ...(role === 'text' && {
     transform: `translateY(${entityTypes[type].icon ? '0.4rem' : '0'}`,
   }),
-  whiteSpace: 'nowrap',
+  // whiteSpace: 'nowrap',
 })
 export const entityIconStyle = ({ type, role, mode }) => ({
   display: 'inline-flex',

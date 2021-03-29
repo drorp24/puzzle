@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useSelector, useDispatch } from 'react-redux'
-import { selected } from '../redux/content'
+import { selected, selectEntityById } from '../redux/content'
 import { view } from '../redux/app'
 
 import entityTypes from './entityTypes'
@@ -28,8 +28,9 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const dispatch = useDispatch(0)
 
   const { icon, color } = entityTypes[type]
-  const { id, subTypes, word, entityRanges } = data
-  const name = word || entityRanges[0]?.text
+  const { id, subTypes } = data
+  const { entityRanges } = useSelector(selectEntityById(id))
+  const name = entityRanges[0]?.text
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}

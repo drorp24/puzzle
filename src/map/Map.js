@@ -23,12 +23,7 @@ const Map = () => {
   }, [dispatch])
 
   return (
-    <MapContainer
-      center={locations.home}
-      zoom={11}
-      scrollWheelZoom={false}
-      css={styles.map}
-    >
+    <MapContainer center={locations.home} zoom={11} css={styles.map}>
       <LayersControl>
         {tileProviders.map(({ name, checked, args }) => (
           <LayersControl.BaseLayer {...{ name, checked }} key={name}>

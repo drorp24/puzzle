@@ -64,6 +64,9 @@ const styles = {
 // Same solution (memoization) prevents that 12-13 re-renderings, but then the flyTo doesn't work even initially.
 // As a temp workaround I have a non-memoized useEffect running initially, then the memoized version takes over.
 // The memoized version is currently commented, but should be used as soon as users can change selection.
+//
+// ToDo: remove 'showEntity', leaving only selectedEntity
+// Programmatically select the first point on the map, if need to
 
 const SelectedGeo = () => {
   const map = useMap()
@@ -73,11 +76,17 @@ const SelectedGeo = () => {
   const showEntity = useSelector(selectShowEntity)
   const memoizedSelectedEntity = useMemo(() => selectedEntity, [selectedId])
   const memoizedShowEntity = useMemo(() => showEntity, [showId])
-  const ref = useRef()
+  const showEntityRef = useRef()
+  const selectedEntityRef = useRef()
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (ref.current?.nonMemoizedShowEntityRan || !map || !showId || !showEntity)
+    if (
+      showEntityRef.current?.nonMemoizedShowEntityRan ||
+      !map ||
+      !showId ||
+      !showEntity
+    )
       return
 
     console.log('non memoized showEntity, for the flyTo')
@@ -85,7 +94,7 @@ const SelectedGeo = () => {
     const { type, coordinates } = showEntity
     const polygon = type === 'Point' ? [coordinates] : coordinates
 
-    ref.current = { nonMemoizedShowEntityRan: true }
+    showEntityRef.current = { nonMemoizedShowEntityRan: true }
 
     map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
   }, [map, showEntity, showId])
@@ -106,6 +115,25 @@ const SelectedGeo = () => {
 
   //   map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
   // }, [map, memoizedShowEntity, showId])
+
+  useEffect(() => {
+    if (
+      selectedEntityRef.current?.nonMemoizedSelectedEntityRan ||
+      !map ||
+      !selectedId ||
+      !selectedEntity
+    )
+      return
+
+    console.log('non memoized selectedEntity, for the flyTo')
+
+    const { type, coordinates } = selectedEntity
+    const polygon = type === 'Point' ? [coordinates] : coordinates
+
+    selectedEntityRef.current = { nonMemoizedSelectedEntityRan: true }
+
+    map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
+  }, [map, selectedId, selectedEntity])
 
   useEffect(() => {
     if (!map || !selectedId || !memoizedSelectedEntity) return
