@@ -1,4 +1,7 @@
 {
+  "noSuchFile": "לא נמצאה ידיעה עם זיהוי זה. אנא נסו שנית",
+  "required": "יש לבחור קובץ",
+  "fileSelect": "אנא הקלידו מזהה ידיעה",
   "signUp": "הרשמה",
   "forgotPassword": "שכחת סיסמה?",
   "rememberMe": "זכרו אותי",
@@ -6,8 +9,8 @@
   "username": "שם משתמש",
   "signIn": "כניסה",
   "appName": "פאזל",
-  "file": "קובץ",
-  "fileId": "פרטי קובץ",
+  "file": "ידיעה",
+  "fileId": "מזהה ידיעה",
   "userId": "פרטי משתמש",
   "locations": "טקסט",
   "dashboard": "בקרה",

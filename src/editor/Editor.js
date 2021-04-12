@@ -28,6 +28,7 @@ import Scroller from './Scroller'
 import { throttleByFrame } from '../utility/debounce'
 
 const MyEditor = () => {
+  const file = useSelector(store => store.content.file)
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
@@ -145,18 +146,19 @@ const MyEditor = () => {
 
   // conversion
   useEffect(() => {
+    if (!file) return
     const convertContent = rawContent => convertFromRaw(rawContent)
 
     const showContent = content =>
       setEditorState(EditorState.createWithContent(content, decorator))
 
-    dispatch(fetchContent({ convertContent, showContent }))
+    dispatch(fetchContent({ file, convertContent, showContent }))
       .then(unwrapResult)
       .catch(serializedError => {
         console.error(serializedError)
         dispatch(error('content'))
       })
-  }, [dispatch])
+  }, [dispatch, file])
 
   // selection & entity creation
   useEffect(() => {

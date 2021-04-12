@@ -1,4 +1,7 @@
 {
+  "noSuchFile": "No such file",
+  "required": "File is required",
+  "fileSelect": "Select file",
   "signUp": "Sign up",
   "forgotPassword": "Forgot password?",
   "rememberMe": "Remember me",

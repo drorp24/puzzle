@@ -32,6 +32,8 @@ import Dashboard from './Dashboard'
 import File from './File'
 import Locations from './Locations'
 
+// ToDo: username & login status should be inside the side drawer, not in any route
+
 const Home = () => {
   const { url } = useRouteMatch()
   const { pathname } = useLocation()

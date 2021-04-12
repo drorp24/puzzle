@@ -6,7 +6,7 @@ import {
 } from '@reduxjs/toolkit'
 import { createSelector } from 'reselect'
 
-import { getContent } from '../api/fakeEditorApiHeb'
+// import { getFakeHebContent } from '../api/fakeEditorApiHeb'
 import { createEntitiesFromContent } from '../../src/editor/entities'
 import realEditorApi from '../api/realEditorApi'
 
@@ -19,10 +19,10 @@ const contentAdapter = createEntityAdapter({
 // * thunk
 export const fetchContent = createAsyncThunk(
   'content/fetch',
-  async ({ convertContent, showContent }, thunkAPI) => {
+  async ({ file, convertContent, showContent }, thunkAPI) => {
     try {
-      // const rawContent = await getContent()
-      const rawContent = await realEditorApi('doc_80')
+      // const rawContent = await getFakeHebContent()
+      const rawContent = await realEditorApi(file)
       if (!rawContent) throw new Error('No rawContent returned')
       if (rawContent.error)
         throw new Error(rawContent.error.message?.toString())
@@ -45,6 +45,7 @@ const initialState = contentAdapter.getInitialState({
   loading: 'idle',
   changes: 0,
   selected: null,
+  file: null,
 })
 
 const contentSlice = createSlice({
@@ -73,6 +74,10 @@ const contentSlice = createSlice({
       // Immer again
       state.entities[id].data.tag = tag
     },
+    setFile: (state, { payload }) => ({
+      ...state,
+      ...payload,
+    }),
   },
   extraReducers: {
     [fetchContent.pending]: (state, { meta: { requestId } }) => {
@@ -191,6 +196,7 @@ export const {
   selected,
   show,
   updateTag,
+  setFile,
 } = actions
 
 export default reducer

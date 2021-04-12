@@ -15,18 +15,18 @@ const useNotifications = setOpen => {
       setMessage(userError || 'Something went wrong')
       setSeverity('error')
     }
-    if (contentError) {
-      setOpen(true)
-      setMessage(
-        "There are issues with the file's content. Check log for more details"
-      )
-      setSeverity('error')
-    }
-    if (fileError && !contentError) {
-      setOpen(true)
-      setMessage(contentError || 'Something went wrong')
-      setSeverity('error')
-    }
+    // if (contentError) {
+    //   setOpen(true)
+    //   setMessage(
+    //     "There are issues with the file's content. Check log for more details"
+    //   )
+    //   setSeverity('error')
+    // }
+    // if (fileError && !contentError) {
+    //   setOpen(true)
+    //   setMessage(contentError || 'Something went wrong')
+    //   setSeverity('error')
+    // }
   }, [setOpen, userError, contentError, fileError])
 
   return { message, severity }

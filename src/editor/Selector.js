@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import entityTypes from './entityTypes'
 import { useLocale, useLocaleDate, capitalize } from '../utility/appUtilities'
 
+import { makeStyles } from '@material-ui/core/styles'
 import SpeedDial from '@material-ui/core/SpeedDial'
 import SpeedDialIcon from '@material-ui/core/SpeedDialIcon'
 import SpeedDialAction from '@material-ui/core/SpeedDialAction'
@@ -19,7 +20,8 @@ export const emptyData = {
 const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
   const { placement } = useLocale()
 
-  const styles = {
+  // SpeedDial requires mui's v4 makeStyles hook format to work properly
+  const useStyles = makeStyles(theme => ({
     root: {
       height: '100%',
       width: '100%',
@@ -32,8 +34,11 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
     speedDial: {},
     icon: {
       backgroundColor: 'black',
+      color: 'white',
     },
-  }
+  }))
+
+  const classes = useStyles()
 
   const user = useSelector(store => store.users.loggedIn.username)
   const created = useLocaleDate(new Date())
@@ -60,11 +65,11 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
   )
 
   return (
-    <div css={styles.root}>
+    <div className={classes.root}>
       <SpeedDial
         ariaLabel="SpeedDial uncontrolled open example"
-        css={styles.speedDial}
-        icon={<SpeedDialIcon />}
+        className={classes.speedDial}
+        icon={<SpeedDialIcon className={classes.icon} />}
         onClose={handleClose(null)}
         onOpen={handleOpen}
         open={uSelectorOpen}

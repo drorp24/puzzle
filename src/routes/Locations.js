@@ -4,12 +4,10 @@ import { useLocale, capitalize } from '../utility/appUtilities'
 
 import Paper from '@material-ui/core/Paper'
 
-import { FormattedMessage } from 'react-intl'
-
+import FileSelect from '../editor/FileSelect'
 import Editor from '../editor/Editor'
 import Table from '../table/Table'
 import Map from '../map/Map'
-import Logout from '../auth/Logout'
 import noScrollbar from '../styling/noScrollbar'
 
 const heights = {
@@ -43,15 +41,12 @@ const Locations = () => {
       height: relations
         ? `${heights.search + heights.gap}%`
         : `${heights.search}%`,
-      display: 'flex',
       border: theme.palette.border,
       borderRadius: '3px',
       justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '0 1.5rem',
+      padding: '0 0.75rem',
       backgroundColor: theme.palette.background.paper,
       zIndex: 1,
-      fontWeight: '100',
       textTransform: 'capitalize',
       fontSize: locale === 'he' ? '1rem' : '0.8125rem',
     }),
@@ -85,12 +80,7 @@ const Locations = () => {
     <div css={styles.container}>
       <Paper square elevation={4} css={styles.paper}>
         <div css={styles.input}>
-          <div>
-            <FormattedMessage id="fileId" />
-          </div>
-          <div>
-            <Logout noButton />
-          </div>
+          <FileSelect />
         </div>
         <div css={styles.editor}>
           <Editor />

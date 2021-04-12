@@ -263,7 +263,7 @@ const rawContent = {
   ],
 }
 
-export const getContent = () =>
+export const getFakeHebContent = () =>
   new Promise((resolve, reject) => {
     if (!rawContent) {
       return setTimeout(() => reject(new Error('Content unavailable')), timeout)
