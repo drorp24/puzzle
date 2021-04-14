@@ -153,11 +153,6 @@ const MyEditor = () => {
       setEditorState(EditorState.createWithContent(content, decorator))
 
     dispatch(fetchContent({ file, convertContent, showContent }))
-      .then(unwrapResult)
-      .catch(serializedError => {
-        console.error(serializedError)
-        dispatch(error('content'))
-      })
   }, [dispatch, file])
 
   // selection & entity creation
@@ -181,28 +176,28 @@ const MyEditor = () => {
   }, [dispatch, editorState, data])
 
   // editor position
-  useEffect(() => {
-    const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
-    const position = { x, y, width, height, scrolling: 0 }
-    dispatch(setAppProp({ editor: position }))
-  }, [dispatch, view.relations, view.exclusiveRelations, drawerOpen])
+  // useEffect(() => {
+  //   const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
+  //   const position = { x, y, width, height, scrolling: 0 }
+  //   dispatch(setAppProp({ editor: position }))
+  // }, [dispatch, view.relations, view.exclusiveRelations, drawerOpen])
 
   // when view editor is off and relations are temporarily hidden (during scroll), text becomes empty
   const temporarilyEmpty = !view.editor && hide.relations
 
   // manual scroll prevention
   // this useCallback is imperative for the remove to use the same fn reference
-  const preventManuallScrolling = useCallback(e => e.preventDefault(), [])
-  useEffect(() => {
-    const active = { passive: false }
-    const text = ref.current
+  // const preventManuallScrolling = useCallback(e => e.preventDefault(), [])
+  // useEffect(() => {
+  //   const active = { passive: false }
+  //   const text = ref.current
 
-    if (view.relations || view.exclusiveRelations) {
-      text.addEventListener('wheel', preventManuallScrolling, active)
-    } else {
-      text.removeEventListener('wheel', preventManuallScrolling)
-    }
-  }, [preventManuallScrolling, view.exclusiveRelations, view.relations])
+  //   if (view.relations || view.exclusiveRelations) {
+  //     text.addEventListener('wheel', preventManuallScrolling, active)
+  //   } else {
+  //     text.removeEventListener('wheel', preventManuallScrolling)
+  //   }
+  // }, [preventManuallScrolling, view.exclusiveRelations, view.relations])
 
   return (
     <div css={styles.container}>

@@ -1,4 +1,6 @@
 {
+  "table": "Table",
+  "text": "Text",
   "noSuchFile": "No such file",
   "required": "File is required",
   "fileSelect": "Select file",

@@ -77,64 +77,64 @@ export const EntitySpan = ({
     selectorEntity.entityRanges?.length &&
     selectorEntity.entityRanges.findIndex(of({ blockKey, start, end }))
 
-  useEffect(() => {
-    if (
-      !loaded ||
-      selectorEntity === undefined ||
-      entityRangeIndex === undefined
-    )
-      return
+  // useEffect(() => {
+  //   if (
+  //     !loaded ||
+  //     selectorEntity === undefined ||
+  //     entityRangeIndex === undefined
+  //   )
+  //     return
 
-    const reportIfPositionShifted = () => {
-      const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
+  //   const reportIfPositionShifted = () => {
+  //     const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
 
-      if (x !== ref.current?.position?.x || y !== ref.current?.position?.y) {
-        // keep prev position so only position changes would be reported
-        const position = { x, y, width, height }
-        ref.current.position = position
+  //     if (x !== ref.current?.position?.x || y !== ref.current?.position?.y) {
+  //       // keep prev position so only position changes would be reported
+  //       const position = { x, y, width, height }
+  //       ref.current.position = position
 
-        // keep prev drawerOpen state and editor dimensions to detect changes that require setTimeout
-        ref.current.drawerOpen = drawerOpen
-        ref.current.editorX = editorX
-        ref.current.editorY = editorY
-        ref.current.editorWidth = editorWidth
-        ref.current.editorHeight = editorHeight
+  //       // keep prev drawerOpen state and editor dimensions to detect changes that require setTimeout
+  //       ref.current.drawerOpen = drawerOpen
+  //       ref.current.editorX = editorX
+  //       ref.current.editorY = editorY
+  //       ref.current.editorWidth = editorWidth
+  //       ref.current.editorHeight = editorHeight
 
-        dispatch(updatePosition({ id, entityRangeIndex, position }))
-      }
-    }
+  //       dispatch(updatePosition({ id, entityRangeIndex, position }))
+  //     }
+  //   }
 
-    reportIfPositionShifted()
+  //   reportIfPositionShifted()
 
-    if (
-      relations && // delayed check is required only when relations is viewed
-      (drawerOpen !== ref.current.drawerOpen ||
-        editorX !== ref.current.editorX ||
-        editorY !== ref.current.editorY ||
-        editorWidth !== ref.current.editorWidth ||
-        editorHeight !== ref.current.editorHeight)
-    ) {
-      setTimeout(reportIfPositionShifted, 1000)
-    }
-  }, [
-    loaded,
-    entities.length,
-    contentChanges,
-    windowHeight,
-    windowWidth,
-    id,
-    entityRangeIndex,
-    selectorEntity,
-    tags,
-    drawerOpen,
-    editorX,
-    editorY,
-    editorWidth,
-    editorHeight,
-    dispatch,
-    relations,
-    scrolling,
-  ])
+  //   if (
+  //     relations && // delayed check is required only when relations is viewed
+  //     (drawerOpen !== ref.current.drawerOpen ||
+  //       editorX !== ref.current.editorX ||
+  //       editorY !== ref.current.editorY ||
+  //       editorWidth !== ref.current.editorWidth ||
+  //       editorHeight !== ref.current.editorHeight)
+  //   ) {
+  //     setTimeout(reportIfPositionShifted, 1000)
+  //   }
+  // }, [
+  //   loaded,
+  //   entities.length,
+  //   contentChanges,
+  //   windowHeight,
+  //   windowWidth,
+  //   id,
+  //   entityRangeIndex,
+  //   selectorEntity,
+  //   tags,
+  //   drawerOpen,
+  //   editorX,
+  //   editorY,
+  //   editorWidth,
+  //   editorHeight,
+  //   dispatch,
+  //   relations,
+  //   scrolling,
+  // ])
 
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />
 }

@@ -18,7 +18,7 @@ export const emptyData = {
 }
 
 const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
-  const { placement } = useLocale()
+  const { antiPlacement } = useLocale()
 
   // SpeedDial requires mui's v4 makeStyles hook format to work properly
   const useStyles = makeStyles(theme => ({
@@ -29,7 +29,7 @@ const Selector = memo(({ uSelectorOpen, uSetSelectorOpen, uSetData }) => {
       flexDirection: 'column',
       justifyContent: 'flex-start',
       paddingTop: '0.5rem',
-      [`padding${capitalize(placement)}`]: '0.5rem',
+      [`padding${capitalize(antiPlacement)}`]: '0.5rem',
     },
     speedDial: {},
     icon: {

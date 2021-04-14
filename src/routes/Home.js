@@ -132,16 +132,16 @@ const Home = () => {
   }
 
   const routes = [
-    {
-      path: 'file',
-      component: <File />,
-      icon: <Folder />,
-      title: t('file'),
-      color:
-        pathname === '/home/file'
-          ? theme.palette.menu.active
-          : theme.palette.menu.inactive,
-    },
+    // {
+    //   path: 'file',
+    //   component: <File />,
+    //   icon: <Folder />,
+    //   title: t('file'),
+    //   color:
+    //     pathname === '/home/file'
+    //       ? theme.palette.menu.active
+    //       : theme.palette.menu.inactive,
+    // },
     {
       path: 'locations',
       component: <Locations />,
@@ -152,16 +152,16 @@ const Home = () => {
           ? theme.palette.menu.active
           : theme.palette.menu.inactive,
     },
-    {
-      path: 'dashboard',
-      component: <Dashboard />,
-      icon: <DashboardOutlinedIcon />,
-      title: t('dashboard'),
-      color:
-        pathname === '/home/dashboard'
-          ? theme.palette.menu.active
-          : theme.palette.menu.inactive,
-    },
+    // {
+    //   path: 'dashboard',
+    //   component: <Dashboard />,
+    //   icon: <DashboardOutlinedIcon />,
+    //   title: t('dashboard'),
+    //   color:
+    //     pathname === '/home/dashboard'
+    //       ? theme.palette.menu.active
+    //       : theme.palette.menu.inactive,
+    // },
   ]
   const toggles = [
     {

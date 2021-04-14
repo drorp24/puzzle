@@ -38,6 +38,7 @@ export const styles = {
 
 // ToDo: when 'editRelations' is on and 'showText' is off, text inside pills disappears
 const Relations = memo(() => {
+  return null
   const [elements, setElements] = useState([])
 
   const { entities, relations } = useSelector(selectEntities)

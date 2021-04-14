@@ -31,7 +31,7 @@ import getArrayDepth from '../utility/getArrayDepth'
 
 // ToDo: remove getArrayDepth; depth should be derived from type;
 // find out which types are supported
-const swap = ({ type, coordinates }) => {
+const swap = (id, { type, coordinates }) => {
   switch (type) {
     case 'Point':
       const [lng, lat] = coordinates
@@ -41,8 +41,9 @@ const swap = ({ type, coordinates }) => {
       const array = depth === 1 ? coordinates : coordinates[0]
       return { type, coordinates: array.map(([lng, lat]) => [lat, lng]) }
     default:
-      console.error(`>> Type ${type} is not recognized`)
-      return [null, null]
+      const error = { id, field: 'type', value: type, issue: 'unrecognized' }
+      console.error(error)
+      return { type, coordinates: [], error }
   }
 }
 
@@ -62,18 +63,22 @@ const convertShayToRaw = (
       })),
     },
   ]
+  const errors = []
 
   Object.values(entities).forEach(
     ({ id, geolocation, score, sub_type_id, type_id, word }) => {
       const type = lists[type_id]?.value
       const mutability = 'IMMUTABLE'
+      const geometry = swap(id, geolocation)
+      const { error } = geometry
+      if (error) errors.push(error)
 
       const data = {
         id,
         score,
         subTypes: [lists[sub_type_id[0]]?.value],
         word,
-        geoLocation: { geometry: swap(geolocation) },
+        geoLocation: { geometry },
       }
       const entity = { type, mutability, data }
       entityMap[id] = entity
@@ -88,23 +93,27 @@ const convertShayToRaw = (
     })
   )
 
-  return { blocks, entityMap, relations }
+  return { blocks, entityMap, relations, errors }
 }
 
-const realEditorApi = fileId => {
+const realEditorApi = async fileId => {
   const analysis = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_ANALYSIS_ENDPOINT}${fileId}`
   const lists = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_LISTS_ENDPOINT}`
 
   const getAnalysis = () => axios.get(analysis)
   const getLists = () => axios.get(lists)
 
-  return Promise.all([getAnalysis(), getLists()])
-    .then(([analysis, lists]) =>
-      convertShayToRaw(analysis.data, keyProxy(objectify(lists.data)))
-    )
-    .catch(error => {
-      console.error(error.message)
-    })
+  // no catch statement, leaving error catching & handling to content.js
+  return (
+    Promise.all([getAnalysis(), getLists()])
+      .then(([analysis, lists]) =>
+        convertShayToRaw(analysis.data, keyProxy(objectify(lists.data)))
+      )
+      // no throwing (see content.js)
+      .catch(error => {
+        console.log(error)
+      })
+  )
 }
 
 export default realEditorApi

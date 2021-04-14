@@ -5,7 +5,7 @@ const appSlice = createSlice({
   initialState: {
     mode: 'light',
     locale: 'he',
-    drawerOpen: true,
+    drawerOpen: false,
     window: {},
     view: { tags: true },
     hide: { relations: false },

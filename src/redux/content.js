@@ -4,7 +4,6 @@ import {
   createEntityAdapter,
   // current,
 } from '@reduxjs/toolkit'
-import { createSelector } from 'reselect'
 
 // import { getFakeHebContent } from '../api/fakeEditorApiHeb'
 import { createEntitiesFromContent } from '../../src/editor/entities'
@@ -21,11 +20,20 @@ export const fetchContent = createAsyncThunk(
   'content/fetch',
   async ({ file, convertContent, showContent }, thunkAPI) => {
     try {
-      // const rawContent = await getFakeHebContent()
+      // ! error handling
+      // redux-toolkit's 'rejectWithValue' dispatches a '.../.../reject' action and populates its paylod with its argument.
+      // That calls for a different error handling than the typical one:
+      //
+      // 1. realEditorApi catch caluse doesn't throw back to its caller;
+      //    if it did, rejectwithValue would pass an unserializable value in the payload, which redux can't cope with.
+      // 2. rejectWithValue's argument is a plain object literal rather than an instance of Error (= no 'new Error');
+      //    Thus it can be kept in redux and serve to report and resolve data discrepancies.
       const rawContent = await realEditorApi(file)
-      if (!rawContent) throw new Error('No rawContent returned')
-      if (rawContent.error)
-        throw new Error(rawContent.error.message?.toString())
+
+      if (!rawContent)
+        // eslint-disable-next-line no-throw-literal
+        throw { id: null, field: 'file', value: file, issue: 'Invalid file' }
+      if (rawContent.errors.length) throw rawContent.errors
 
       const content = convertContent(rawContent)
       showContent(content)
@@ -35,7 +43,7 @@ export const fetchContent = createAsyncThunk(
 
       return { entities, relations }
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.toString())
+      return thunkAPI.rejectWithValue(error)
     }
   }
 )
@@ -44,7 +52,7 @@ export const fetchContent = createAsyncThunk(
 const initialState = contentAdapter.getInitialState({
   loading: 'idle',
   changes: 0,
-  selected: null,
+  selectedId: null,
   file: null,
 })
 
@@ -58,7 +66,11 @@ const contentSlice = createSlice({
     error: (state, { payload: error }) => ({ ...state, error }),
     changes: state => ({ ...state, changes: state.changes + 1 }),
     selected: (state, { payload }) => {
-      state.selected = payload
+      // selected is deprecated; use 'select'
+      state.selectedId = payload
+    },
+    select: (state, { payload }) => {
+      state.selectedId = payload
     },
     show: (state, { payload }) => {
       state.show = payload
@@ -124,13 +136,37 @@ const contentSlice = createSlice({
 // common selector functions should be defined here rather than in the callers for memoization
 const contentSelectors = contentAdapter.getSelectors()
 
-// combine createAsyncThunk's loading/error states with createEntityAdapter's ids/entities join
-// 'entities' in this selector are returned as a sorted array rather than keyed
+// ToDo: replace all other selectors with this single one
+// The code is simpler and the penalty small (sorting the entities once even if not requested)
+// since the resulting selector object is memoized (using reselect).
+
+// combine all aspects of entities:
+// - createEntityAdapter's memoized sorted entities
+// - keyed entities
+// - createAsyncThunk's loading/error states as well as my own 'loaded' state
+// - selected Id and entity
 export const selectContent = ({ content }) => {
   const entities = contentSelectors.selectAll(content)
-  const { loading, error, relations, selected } = content
-  const loaded = entities.length > 0 && loading === 'idle' && !error
-  return { entities, relations, selected, loading, error, loaded }
+  const sortedEntities = entities // 'entities' key is deprecated; use 'sortedEntities'
+  const keyedEntities = content.entities
+  const ids = contentSelectors.selectIds(content)
+  const { loading, error, selectedId, relations } = content
+  const selectedEntity = keyedEntities[selectedId]
+  const isLoading = loading === 'pending'
+  const loaded = sortedEntities.length > 0 && loading === 'idle' && !error
+  return {
+    entities,
+    sortedEntities,
+    keyedEntities,
+    ids,
+    selectedId,
+    selectedEntity,
+    loading,
+    isLoading,
+    loaded,
+    error,
+    relations,
+  }
 }
 
 // this will return entities keyed, as they naturally appear in redux
@@ -200,47 +236,3 @@ export const {
 } = actions
 
 export default reducer
-
-// ! reselect
-// Following is a failed attempt to have reselect return an identical selectedEntity *reference* with every call,
-// so long as the selectedId has been cached already.
-//
-// Since selectSelectedEntity returns a partial object rather than the entire entity,
-// I was hoping that reselect would return the same reference when other, irrelevant changes were made to the entity.
-//
-// That didn't happen. Maybe because of the dependency on 'entities'.
-//
-// Whatever the reason, instead of forcing reselect to return an identical entity reference, I ended up
-// using useMemo in SelectedGeo to coerce the selected entity record to remain identical in spite of the deep change.
-
-const selectOnlyEntities = ({ content: { entities } }) => entities
-
-const reselectSelected = createSelector(
-  [selectSelectedId],
-  selected => selected
-)
-
-const reselectOnlyEntities = createSelector([selectOnlyEntities], entities => {
-  console.log('in the reselector')
-  return entities
-})
-
-export const selectSelectedEntity1 = createSelector(
-  [reselectSelected, reselectOnlyEntities],
-  (selectedId, entities) => {
-    if (!selectedId) return null
-
-    console.log('selectedId, entities: ', selectedId, entities)
-    const id = selectedId
-    const {
-      data: {
-        geoLocation: {
-          geometry: { type, coordinates },
-        },
-      },
-    } = entities[id]
-    return { id, type, coordinates }
-  }
-)
-
-// ! reselect end
