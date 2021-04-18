@@ -23,7 +23,7 @@ const fullHeight = 100 - searchHeight
 const Locations = () => {
   const relations = useSelector(store => store.app.view.relations)
   const { locale, placement } = useLocale()
-  const [info, setInfo] = useState(['text', 'table'])
+  const [info, setInfo] = useState(['text' /* , 'table' */])
 
   const tableHeight = info.includes('text')
     ? info.includes('table')

@@ -86,25 +86,32 @@ const entityTypes = keyProxy({
   },
 })
 
+export const levelIconWithText = 0.4
+
 // ToDo: double borders issue
 // Find out why the component renders (at least) twice,
 // in slight coordinate differences,
 // resulting in very noticeable double borders.
-export const entityStyle = ({ type, role, mode }) => ({
-  backgroundColor: role === 'text' ? entityTypes[type].color : 'none',
-  border: role === 'text' ? 'none' : `1px solid ${entityTypes[type].color}`,
-  borderRadius: '1rem',
-  display: 'inline-flex',
-  flexDirection: 'row-reverse', //ToDo: changed according to detected language
-  justifyContent: 'center',
-  padding: '0.1rem 0.5rem',
-  alignItems: 'center',
-  lineHeight: '1',
-  ...(role === 'text' && {
-    transform: `translateY(${entityTypes[type].icon ? '0.4rem' : '0'}`,
-  }),
-  // whiteSpace: 'nowrap',
-})
+export const entityStyle = ({ type, role, mode, id }) => {
+  console.log('type, role, id: ', type, role, id)
+  return {
+    backgroundColor:
+      /* role === 'text'  ?*/ entityTypes[type].color /* : 'none' */,
+    // border: role === 'text' ? 'none' : `3px solid ${entityTypes[type].color}`,
+    borderRadius: '1rem',
+    display: 'inline-flex',
+    flexDirection: 'row-reverse',
+    justifyContent: 'center',
+    padding: '0 0.5rem',
+    alignItems: 'center',
+    lineHeight: '1',
+    ...(role === 'text' && {
+      transform: `translateY(${
+        entityTypes[type].icon ? `${levelIconWithText}rem` : '0'
+      }`,
+    }),
+  }
+}
 export const entityIconStyle = ({ type, role, mode }) => ({
   display: 'inline-flex',
   marginRight: '0.25rem',

@@ -53,7 +53,7 @@ const initialState = contentAdapter.getInitialState({
   loading: 'idle',
   changes: 0,
   selectedId: null,
-  file: null,
+  file: 'doc_0',
 })
 
 const contentSlice = createSlice({

@@ -15,11 +15,14 @@ export const styles = {
   container: {
     height: '100%',
     width: '100%',
-    position: 'fixed',
+    position: 'absolute',
     left: '0',
     top: '0',
     pointerEvents: 'none',
-    zIndex: '-1',
+    zIndex: '3',
+    '& svg': {
+      zIndex: '3',
+    },
   },
   editMode: {
     zIndex: '1',
@@ -38,7 +41,6 @@ export const styles = {
 
 // ToDo: when 'editRelations' is on and 'showText' is off, text inside pills disappears
 const Relations = memo(() => {
-  return null
   const [elements, setElements] = useState([])
 
   const { entities, relations } = useSelector(selectEntities)
@@ -110,6 +112,8 @@ const Relations = memo(() => {
           })
         })
       })
+
+    console.log('nodes: ', nodes)
 
     setElements([...nodes, ...edges])
   }, [

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { scrolling, hide } from '../redux/app'
+import { /* scrolling, */ hide } from '../redux/app'
 
 import { useMode } from '../utility/appUtilities'
 import useTheme from '../styling/useTheme'
@@ -56,16 +56,16 @@ const Scroller = ({ textRef }) => {
     // allow smooth scrolling to finish before
     // - reporting the scroll (for the nodes' positions to be recalculated)
     // - checking whether bottom or top have been reached
-    setTimeout(() => {
-      dispatch(scrolling())
+    // setTimeout(() => {
+    //   dispatch(scrolling())
 
-      if (atScrollTop(text)) {
-        setDirection('down')
-      }
-      if (atScrollBottom(text)) {
-        setDirection('up')
-      }
-    }, 700)
+    //   if (atScrollTop(text)) {
+    //     setDirection('down')
+    //   }
+    //   if (atScrollBottom(text)) {
+    //     setDirection('up')
+    //   }
+    // }, 700)
 
     // allow the nodes' positions to be re-calculatedand and the nodes
     // to be repositioned, before showing them up again

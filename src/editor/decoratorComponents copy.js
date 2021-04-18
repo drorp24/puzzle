@@ -8,8 +8,6 @@ import {
   selectEntityById,
 } from '../redux/content'
 
-import { levelIconWithText } from '../editor/entityTypes'
-import usePixels from '../utility/usePixels'
 import { useMode } from '../utility/appUtilities'
 
 import Tooltip from '@material-ui/core/Tooltip'
@@ -67,7 +65,6 @@ export const EntitySpan = ({
     store => store.app.window
   )
   const dispatch = useDispatch()
-  const level = usePixels(levelIconWithText)
 
   const of = ({ blockKey, start, end }) => item =>
     item.blockKey === blockKey &&
@@ -91,10 +88,7 @@ export const EntitySpan = ({
     console.log('decoratorComponents useEffect entered')
 
     const reportIfPositionShifted = () => {
-      const { width, height } = ref.current?.getBoundingClientRect() || {}
-      // since flow entities & relations are absolutely positioned relative to their editor parent, offsets are used
-      const x = ref.current.offsetLeft
-      const y = ref.current.offsetTop + level
+      const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
 
       if (x !== ref.current?.position?.x || y !== ref.current?.position?.y) {
         // keep prev position so only position changes would be reported
@@ -114,7 +108,9 @@ export const EntitySpan = ({
 
     reportIfPositionShifted()
 
-    // another, delayed position check is made when transitioning elements finish their transition
+    // a further, setTimeout check is required only when
+    // - relations is viewed
+    // - the dimensions change that trigger the recalculation are transitioned
     if (
       relations &&
       (drawerOpen !== ref.current.drawerOpen ||
@@ -142,7 +138,7 @@ export const EntitySpan = ({
     editorHeight,
     dispatch,
     relations,
-    level,
+    // scrolling,
   ])
 
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />

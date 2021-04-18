@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { view, hide } from '../redux/app'
 
@@ -45,6 +45,7 @@ const styles = {
 // ToDo: find out why leaving 'editor' alone in the initial state makes reactflow's edges wrongly positioned
 const EditorControl = () => {
   const [selected, setSelected] = useState(['editor', 'tags'])
+  const controlRef = useRef()
   const dispatch = useDispatch()
 
   const [editorDisabled] = useState(false)
@@ -63,9 +64,10 @@ const EditorControl = () => {
 
   const dispatchSelected = useCallback(() => {
     if (relationsSelected) {
-      dispatch(hide({ relations: true }))
-      setTimeout(() => dispatch(hide({ relations: false })), 1000)
+      // dispatch(hide({ relations: true }))
+      // setTimeout(() => dispatch(hide({ relations: false })), 1000)
     }
+    console.log('in EditorControl, about to dispatch view')
     dispatch(
       view({
         editor: editorSelected,
@@ -83,6 +85,24 @@ const EditorControl = () => {
   ])
 
   useEffect(() => {
+    // ToDo: replace with 'reduce'
+    console.log('controlRef.current: ', controlRef.current)
+    if (
+      controlRef.current?.selected.length &&
+      controlRef.current?.selected?.includes('editor') ===
+        selected.includes('editor') &&
+      controlRef.current?.selected?.includes('tags') ===
+        selected.includes('tags') &&
+      controlRef.current?.selected?.includes('relations') ===
+        selected.includes('relations') &&
+      controlRef.current?.selected?.includes('connections') ===
+        selected.includes('connections')
+    ) {
+      controlRef.current = { selected }
+      console.log('state remained the same')
+      return
+    }
+
     dispatchSelected()
 
     setRelationsDisabled(!tagsSelected)
@@ -98,6 +118,7 @@ const EditorControl = () => {
     relationsSelected,
     connectionsSelected,
     dispatchSelected,
+    selected,
   ])
 
   const handleDisplay = (event, newSelected) => {
@@ -166,4 +187,4 @@ const EditorControl = () => {
   )
 }
 
-export default EditorControl
+export default memo(EditorControl)

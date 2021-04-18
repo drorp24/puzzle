@@ -15,8 +15,6 @@ import SearchIcon from '@material-ui/icons/SearchOutlined'
 const FileSelect = () => {
   const t = useTranslation()
   const { register, handleSubmit, setError, formState } = useForm()
-  const file = useSelector(store => store.content.file)
-  console.log('file: ', file)
   const { error, loaded } = useSelector(selectContent)
   const dispatch = useDispatch()
 

@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, error, changes } from '../redux/content'
-import { setAppProp, scrolling } from '../redux/app'
+import { setAppProp /* , scrolling */ } from '../redux/app'
 import { useLocale, capitalize } from '../utility/appUtilities'
 
 import {
@@ -83,9 +82,9 @@ const MyEditor = () => {
     return 'not-handled'
   }
 
-  const reportScrolling = () => {
-    dispatch(scrolling())
-  }
+  // const reportScrolling = () => {
+  //   dispatch(scrolling())
+  // }
 
   const styles = {
     container: theme => ({
@@ -107,6 +106,12 @@ const MyEditor = () => {
       position: 'relative',
       ...noScrollbar,
     },
+    relations: {
+      position: 'absolute',
+      top: '0',
+      width: '100%',
+      height: '100%',
+    },
     space: {
       gridArea: 'space',
     },
@@ -120,8 +125,9 @@ const MyEditor = () => {
       justifyContent: 'flex-end',
       paddingBottom: '0.5rem',
       [`padding${capitalize(placement)}`]: '0.5rem',
+      zIndex: '1',
     },
-    relations: {},
+
     scroller: {
       position: 'absolute',
       bottom: '1rem',
@@ -176,11 +182,11 @@ const MyEditor = () => {
   }, [dispatch, editorState, data])
 
   // editor position
-  // useEffect(() => {
-  //   const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
-  //   const position = { x, y, width, height, scrolling: 0 }
-  //   dispatch(setAppProp({ editor: position }))
-  // }, [dispatch, view.relations, view.exclusiveRelations, drawerOpen])
+  useEffect(() => {
+    const { x, y, width, height } = ref.current?.getBoundingClientRect() || {}
+    const position = { x, y, width, height /* , scrolling: 0  */ }
+    dispatch(setAppProp({ editor: position }))
+  }, [dispatch, drawerOpen])
 
   // when view editor is off and relations are temporarily hidden (during scroll), text becomes empty
   const temporarilyEmpty = !view.editor && hide.relations
@@ -204,9 +210,14 @@ const MyEditor = () => {
       <div
         css={styles.editor}
         ref={ref}
-        onScroll={throttleByFrame(reportScrolling)}
+        // onScroll={throttleByFrame(reportScrolling)}
       >
-        <div style={{ visibility: view.editor ? 'visible' : 'hidden' }}>
+        <div
+          style={{
+            visibility: view.editor ? 'visible' : 'hidden',
+            position: 'relative',
+          }}
+        >
           <Editor
             editorState={editorState}
             onChange={handleChange}
@@ -214,13 +225,18 @@ const MyEditor = () => {
             handleKeyCommand={handleKeyCommand}
             css={styles.editor}
           />
+          <div css={styles.relations}>
+            <Relations />
+          </div>
         </div>
+
         {temporarilyEmpty && (
           <div css={styles.circularProgress}>
             <CircularProgress />
           </div>
         )}
       </div>
+
       <div css={styles.space} />
       <div css={styles.selector}>
         <Selector
@@ -236,9 +252,6 @@ const MyEditor = () => {
       </div>
       <div css={styles.scroller}>
         <Scroller textRef={ref} />
-      </div>
-      <div css={styles.relations}>
-        <Relations />
       </div>
     </div>
   )
