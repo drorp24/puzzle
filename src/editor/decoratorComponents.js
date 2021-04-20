@@ -116,12 +116,12 @@ export const EntitySpan = ({
 
     // another, delayed position check is made when transitioning elements finish their transition
     if (
-      relations &&
-      (drawerOpen !== ref.current.drawerOpen ||
-        editorX !== ref.current.editorX ||
-        editorY !== ref.current.editorY ||
-        editorWidth !== ref.current.editorWidth ||
-        editorHeight !== ref.current.editorHeight)
+      // relations &&
+      drawerOpen !== ref.current.drawerOpen ||
+      editorX !== ref.current.editorX ||
+      editorY !== ref.current.editorY ||
+      editorWidth !== ref.current.editorWidth ||
+      editorHeight !== ref.current.editorHeight
     ) {
       setTimeout(reportIfPositionShifted, 1000)
     }
@@ -141,7 +141,7 @@ export const EntitySpan = ({
     editorWidth,
     editorHeight,
     dispatch,
-    relations,
+    // relations,
     level,
   ])
 

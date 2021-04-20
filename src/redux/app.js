@@ -7,8 +7,7 @@ const appSlice = createSlice({
     locale: 'he',
     drawerOpen: false,
     window: {},
-    view: { tags: true },
-    hide: { relations: false },
+    view: { editor: true, tags: true },
     editor: {
       /*  scrolling: 0 */
     },

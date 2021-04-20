@@ -1,15 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, memo } from 'react'
-import { useSelector } from 'react-redux'
-import { selectEntities } from '../redux/content'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectEntities, positionShifted } from '../redux/content'
 import ReactFlow, { removeElements, addEdge } from 'react-flow-renderer'
 
 import { options, makeNode, makeRelation, relationOptions } from './flowOptions'
 import { entityStyle } from '../editor/entityTypes'
 
-import { Node } from './Node'
+import Node from './Node'
 
 import useWindowResize from '../utility/useWindowResize'
+import { getEntityId } from '../utility/extractIds'
 
 export const styles = {
   container: {
@@ -40,20 +41,19 @@ export const styles = {
 // ToDo: spread the handles so they don't overlap
 
 // ToDo: when 'editRelations' is on and 'showText' is off, text inside pills disappears
-const Relations = memo(() => {
+const Relations = () => {
   const [elements, setElements] = useState([])
+  const dispatch = useDispatch()
+  console.log('Relations is rendered')
 
-  const { entities, relations } = useSelector(selectEntities)
+  const { entities, relations, selectedId } = useSelector(selectEntities)
+
   const {
-    view: {
-      relations: viewRelations,
-      connections: editRelations,
-      exclusiveRelations,
-    },
-    hide: { relations: hideRelations },
-  } = useSelector(store => store.app)
-  const { editor: editorBox } = useSelector(store => store.app)
-  const { selected } = useSelector(store => store.content)
+    editor: viewEditor,
+    connections: editRelations,
+    relations: viewRelations,
+    exclusiveRelations,
+  } = useSelector(store => store.app.view)
 
   useWindowResize()
 
@@ -66,16 +66,47 @@ const Relations = memo(() => {
   const onConnect = params =>
     setElements(els => addEdge({ ...params, ...relationOptions('new') }, els))
 
+  // ToDo: This repositions the element back into place *regardless of x, y values* - check why
+  const onNodeDragStop = (event, node) => {
+    setElements(elements =>
+      elements.map(element => {
+        if (element.id === node.id) element.position = { x: 0, y: 0 }
+        return element
+      })
+    )
+
+    const { id, entityRangeIndex } = getEntityId(node.id)
+    const shifted = true
+
+    dispatch(positionShifted({ id, entityRangeIndex, shifted }))
+  }
+
+  const onLoad = reactFlowInstance => {
+    const els = reactFlowInstance.getElements()
+  }
+
   useEffect(() => {
     const entityEntries = Object.entries(entities)
     if (!entityEntries.length) return
 
     const nodes = []
     const edges = []
+    const shiftedNodes = {}
 
     entityEntries.forEach(([id, { type, data, entityRanges }]) => {
       entityRanges.forEach(({ position = {}, text }, index) => {
-        const { x, y, width, height } = position
+        const { x, y, width, height, shifted } = position
+
+        if (shifted) {
+          const nodeId = `${id}-${index}`
+          shiftedNodes[nodeId] = { index, position }
+        }
+
+        // ToDo: skip when positions are still empty
+        // next line saves nodes creation when positions aren't ready yet
+        // however it makes next (edges) section log "couldn't create edge" warnings
+        // as there aren't any nodes that match the edge; fix along with the corrupted data fix
+        // if (!x || !y) return
         const role = 'node'
         const nodeStyle = entityStyle({ type, role })
         const node = makeNode({
@@ -91,8 +122,11 @@ const Relations = memo(() => {
           text,
         })
         nodes.push(node)
+        // setElements(els => [...els, node])
       })
     })
+
+    if (!entityEntries.length) return null
 
     relations &&
       relations.forEach(({ from, to, type }) => {
@@ -105,34 +139,75 @@ const Relations = memo(() => {
               toEntityRangeIndex,
               type,
               exclusiveRelations,
-              selected,
+              selectedId,
               entityFromType: entities[from].type,
             })
             edges.push(relation)
+            // setElements(els => [...els, relation])
           })
         })
       })
 
-    console.log('nodes: ', nodes)
-
     setElements([...nodes, ...edges])
+
+    // ToDo: re-position shifted nodes back to place whenever viewEditor is on
+    // Though setElements gets an entirely new array, with the correct positioning,
+    // nothing seems to make react-flow rerender shifted nodes.
+    // As a temporary workaround, the dragStop event returns the shifted node back to place.
+    // The following code was an attempt to make it work. It didn't.
+
+    // setElements(elements =>
+    //   elements.map(element => {
+    //     const shiftedNode = element.type === 'node' && shiftedNodes[element.id]
+
+    //     if (shiftedNode) {
+    //       console.log('shiftedNode: ', shiftedNode)
+    //       const {
+    //         index,
+    //         position: { x, y },
+    //       } = shiftedNode
+    //       element.position = { x, y }
+
+    //       // ToDo: this makes FileSelect re-render
+    //       // dispatch(
+    //       //   positionShifted({
+    //       //     id: element.id,
+    //       //     entityRangeIndex: index,
+    //       //     shifted: false,
+    //       //   })
+    //       // )
+    //       return { ...element, position: { x, y } }
+    //     }
+    //     return element
+    //   })
+    // )
+
+    // })
+
+    // This is left here since it did succeed in positioning a node
+    // though it looks equivalent to the setElements attempts above, that didn't do the job.
+    // setElements(elements =>
+    //   elements.map(element => {
+    //     if (element.id === '6644bd08-59d8-43c8-9919-4e069b7b91b0-0') {
+    //       element.position = { x: 0, y: 0 }
+    //     }
+    //     return element
+    //   })
+    // )
   }, [
-    editRelations,
-    editorBox,
     entities,
-    exclusiveRelations,
     relations,
-    selected,
+    exclusiveRelations,
+    editRelations,
+    selectedId,
+    dispatch,
   ])
 
   return (
     <div
       css={styles.container}
       style={{
-        visibility:
-          (viewRelations || exclusiveRelations) && !hideRelations
-            ? 'visible'
-            : 'hidden',
+        visibility: viewRelations || exclusiveRelations ? 'visible' : 'hidden',
         direction: 'ltr',
         ...(editRelations && styles.editMode),
       }}
@@ -141,13 +216,16 @@ const Relations = memo(() => {
         {...{
           elements,
           nodeTypes,
+          onLoad,
           onElementsRemove,
           onConnect,
+          onNodeDragStop,
           ...options,
+          nodesDraggable: !viewEditor,
         }}
       />
     </div>
   )
-})
+}
 
-export default Relations
+export default memo(Relations)

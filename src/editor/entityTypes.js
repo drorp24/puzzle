@@ -49,7 +49,7 @@ const entityTypes = keyProxy({
     mutability: 'IMMUTABLE',
     icon: <PlaceIcon />,
     selector: true,
-    color: 'deepskyblue',
+    color: 'coral',
   },
   TIME: {
     name: 'TIME',
@@ -63,7 +63,7 @@ const entityTypes = keyProxy({
     mutability: 'IMMUTABLE',
     icon: <DeviceIcon />,
     selector: true,
-    color: 'coral',
+    color: 'deepskyblue',
   },
   MENTION: {
     name: 'MENTION',
@@ -88,40 +88,33 @@ const entityTypes = keyProxy({
 
 export const levelIconWithText = 0.4
 
-// ToDo: double borders issue
-// Find out why the component renders (at least) twice,
-// in slight coordinate differences,
-// resulting in very noticeable double borders.
-export const entityStyle = ({ type, role, mode, id }) => {
-  console.log('type, role, id: ', type, role, id)
-  return {
-    backgroundColor:
-      /* role === 'text'  ?*/ entityTypes[type].color /* : 'none' */,
-    // border: role === 'text' ? 'none' : `3px solid ${entityTypes[type].color}`,
-    borderRadius: '1rem',
-    display: 'inline-flex',
-    flexDirection: 'row-reverse',
-    justifyContent: 'center',
-    padding: '0 0.5rem',
-    alignItems: 'center',
-    lineHeight: '1',
-    ...(role === 'text' && {
-      transform: `translateY(${
-        entityTypes[type].icon ? `${levelIconWithText}rem` : '0'
-      }`,
-    }),
-  }
-}
-export const entityIconStyle = ({ type, role, mode }) => ({
+// ! node & text styling
+// Since they overlap, both draft.js spans and react-flow's nodes use identical styling rules
+// - type: entity type
+// - role: 'text' (draft) or 'node' (flow)
+// - element: 'node' (react-flow's entire node element) or 'span' (react-flow's text span element)
+// - mode: 'light' or 'dark' (currently not in use)
+// - id: left for debugging purposes
+export const entityStyle = ({ type, role, element, mode, id }) => ({
+  backgroundColor: element === 'span' ? 'none' : entityTypes[type].color,
+  borderRadius: '1rem',
+  display: 'inline-flex',
+  flexDirection: role === 'text' ? 'row-reverse' : 'row',
+  justifyContent: 'center',
+  padding: '0 0.5rem',
+  alignItems: 'center',
+  lineHeight: '1',
+  ...(role === 'text' && {
+    transform: `translateY(${
+      entityTypes[type].icon ? `${levelIconWithText}rem` : '0'
+    }`,
+  }),
+})
+export const entityIconStyle = ({ type, role, mode = 'light' }) => ({
   display: 'inline-flex',
   marginRight: '0.25rem',
   fontSize: '1rem',
-  color:
-    role === 'text'
-      ? mode === 'light'
-        ? 'rgba(0, 0, 0, 0.6)'
-        : 'white'
-      : entityTypes[type].color,
+  color: mode === 'light' ? 'black' : 'white',
 })
 
 export default entityTypes

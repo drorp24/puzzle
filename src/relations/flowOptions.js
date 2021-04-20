@@ -2,7 +2,6 @@ import entityTypes, { relationTypes } from '../editor/entityTypes'
 // import ConnectionLine from './ConnectionLine'
 
 export const options = {
-  nodesDraggable: false,
   zoomOnScroll: false,
   zoomOnDoubleClick: false,
   paneMoveable: false,
@@ -55,6 +54,7 @@ export const relationOptions = ({ type, entityFromType }) => ({
   labelBgBorderRadius: '4',
   labelBgPadding: [5, 2],
   animated: true,
+  // type: 'smoothstep',
 })
 
 export const makeRelation = ({
@@ -64,13 +64,13 @@ export const makeRelation = ({
   toEntityRangeIndex,
   type,
   exclusiveRelations,
-  selected,
+  selectedId,
   entityFromType,
 }) => {
   const source = `${from}-${fromEntityRangeIndex}`
   const target = `${to}-${toEntityRangeIndex}`
   const isHidden =
-    exclusiveRelations && selected && selected !== from && selected !== to
+    exclusiveRelations && selectedId && selectedId !== from && selectedId !== to
   const relation = {
     id: `${source}-${target}-${type}`,
     source: `${source}`,

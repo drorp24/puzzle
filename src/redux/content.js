@@ -82,6 +82,19 @@ const contentSlice = createSlice({
       // Immer to the rescue
       state.entities[id].entityRanges[entityRangeIndex].position = position
     },
+    positionShifted: (
+      state,
+      { payload: { id, entityRangeIndex, shifted } }
+    ) => {
+      // Immer
+      const position =
+        state.entities[id]?.entityRanges[entityRangeIndex]?.position
+      if (position)
+        state.entities[id].entityRanges[entityRangeIndex].position = {
+          ...position,
+          shifted,
+        }
+    },
     updateTag: (state, { payload: { id, tag } }) => {
       // Immer again
       state.entities[id].data.tag = tag
@@ -171,9 +184,12 @@ export const selectContent = ({ content }) => {
 
 // this will return entities keyed, as they naturally appear in redux
 // todo: memoize with reselect
-export const selectEntities = ({ content: { entities, relations } }) => ({
+export const selectEntities = ({
+  content: { entities, relations, selectedId },
+}) => ({
   entities,
   relations,
+  selectedId,
 })
 
 export const selectEntityById = id => ({ content }) =>
@@ -181,7 +197,7 @@ export const selectEntityById = id => ({ content }) =>
 
 export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
-export const selectSelectedId = ({ content: { selected } }) => selected
+export const selectSelectedId = ({ content: { selectedId } }) => selectedId
 export const selectShowId = ({ content: { show } }) => show
 
 export const selectSelectedEntity = ({ content }) => {
@@ -229,6 +245,7 @@ export const {
   error,
   changes,
   updatePosition,
+  positionShifted,
   selected,
   show,
   updateTag,

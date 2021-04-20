@@ -188,30 +188,9 @@ const MyEditor = () => {
     dispatch(setAppProp({ editor: position }))
   }, [dispatch, drawerOpen])
 
-  // when view editor is off and relations are temporarily hidden (during scroll), text becomes empty
-  const temporarilyEmpty = !view.editor && hide.relations
-
-  // manual scroll prevention
-  // this useCallback is imperative for the remove to use the same fn reference
-  // const preventManuallScrolling = useCallback(e => e.preventDefault(), [])
-  // useEffect(() => {
-  //   const active = { passive: false }
-  //   const text = ref.current
-
-  //   if (view.relations || view.exclusiveRelations) {
-  //     text.addEventListener('wheel', preventManuallScrolling, active)
-  //   } else {
-  //     text.removeEventListener('wheel', preventManuallScrolling)
-  //   }
-  // }, [preventManuallScrolling, view.exclusiveRelations, view.relations])
-
   return (
     <div css={styles.container}>
-      <div
-        css={styles.editor}
-        ref={ref}
-        // onScroll={throttleByFrame(reportScrolling)}
-      >
+      <div css={styles.editor} ref={ref}>
         <div
           style={{
             visibility: view.editor ? 'visible' : 'hidden',
@@ -229,12 +208,6 @@ const MyEditor = () => {
             <Relations />
           </div>
         </div>
-
-        {temporarilyEmpty && (
-          <div css={styles.circularProgress}>
-            <CircularProgress />
-          </div>
-        )}
       </div>
 
       <div css={styles.space} />

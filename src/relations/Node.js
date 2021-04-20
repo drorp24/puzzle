@@ -1,5 +1,6 @@
-import { useRef } from 'react'
+import { useEffect, memo } from 'react'
 import { useSelector } from 'react-redux'
+import { useLocale } from '../utility/appUtilities'
 
 import { Handle } from 'react-flow-renderer'
 
@@ -13,22 +14,21 @@ import entityTypes, {
 } from '../editor/entityTypes'
 import { styles } from './Relations'
 
-export const Node = ({ id, data: { inputs, outputs, type, text } }) => {
-  console.log('Node is rendered')
-  // const ref = useRef()
+const Node = ({ id, data: { inputs, outputs, type, text } }) => {
   const { editor, connections } = useSelector(store => store.app.view)
+  const { direction } = useLocale()
   const showText = /* editor ? false :  */ true
   const handlesVisibility = connections ? 'visible' : 'hidden'
   const { icon } = entityTypes[type]
   const role = 'node'
+  const element = 'span'
 
-  console.log('id: ', id)
-  console.log('inputs: ', inputs)
-  console.log('outputs: ', outputs)
-  // console.log('Node ref.current: ', ref.current)
+  useEffect(() => {
+    console.log('Node is rendered')
+  }, [])
 
   return (
-    <div /*  ref={ref} */>
+    <>
       {outputs &&
         outputs.map(({ source, target, type }) => (
           <Handle
@@ -55,9 +55,9 @@ export const Node = ({ id, data: { inputs, outputs, type, text } }) => {
         }}
       />
       {showText && (
-        <span style={entityStyle({ type, role, id })}>
+        <span style={entityStyle({ type, role, element })}>
           <span style={entityIconStyle({ type, role })}>{icon}</span>
-          <span>{text}</span>
+          <span style={{ direction }}>{text}</span>
         </span>
       )}
       {inputs &&
@@ -85,6 +85,8 @@ export const Node = ({ id, data: { inputs, outputs, type, text } }) => {
           visibility: handlesVisibility,
         }}
       />
-    </div>
+    </>
   )
 }
+
+export default memo(Node)

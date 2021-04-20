@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { view, hide } from '../redux/app'
+import { view } from '../redux/app'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
 
@@ -10,7 +10,6 @@ import AccountTreeIcon from '@material-ui/icons/AccountTreeOutlined'
 import LabelIcon from '@material-ui/icons/LabelOutlined'
 import TextIcon from '@material-ui/icons/DescriptionOutlined'
 import Tooltip from '@material-ui/core/Tooltip'
-import BorderColorOutlinedIcon from '@material-ui/icons/BorderColorOutlined'
 
 const styles = {
   root: theme => ({
@@ -45,7 +44,11 @@ const styles = {
 // ToDo: find out why leaving 'editor' alone in the initial state makes reactflow's edges wrongly positioned
 const EditorControl = () => {
   const [selected, setSelected] = useState(['editor', 'tags'])
-  const controlRef = useRef()
+
+  // const editorSelected = selected.includes('editor')
+  // const tagsSelected = selected.includes('tags')
+  // const relationsSelected = selected.includes('relations')
+  // const connectionsSelected = selected.includes('connections')
   const dispatch = useDispatch()
 
   const [editorDisabled] = useState(false)
@@ -53,77 +56,36 @@ const EditorControl = () => {
   const [relationsDisabled, setRelationsDisabled] = useState(false)
   const [connectionsDisabled, setConnectionsDisabled] = useState(false)
 
-  const editorSelected = useMemo(() => selected.includes('editor'), [selected])
-  const tagsSelected = useMemo(() => selected.includes('tags'), [selected])
-  const relationsSelected = useMemo(() => selected.includes('relations'), [
-    selected,
-  ])
-  const connectionsSelected = useMemo(() => selected.includes('connections'), [
-    selected,
-  ])
-
-  const dispatchSelected = useCallback(() => {
-    if (relationsSelected) {
-      // dispatch(hide({ relations: true }))
-      // setTimeout(() => dispatch(hide({ relations: false })), 1000)
-    }
-    console.log('in EditorControl, about to dispatch view')
-    dispatch(
-      view({
-        editor: editorSelected,
-        tags: tagsSelected,
-        relations: relationsSelected,
-        connections: connectionsSelected,
-      })
-    )
-  }, [
-    editorSelected,
-    tagsSelected,
-    relationsSelected,
-    connectionsSelected,
-    dispatch,
-  ])
+  const dispatchSelected = useCallback(
+    selected => {
+      dispatch(
+        view({
+          editor: selected.includes('editor'),
+          tags: selected.includes('tags'),
+          relations: selected.includes('relations'),
+          connections: selected.includes('connections'),
+        })
+      )
+    },
+    [dispatch]
+  )
 
   useEffect(() => {
-    // ToDo: replace with 'reduce'
-    console.log('controlRef.current: ', controlRef.current)
-    if (
-      controlRef.current?.selected.length &&
-      controlRef.current?.selected?.includes('editor') ===
-        selected.includes('editor') &&
-      controlRef.current?.selected?.includes('tags') ===
-        selected.includes('tags') &&
-      controlRef.current?.selected?.includes('relations') ===
-        selected.includes('relations') &&
-      controlRef.current?.selected?.includes('connections') ===
-        selected.includes('connections')
-    ) {
-      controlRef.current = { selected }
-      console.log('state remained the same')
-      return
-    }
+    const unSelect = view =>
+      setSelected(selected => selected.filter(i => i !== view))
 
-    dispatchSelected()
+    setRelationsDisabled(!selected.includes('tags'))
+    if (selected.includes('relations') && !selected.includes('tags'))
+      unSelect('relations')
 
-    setRelationsDisabled(!tagsSelected)
-    if (!tagsSelected && relationsSelected)
-      setSelected(selected => selected.filter(i => i !== 'relations'))
-
-    setConnectionsDisabled(!relationsSelected)
-    if (!relationsSelected && connectionsSelected)
-      setSelected(selected => selected.filter(i => i !== 'connections'))
-  }, [
-    editorSelected,
-    tagsSelected,
-    relationsSelected,
-    connectionsSelected,
-    dispatchSelected,
-    selected,
-  ])
+    setConnectionsDisabled(!selected.includes('relations'))
+    if (selected.includes('connections') && !selected.includes('relations'))
+      unSelect('connections')
+  }, [selected])
 
   const handleDisplay = (event, newSelected) => {
     setSelected(newSelected)
-    dispatchSelected()
+    dispatchSelected(newSelected)
   }
 
   const { on, off, disabled } = styles
@@ -140,9 +102,11 @@ const EditorControl = () => {
         <Tooltip title="Show text" placement="left">
           <ToggleButton
             value="editor"
-            selected={editorSelected}
+            selected={selected.includes('relations')}
             css={styles.button}
-            style={editorDisabled ? disabled : editorSelected ? on : off}
+            style={
+              editorDisabled ? disabled : selected.includes('editor') ? on : off
+            }
           >
             <TextIcon />
           </ToggleButton>
@@ -151,9 +115,11 @@ const EditorControl = () => {
         <Tooltip title="Show tags" placement="left">
           <ToggleButton
             value="tags"
-            selected={tagsSelected}
+            selected={selected.includes('tags')}
             css={styles.button}
-            style={tagsDisabled ? disabled : tagsSelected ? on : off}
+            style={
+              tagsDisabled ? disabled : selected.includes('tags') ? on : off
+            }
           >
             <LabelIcon />
           </ToggleButton>
@@ -162,15 +128,21 @@ const EditorControl = () => {
         <Tooltip title="Show relations" placement="left">
           <ToggleButton
             value="relations"
-            selected={relationsSelected}
+            selected={selected.includes('relations')}
             css={styles.button}
-            style={relationsDisabled ? disabled : relationsSelected ? on : off}
+            style={
+              relationsDisabled
+                ? disabled
+                : selected.includes('relations')
+                ? on
+                : off
+            }
           >
             <AccountTreeIcon />
           </ToggleButton>
         </Tooltip>
 
-        <Tooltip title="Edit relations" placement="left">
+        {/* <Tooltip title="Edit relations" placement="left">
           <ToggleButton
             value="connections"
             selected={connectionsSelected}
@@ -181,7 +153,7 @@ const EditorControl = () => {
           >
             <BorderColorOutlinedIcon />
           </ToggleButton>
-        </Tooltip>
+        </Tooltip> */}
       </ToggleButtonGroup>
     </div>
   )
