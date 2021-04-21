@@ -21,27 +21,44 @@ export const fetchContent = createAsyncThunk(
   async ({ file, convertContent, showContent }, thunkAPI) => {
     try {
       // ! error handling
-      // redux-toolkit's 'rejectWithValue' dispatches a '.../.../reject' action and populates its paylod with its argument.
-      // That calls for a different error handling than the typical one:
+      // To record data issues in redux, and separate them from failures,
+      // adapting to redux' requirement to record only serializable data
+      // the following error handling should be taken:
       //
-      // 1. realEditorApi catch caluse doesn't throw back to its caller;
-      //    if it did, rejectwithValue would pass an unserializable value in the payload, which redux can't cope with.
-      // 2. rejectWithValue's argument is a plain object literal rather than an instance of Error (= no 'new Error');
-      //    Thus it can be kept in redux and serve to report and resolve data discrepancies.
+      // ? Real failures
+      // Real failures, such as when data is corrupted or non available, reach realEditorApi's catch clause.
+      //
+      // 1. throw an error object literal instead of Error instance
+      //    redux can store only serializable data, so if error is to be stored there,
+      //    it needs to sit in ab object literal instread of an Error instance.
+      //    This is true whether the thrower is realEditorApi or this function.
+      //
+      // ? Issues
+      // These are data discrepancies that are expected to be part of the data;
+      // I want redux to record them too, in order to explain system behavior and enable later handling.
+      //
+      // 2. Issues aren't supposed to stop the flow or render the app unusuable.
+      //    Instead they are appended to the data as a kind of meta data, inside an 'issues' key,
+      //    then included in the payload to be recorded in the [fetchContent.fulfilled] reducer.
+      //
+      // Real failures are recorded in redux' content.error key and render the app unusuable until resolved;
+      // Issues are recorded in content.issues and don't interfere with using the app.
+      //
+      // Real failures are reported to the user; issues aren't.
+      //
       const rawContent = await realEditorApi(file)
 
       if (!rawContent)
         // eslint-disable-next-line no-throw-literal
         throw { id: null, field: 'file', value: file, issue: 'Invalid file' }
-      if (rawContent.errors.length) throw rawContent.errors
 
       const content = convertContent(rawContent)
       showContent(content)
 
       const entities = createEntitiesFromContent(content)
-      const { relations } = rawContent
+      const { relations, issues } = rawContent
 
-      return { entities, relations }
+      return { entities, relations, issues }
     } catch (error) {
       return thunkAPI.rejectWithValue(error)
     }
@@ -54,6 +71,7 @@ const initialState = contentAdapter.getInitialState({
   changes: 0,
   selectedId: null,
   file: 'doc_0',
+  issues: [],
 })
 
 const contentSlice = createSlice({
@@ -103,6 +121,10 @@ const contentSlice = createSlice({
       ...state,
       ...payload,
     }),
+    addIssue: (state, { payload }) => ({
+      ...state,
+      issues: [...state.issues, payload],
+    }),
   },
   extraReducers: {
     [fetchContent.pending]: (state, { meta: { requestId } }) => {
@@ -115,23 +137,50 @@ const contentSlice = createSlice({
 
     [fetchContent.fulfilled]: (
       state,
-      { meta: { requestId }, payload: { entities, relations } }
+      { meta: { requestId }, payload: { entities, relations, issues } }
     ) => {
       if (state.loading === 'pending' && state.currentRequestId === requestId) {
-        state.currentRequestId = undefined
-        state.loading = 'idle'
-        state.error = null
-        contentAdapter.setAll(state, entities)
-        state.relations = relations
-        relations.forEach(({ from, to, type }) => {
-          const relation = {
-            source: from,
-            target: to,
-            type,
-          }
-          state.entities[from].data.outputs.push(relation)
-          state.entities[to].data.inputs.push(relation)
-        })
+        try {
+          state.currentRequestId = undefined
+          state.loading = 'idle'
+          state.error = null
+          if (issues) state.issues = [...state.issues, ...issues]
+          contentAdapter.setAll(state, entities)
+          state.relations = relations
+          relations.forEach(({ from, to, type }) => {
+            const relation = {
+              source: from,
+              target: to,
+              type,
+            }
+            if (state.entities[from]) {
+              state.entities[from].data.outputs.push(relation)
+            } else {
+              const issue = {
+                data: 'relations',
+                field: 'from',
+                value: from,
+                issue: 'No entity with that id',
+              }
+              state.issues.push(issue)
+              console.error(`relations issue: no entity with id ${from}`)
+            }
+            if (state.entities[to]) {
+              state.entities[to].data.inputs.push(relation)
+            } else {
+              const issue = {
+                data: 'relations',
+                field: 'to',
+                value: to,
+                issue: 'No entity with that id',
+              }
+              state.issues.push(issue)
+              console.error(`relations issue: no entity with id ${to}`)
+            }
+          })
+        } catch (error) {
+          console.log('error: ', error)
+        }
       }
     },
 
@@ -250,6 +299,7 @@ export const {
   show,
   updateTag,
   setFile,
+  addIssue,
 } = actions
 
 export default reducer

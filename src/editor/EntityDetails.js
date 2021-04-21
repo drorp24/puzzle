@@ -29,7 +29,12 @@ export const EntityDetails = ({ entity: { type, data } }) => {
 
   const { icon, color } = entityTypes[type]
   const { id, subTypes } = data
-  const { entityRanges } = useSelector(selectEntityById(id))
+  // 'entity' argument is only what draft.js holds for the entity. For the rest, redux should be called.
+  const {
+    data: { geoLocation },
+    entityRanges,
+  } = useSelector(selectEntityById(id))
+  const locationExists = geoLocation?.geometry?.coordinates?.length
   const name = entityRanges[0]?.text
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
@@ -102,6 +107,11 @@ export const EntityDetails = ({ entity: { type, data } }) => {
     modeColor: {
       color: darkTheme.palette.text.distinct,
     },
+    locationIcon: {
+      color: locationExists
+        ? darkTheme.palette.text.distinct
+        : darkTheme.palette.action.disabledBackground,
+    },
     dividerSplitLine: {
       color: '#bdbdbd',
       '&::before, &::after': {
@@ -161,12 +171,12 @@ export const EntityDetails = ({ entity: { type, data } }) => {
           <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>
             <AccountTreeIcon css={styles.modeColor} />
           </IconButton>
-          <IconButton onClick={markSelected(id)}>
-            <RoomIcon css={styles.modeColor} />
+          <IconButton onClick={markSelected(id)} disabled={!locationExists}>
+            <RoomIcon css={{ ...styles.modeColor, ...styles.locationIcon }} />
           </IconButton>
-          <IconButton>
+          {/* <IconButton>
             <TableIcon css={styles.modeColor} />
-          </IconButton>
+          </IconButton> */}
         </CardActions>
       </Card>
     </ThemeProvider>

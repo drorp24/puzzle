@@ -5,11 +5,31 @@
     },
     {
       "path": "..\\text_analysis"
-    },
-    {
-      "path": "..\\schedule"
     }
   ],
   "settings": {
+    "sqltools.connections": [
+      {
+        "name": "Ring",
+        "server": "localhost",
+        "driver": "PostgreSQL",
+        "port": 5432,
+        "database": "Ring",
+        "username": "postgres",
+        "askForPassword": false,
+        "password": "29092012",
+        "connectionTimeout": 15
+      },
+      {
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 5432,
+        "driver": "PostgreSQL",
+        "name": "text_analysis",
+        "database": "text_analysis",
+        "username": "postgres",
+        "password": "29092012"
+      }
+    ]
   }
 }

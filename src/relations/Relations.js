@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectEntities, positionShifted } from '../redux/content'
+import { selectEntities, positionShifted, addIssue } from '../redux/content'
 import ReactFlow, { removeElements, addEdge } from 'react-flow-renderer'
 
 import { options, makeNode, makeRelation, relationOptions } from './flowOptions'
@@ -86,69 +86,80 @@ const Relations = () => {
   }
 
   useEffect(() => {
-    const entityEntries = Object.entries(entities)
-    if (!entityEntries.length) return
+    try {
+      const entityEntries = Object.entries(entities)
+      if (!entityEntries.length) return
 
-    const nodes = []
-    const edges = []
-    const shiftedNodes = {}
+      const nodes = []
+      const edges = []
+      const shiftedNodes = {}
 
-    entityEntries.forEach(([id, { type, data, entityRanges }]) => {
-      entityRanges.forEach(({ position = {}, text }, index) => {
-        const { x, y, width, height, shifted } = position
+      entityEntries.forEach(([id, { type, data, entityRanges }]) => {
+        entityRanges &&
+          entityRanges.forEach(({ position = {}, text }, index) => {
+            const { x, y, width, height, shifted } = position
 
-        if (shifted) {
-          const nodeId = `${id}-${index}`
-          shiftedNodes[nodeId] = { index, position }
-        }
+            if (shifted) {
+              const nodeId = `${id}-${index}`
+              shiftedNodes[nodeId] = { index, position }
+            }
 
-        // ToDo: skip when positions are still empty
-        // next line saves nodes creation when positions aren't ready yet
-        // however it makes next (edges) section log "couldn't create edge" warnings
-        // as there aren't any nodes that match the edge; fix along with the corrupted data fix
-        // if (!x || !y) return
-        const role = 'node'
-        const nodeStyle = entityStyle({ type, role })
-        const node = makeNode({
-          id,
-          type,
-          data,
-          index,
-          x,
-          y,
-          width,
-          height,
-          nodeStyle,
-          text,
-        })
-        nodes.push(node)
-        // setElements(els => [...els, node])
-      })
-    })
-
-    if (!entityEntries.length) return null
-
-    relations &&
-      relations.forEach(({ from, to, type }) => {
-        entities[from].entityRanges.forEach((_, fromEntityRangeIndex) => {
-          entities[to].entityRanges.forEach((_, toEntityRangeIndex) => {
-            const relation = makeRelation({
-              from,
-              fromEntityRangeIndex,
-              to,
-              toEntityRangeIndex,
+            // ToDo: skip when positions are still empty
+            // next line saves nodes creation when positions aren't ready yet
+            // however it makes next (edges) section log "couldn't create edge" warnings
+            // as there aren't any nodes that match the edge; fix along with the corrupted data fix
+            // if (!x || !y) return
+            const role = 'node'
+            const nodeStyle = entityStyle({ type, role })
+            const node = makeNode({
+              id,
               type,
-              exclusiveRelations,
-              selectedId,
-              entityFromType: entities[from].type,
+              data,
+              index,
+              x,
+              y,
+              width,
+              height,
+              nodeStyle,
+              text,
             })
-            edges.push(relation)
-            // setElements(els => [...els, relation])
+            nodes.push(node)
+            // setElements(els => [...els, node])
           })
-        })
       })
 
-    setElements([...nodes, ...edges])
+      if (!entityEntries.length) return null
+
+      relations &&
+        relations.forEach(({ from, to, type }) => {
+          entities[from] &&
+            entities[from].entityRanges.forEach((_, fromEntityRangeIndex) => {
+              entities[to] &&
+                entities[to].entityRanges.forEach((_, toEntityRangeIndex) => {
+                  const relation = makeRelation({
+                    from,
+                    fromEntityRangeIndex,
+                    to,
+                    toEntityRangeIndex,
+                    type,
+                    exclusiveRelations,
+                    selectedId,
+                    entityFromType: entities[from].type,
+                  })
+                  edges.push(relation)
+                  // setElements(els => [...els, relation])
+                })
+            })
+        })
+
+      setElements([...nodes, ...edges])
+    } catch (error) {
+      console.error(error.name)
+      const component = 'Relations'
+      const { name, message } = error
+      const issue = { component, name, message }
+      dispatch(addIssue(issue))
+    }
 
     // ToDo: re-position shifted nodes back to place whenever viewEditor is on
     // Though setElements gets an entirely new array, with the correct positioning,

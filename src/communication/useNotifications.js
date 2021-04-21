@@ -1,33 +1,32 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+
+import useTranslation from '../i18n/useTranslation'
 
 const useNotifications = setOpen => {
   const [message, setMessage] = useState('')
   const [severity, setSeverity] = useState('')
+  const t = useTranslation()
 
   const userError = useSelector(store => store.users.error)
-  const fileError = useSelector(store => store.content.error)
-  const contentError = useSelector(store => store.content.error === 'content')
+  const contentError = useSelector(
+    store => store.content.error?.status && store.content.error.status !== 404
+  )
 
   useEffect(() => {
     if (userError) {
       setOpen(true)
-      setMessage(userError || 'Something went wrong')
+      setMessage(t('userError'))
       setSeverity('error')
     }
-    // if (contentError) {
-    //   setOpen(true)
-    //   setMessage(
-    //     "There are issues with the file's content. Check log for more details"
-    //   )
-    //   setSeverity('error')
-    // }
-    // if (fileError && !contentError) {
-    //   setOpen(true)
-    //   setMessage(contentError || 'Something went wrong')
-    //   setSeverity('error')
-    // }
-  }, [setOpen, userError, contentError, fileError])
+
+    if (contentError) {
+      setOpen(true)
+      setMessage(t('contentError'))
+      setSeverity('error')
+    }
+  }, [setOpen, userError, contentError, t])
 
   return { message, severity }
 }

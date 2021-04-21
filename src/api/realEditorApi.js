@@ -1,37 +1,17 @@
 import axios from 'axios'
-import * as L from 'leaflet'
 
 import objectify from '../utility/objectify'
 import { keyProxy } from '../utility/proxies'
 import getArrayDepth from '../utility/getArrayDepth'
 
-// ToDo: remove
-// const swapUsingL = ({ type, coordinates }) => {
-//   const swapLngAndLat = ([lng, lat]) => [lat, lng]
-
-//   let result
-//   switch (type) {
-//     case 'Point':
-//       result = L.GeoJSON.coordsToLatLngs(coordinates, 0, swapLngAndLat)
-//       console.log('Point. result: ', result)
-//       return result
-//     case 'Polygon':
-//       result = L.GeoJSON.coordsToLatLngs(
-//         coordinates,
-//         getArrayDepth(coordinates),
-//         swapLngAndLat
-//       )
-//       console.log('Polygon. result: ', result)
-//       return result
-//     default:
-//       console.error(`>> Type ${type} is not recognized`)
-//       return [null, null]
-//   }
-// }
-
 // ToDo: remove getArrayDepth; depth should be derived from type;
 // find out which types are supported
-const swap = (id, { type, coordinates }) => {
+const swap = (id, geolocation) => {
+  const { type, coordinates } = geolocation || {
+    type: undefined,
+    coordinates: undefined,
+  }
+  let issue = {}
   switch (type) {
     case 'Point':
       const [lng, lat] = coordinates
@@ -40,10 +20,17 @@ const swap = (id, { type, coordinates }) => {
       const depth = getArrayDepth(coordinates)
       const array = depth === 1 ? coordinates : coordinates[0]
       return { type, coordinates: array.map(([lng, lat]) => [lat, lng]) }
+    case undefined:
+      issue = {
+        id,
+        field: 'geolocation',
+        value: 'undefined',
+        issue: 'undefined',
+      }
+      return { type, coordinates: [], issue }
     default:
-      const error = { id, field: 'type', value: type, issue: 'unrecognized' }
-      console.error(error)
-      return { type, coordinates: [], error }
+      issue = { id, field: 'type', value: type, issue: 'unrecognized' }
+      return { type, coordinates: [], issue }
   }
 }
 
@@ -63,15 +50,16 @@ const convertShayToRaw = (
       })),
     },
   ]
-  const errors = []
+  const issues = []
 
   Object.values(entities).forEach(
     ({ id, geolocation, score, sub_type_id, type_id, word }) => {
       const type = lists[type_id]?.value
       const mutability = 'IMMUTABLE'
+      // if (id === '6644bd08-59d8-43c8-9919-4e069b7b91b0') geolocation = null
       const geometry = swap(id, geolocation)
-      const { error } = geometry
-      if (error) errors.push(error)
+      const { issue } = geometry
+      if (issue) issues.push(issue)
 
       const data = {
         id,
@@ -93,7 +81,10 @@ const convertShayToRaw = (
     })
   )
 
-  return { blocks, entityMap, relations, errors }
+  if (issues.length) {
+    console.error('There are issues in the file. See redux content.issues')
+  }
+  return { blocks, entityMap, relations, issues }
 }
 
 const realEditorApi = async fileId => {
@@ -103,17 +94,19 @@ const realEditorApi = async fileId => {
   const getAnalysis = () => axios.get(analysis)
   const getLists = () => axios.get(lists)
 
-  // no catch statement, leaving error catching & handling to content.js
-  return (
-    Promise.all([getAnalysis(), getLists()])
-      .then(([analysis, lists]) =>
-        convertShayToRaw(analysis.data, keyProxy(objectify(lists.data)))
-      )
-      // no throwing (see content.js)
-      .catch(error => {
-        console.log(error)
-      })
-  )
+  return Promise.all([getAnalysis(), getLists()])
+    .then(([analysis, lists]) =>
+      convertShayToRaw(analysis.data, keyProxy(objectify(lists.data)))
+    )
+    .catch(error => {
+      // eslint-disable-next-line no-throw-literal
+      throw {
+        field: 'file',
+        value: fileId,
+        issue: error.response?.data?.error || 'Invalid file',
+        status: error.response?.status,
+      }
+    })
 }
 
 export default realEditorApi

@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchContent, error, changes } from '../redux/content'
-import { setAppProp /* , scrolling */ } from '../redux/app'
+import { fetchContent, changes } from '../redux/content'
+import { setAppProp } from '../redux/app'
 import { useLocale, capitalize } from '../utility/appUtilities'
 
 import {
@@ -14,8 +14,6 @@ import {
 } from 'draft-js'
 import 'draft-js/dist/Draft.css'
 
-import CircularProgress from '@material-ui/core/CircularProgress'
-
 import Relations from '../relations/Relations'
 import Selector, { emptyData } from './Selector'
 import { createEntityFromSelection } from './entities'
@@ -24,7 +22,6 @@ import parseSelection from './selection'
 import EditorControl from './EditorControl'
 import noScrollbar from '../styling/noScrollbar'
 import Scroller from './Scroller'
-import { throttleByFrame } from '../utility/debounce'
 
 const MyEditor = () => {
   const file = useSelector(store => store.content.file)
@@ -35,9 +32,7 @@ const MyEditor = () => {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const ref = useRef()
 
-  const { view, hide, drawerOpen, locale, mode } = useSelector(
-    store => store.app
-  )
+  const { view, drawerOpen, locale, mode } = useSelector(store => store.app)
   const { placement, antiPlacement } = useLocale()
 
   const dispatch = useDispatch()
@@ -158,7 +153,15 @@ const MyEditor = () => {
     const showContent = content =>
       setEditorState(EditorState.createWithContent(content, decorator))
 
-    dispatch(fetchContent({ file, convertContent, showContent }))
+    // ! error cacthing
+    // Being a thunk, fetchContent returns a promise. As a convention, that promise should be caught
+    // to prevent ugly uncaught exceptions, though in this specific case,
+    // fetchContent's fulfilled reducer catches on its own.
+    dispatch(fetchContent({ file, convertContent, showContent })).catch(
+      error => {
+        console.error(error)
+      }
+    )
   }, [dispatch, file])
 
   // selection & entity creation

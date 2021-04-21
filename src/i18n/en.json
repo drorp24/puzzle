@@ -1,4 +1,6 @@
 {
+  "contentError": "Content error",
+  "userError": "Wrong user or password",
   "table": "Table",
   "text": "Text",
   "noSuchFile": "No such file",
