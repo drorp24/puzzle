@@ -2,10 +2,11 @@ import { useMemo } from 'react'
 import { keyProxy } from '../utility/proxies'
 
 import PersonIcon from '@material-ui/icons/PermIdentityOutlined'
-import PlaceIcon from '@material-ui/icons/PlaceOutlined'
+import LocationIcon from '@material-ui/icons/HomeOutlined'
 import TimeIcon from '@material-ui/icons/AccessTimeOutlined'
-import DeviceIcon from '@material-ui/icons/PhoneOutlined'
+import DeviceIcon from '@material-ui/icons/DevicesOtherOutlined'
 import NotListedIcon from '@material-ui/icons/HelpOutlined'
+import OrganizationIcon from '@material-ui/icons/GroupsOutlined'
 
 export const useColor = relationType =>
   useMemo(() => entityTypes[relationTypes[relationType].entity].color, [
@@ -47,9 +48,16 @@ const entityTypes = keyProxy({
   LOCATION: {
     name: 'LOCATION',
     mutability: 'IMMUTABLE',
-    icon: <PlaceIcon />,
+    icon: <LocationIcon />,
     selector: true,
     color: 'coral',
+  },
+  ORGANIZATION: {
+    name: 'ORGANIZATION',
+    mutability: 'IMMUTABLE',
+    icon: <OrganizationIcon />,
+    selector: true,
+    color: 'springgreen',
   },
   TIME: {
     name: 'TIME',
@@ -86,7 +94,7 @@ const entityTypes = keyProxy({
   },
 })
 
-export const levelIconWithText = 0.4
+export const levelIconWithText = 0.25
 
 // ! node & text styling
 // Since they overlap, both draft.js spans and react-flow's nodes use identical styling rules
@@ -112,9 +120,19 @@ export const entityStyle = ({ type, role, element, mode, id }) => ({
 })
 export const entityIconStyle = ({ type, role, mode = 'light' }) => ({
   display: 'inline-flex',
-  marginRight: '0.25rem',
-  fontSize: '1rem',
-  color: mode === 'light' ? 'black' : 'white',
+  color: 'white',
+  '& svg': {
+    fontSize: '1.2rem',
+  },
 })
-
+export const entityTextStyle = ({
+  type,
+  role,
+  mode = 'light',
+  capitalPlacement,
+  capitalAntiPlacement,
+}) => ({
+  [`margin${capitalPlacement || capitalAntiPlacement}`]: '0.4rem',
+  color: 'black',
+})
 export default entityTypes
