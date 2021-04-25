@@ -1,4 +1,6 @@
 import entityTypes, { relationTypes } from '../editor/entityTypes'
+
+import { humanize } from '../utility/appUtilities'
 // import ConnectionLine from './ConnectionLine'
 
 export const options = {
@@ -36,7 +38,7 @@ export const makeNode = ({
 })
 
 export const relationOptions = ({ type, entityFromType }) => ({
-  label: type,
+  label: humanize(type),
   style: {
     stroke: entityTypes[entityFromType].color,
     strokeWidth: '4',

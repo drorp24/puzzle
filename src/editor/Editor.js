@@ -21,10 +21,11 @@ import decorator from './decorator'
 import parseSelection from './selection'
 import EditorControl from './EditorControl'
 import noScrollbar from '../styling/noScrollbar'
-import Scroller from './Scroller'
+import Spinner from '../layout/Spinner'
 
 const MyEditor = () => {
   const file = useSelector(store => store.content.file)
+  const isLoading = useSelector(store => store.content.loading === 'pending')
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
@@ -32,8 +33,8 @@ const MyEditor = () => {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const ref = useRef()
 
-  const { view, drawerOpen, locale, mode } = useSelector(store => store.app)
-  const { placement, antiPlacement } = useLocale()
+  const { view, drawerOpen } = useSelector(store => store.app)
+  const { placement } = useLocale()
 
   const dispatch = useDispatch()
 
@@ -77,10 +78,6 @@ const MyEditor = () => {
     return 'not-handled'
   }
 
-  // const reportScrolling = () => {
-  //   dispatch(scrolling())
-  // }
-
   const styles = {
     container: theme => ({
       height: '100%',
@@ -122,27 +119,6 @@ const MyEditor = () => {
       [`padding${capitalize(placement)}`]: '0.5rem',
       zIndex: '1',
     },
-
-    scroller: {
-      position: 'absolute',
-      bottom: '1rem',
-      [`${antiPlacement}`]: '0.5rem',
-      outline: 'none',
-      display: 'flex',
-      borderRadius: '50%',
-      '&:focus': {
-        outline: 'none',
-      },
-    },
-    circularProgress: theme => ({
-      position: 'fixed',
-      top: '50%',
-      left: locale === 'en' ? '30%' : '65%',
-      '& > span': {
-        color:
-          mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : theme.palette.grey[500],
-      },
-    }),
   }
 
   // conversion
@@ -191,6 +167,7 @@ const MyEditor = () => {
     dispatch(setAppProp({ editor: position }))
   }, [dispatch, drawerOpen])
 
+  if (isLoading) return <Spinner />
   return (
     <div css={styles.container}>
       <div css={styles.editor} ref={ref}>
@@ -215,19 +192,16 @@ const MyEditor = () => {
 
       <div css={styles.space} />
       <div css={styles.selector}>
-        <Selector
+        {/* <Selector
           {...{
             selectorOpen,
             uSetSelectorOpen,
             uSetData,
           }}
-        />
+        /> */}
       </div>
       <div css={styles.control}>
         <EditorControl />
-      </div>
-      <div css={styles.scroller}>
-        <Scroller textRef={ref} />
       </div>
     </div>
   )

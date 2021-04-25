@@ -1,9 +1,14 @@
-import { useEffect, memo } from 'react'
+import { useEffect, memo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocale } from '../utility/appUtilities'
 
 import { Handle } from 'react-flow-renderer'
 
+import { EntityDetails } from '../editor/EntityDetails'
+
+import { makeStyles } from '@material-ui/core/styles'
+import Tooltip from '@material-ui/core/Tooltip'
+import Zoom from '@material-ui/core/Zoom'
 import red from '@material-ui/core/colors/red'
 import green from '@material-ui/core/colors/green'
 
@@ -11,21 +16,35 @@ import entityTypes, {
   relationTypes,
   entityStyle,
   entityIconStyle,
+  entityTextStyle,
 } from '../editor/entityTypes'
 import { styles } from './Relations'
 
-const Node = ({ id, data: { inputs, outputs, type, text } }) => {
+const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
   const { editor, connections } = useSelector(store => store.app.view)
-  const { direction } = useLocale()
-  const showText = /* editor ? false :  */ true
+  const { direction, capitalAntiPlacement } = useLocale()
   const handlesVisibility = connections ? 'visible' : 'hidden'
   const { icon } = entityTypes[type]
   const role = 'node'
   const element = 'span'
 
+  const [tooltipOpen, setTooltipOpen] = useState(false)
+  const data = { id, subTypes }
+  const entity = { type, data }
+  const toggleTooltip = () => {
+    if (editor) setTooltipOpen(state => !state)
+  }
+
   useEffect(() => {
     console.log('Node is rendered')
   }, [])
+
+  const useStyles = makeStyles(theme => ({
+    entity: entityStyle({ type, role, element }),
+    icon: entityIconStyle({ type, role }),
+    text: entityTextStyle({ capitalAntiPlacement }),
+  }))
+  const classes = useStyles()
 
   return (
     <>
@@ -54,12 +73,22 @@ const Node = ({ id, data: { inputs, outputs, type, text } }) => {
           visibility: handlesVisibility,
         }}
       />
-      {showText && (
-        <span style={entityStyle({ type, role, element })}>
-          <span style={entityIconStyle({ type, role })}>{icon}</span>
-          <span style={{ direction }}>{text}</span>
+
+      <Tooltip
+        open={tooltipOpen}
+        title={<EntityDetails {...{ entity }} />}
+        arrow
+        TransitionComponent={Zoom}
+        disableFocusListener={true}
+        placement="left"
+      >
+        <span className={classes.entity} onClick={toggleTooltip}>
+          <span className={classes.icon}>{icon}</span>
+          <span className={classes.text} style={{ direction }}>
+            {text}
+          </span>
         </span>
-      )}
+      </Tooltip>
       {inputs &&
         inputs.map(({ source, target, type }) => (
           <Handle

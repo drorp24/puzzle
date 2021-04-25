@@ -56,7 +56,7 @@ const convertShayToRaw = (
     ({ id, geolocation, score, sub_type_id, type_id, word }) => {
       const type = lists[type_id]?.value
       const mutability = 'IMMUTABLE'
-      // if (id === '6644bd08-59d8-43c8-9919-4e069b7b91b0') geolocation = null
+      // if (id === '6644bd08-59d8-43c8-9919-4e069b7b91b0') geolocation = undefined
       const geometry = swap(id, geolocation)
       const { issue } = geometry
       if (issue) issues.push(issue)

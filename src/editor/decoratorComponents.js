@@ -10,13 +10,17 @@ import {
 
 import { levelIconWithText } from '../editor/entityTypes'
 import usePixels from '../utility/usePixels'
-import { useMode } from '../utility/appUtilities'
+import { useMode, useLocale } from '../utility/appUtilities'
 
 import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
 import { EntityDetails } from './EntityDetails'
 
-import entityTypes, { entityStyle, entityIconStyle } from './entityTypes'
+import entityTypes, {
+  entityStyle,
+  entityIconStyle,
+  entityTextStyle,
+} from './entityTypes'
 
 export const TextSpan = type => ({ children }) => (
   <span css={entityStyle(type)}>{children}</span>
@@ -60,7 +64,6 @@ export const EntitySpan = ({
       y: editorY,
       width: editorWidth,
       height: editorHeight,
-      // scrolling,
     },
   } = useSelector(store => store.app)
   const { height: windowHeight, width: windowWidth } = useSelector(
@@ -158,8 +161,10 @@ const Entity = memo(
     const { icon } = entityTypes[type]
     const role = 'text'
     const { mode } = useMode()
+    const { capitalPlacement } = useLocale()
     const entityS = entityStyle({ type, role, mode })
     const iconS = entityIconStyle({ type, role, mode })
+    const textS = entityTextStyle({ capitalPlacement })
 
     const toggleTooltip = () => {
       setTooltipOpen(state => !state)
@@ -183,8 +188,8 @@ const Entity = memo(
           {...(tags && { style: entityS })}
           onClick={toggleTooltip}
         >
-          <span style={iconS}>{tags && icon}</span>
-          {children}
+          <span css={iconS}>{tags && icon}</span>
+          <span css={textS}>{children}</span>
         </span>
       </Tooltip>
     )

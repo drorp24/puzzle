@@ -25,7 +25,18 @@ export const useLocale = () => {
   const ltr = direction === 'ltr'
   const placement = rtl ? 'left' : 'right'
   const antiPlacement = rtl ? 'right' : 'left'
-  return { locale, direction, rtl, ltr, placement, antiPlacement }
+  const capitalPlacement = capitalize(placement)
+  const capitalAntiPlacement = capitalize(antiPlacement)
+  return {
+    locale,
+    direction,
+    rtl,
+    ltr,
+    placement,
+    antiPlacement,
+    capitalPlacement,
+    capitalAntiPlacement,
+  }
 }
 
 const dateOptions = {
@@ -52,6 +63,11 @@ export const useLocaleDate = date => {
 export const capitalize = s => {
   if (typeof s !== 'string') return ''
   return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+export const humanize = s => {
+  if (typeof s !== 'string') return ''
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase().replace(/_/g, ' ')
 }
 
 // assumption: element is smaller than box

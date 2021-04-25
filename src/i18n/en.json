@@ -1,4 +1,5 @@
 {
+  "loading": "Loading...",
   "contentError": "Content error",
   "userError": "Wrong user or password",
   "table": "Table",
