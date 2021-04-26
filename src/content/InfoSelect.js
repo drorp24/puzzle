@@ -20,10 +20,33 @@ const styles = {
   },
 }
 
-const InfoSelect = ({ info, setInfo }) => {
+const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
   const t = useTranslation()
 
   const handleInfoSelection = (event, newInfo) => {
+    console.log('info, newInfo: ', info, newInfo)
+
+    const listHeight = selection =>
+      selection.includes('text')
+        ? selection.includes('table')
+          ? heights.table
+          : 0
+        : selection.includes('table')
+        ? heights.full
+        : 0
+
+    const curListHeight = listHeight(info)
+    const newListHeight = listHeight(newInfo)
+    console.log('newListHeight: ', newListHeight)
+
+    if (newListHeight < curListHeight) {
+      setTimeout(() => {
+        setListHeight(newListHeight)
+      }, 1000)
+    } else {
+      setListHeight(newListHeight)
+    }
+
     setInfo(newInfo)
   }
 

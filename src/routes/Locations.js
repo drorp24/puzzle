@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocale, capitalize } from '../utility/appUtilities'
 
 import Paper from '@material-ui/core/Paper'
@@ -17,22 +16,25 @@ const heights = {
   gap: 4,
   table: 40,
 }
-const searchHeight = heights.search + heights.gap
-const fullHeight = 100 - searchHeight
+heights.full = 100 - heights.search - heights.gap
 
 const Locations = () => {
-  const relations = useSelector(store => store.app.view.relations)
   const { locale, placement } = useLocale()
-  const [info, setInfo] = useState(['text' /* , 'table' */])
+  const [info, setInfo] = useState(['text'])
+  const [listHeight, setListHeight] = useState(heights.full)
+  console.log('listHeight: ', listHeight)
 
   const tableHeight = info.includes('text')
     ? info.includes('table')
       ? heights.table
       : 0
     : info.includes('table')
-    ? fullHeight
+    ? heights.full
     : 0
 
+  // tableTop updates as soon as button is clicked
+  // whereas listHeight awaits the transition to end.
+  // This ensures table continues to cover the text as long as its height shrinks
   const tableTop = 100 - tableHeight
 
   const styles = {
@@ -50,7 +52,7 @@ const Locations = () => {
       display: 'grid',
       gridTemplateRows: `${heights.gap / 2}vh ${heights.search}vh ${
         heights.gap / 2
-      }vh ${fullHeight}vh`,
+      }vh ${heights.full}vh`,
       [`padding${capitalize(placement)}`]: '1rem',
       backgroundColor: `${theme.palette.background.backdrop} !important`,
     }),
@@ -68,17 +70,17 @@ const Locations = () => {
       fontSize: locale === 'he' ? '1rem' : '0.8125rem',
     }),
     editor: theme => ({
-      height: `${fullHeight}vh`,
+      height: `${heights.full}vh`,
       transition: 'height 0.7s',
       border: theme.palette.border,
-      lineHeight: /* relations ? '5' : */ '3.5',
+      lineHeight: '3.5',
       padding: '0 1rem',
       backgroundColor: theme.palette.background.paper,
       zIndex: 0,
     }),
     table: theme => ({
       position: 'absolute !important',
-      height: `${fullHeight}vh`,
+      height: `${listHeight}vh`,
       transform: `translateY(${tableTop}vh)`,
       transition: 'transform 0.5s',
       width: 'calc(100% - 1rem)',
@@ -87,6 +89,9 @@ const Locations = () => {
       backgroundColor: theme.palette.background.paper,
       zIndex: 0,
     }),
+    tableInner: {
+      height: `${tableHeight}vh`,
+    },
     map: {},
   }
 
@@ -96,13 +101,13 @@ const Locations = () => {
         <div></div>
         <div css={styles.input}>
           <FileSelect />
-          <InfoSelect {...{ info, setInfo }} />
+          <InfoSelect {...{ info, setInfo, heights, setListHeight }} />
         </div>
         <div></div>
         <div css={styles.editor}>
           <Editor />
         </div>
-        <div css={styles.table}>
+        <div css={styles.table} id="table">
           <Table />
         </div>
       </Paper>

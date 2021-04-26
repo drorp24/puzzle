@@ -12,6 +12,7 @@ import { levelIconWithText } from '../editor/entityTypes'
 import usePixels from '../utility/usePixels'
 import { useMode, useLocale } from '../utility/appUtilities'
 
+import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
 import { EntityDetails } from './EntityDetails'
@@ -166,32 +167,36 @@ const Entity = memo(
     const iconS = entityIconStyle({ type, role, mode })
     const textS = entityTextStyle({ capitalPlacement })
 
-    const toggleTooltip = () => {
-      setTooltipOpen(state => !state)
+    const openTooltip = () => {
+      setTooltipOpen(true)
     }
-
+    const closeTooltip = () => {
+      setTooltipOpen(false)
+    }
     return (
-      <Tooltip
-        // open={
-        //   entity.data.id === 'secondEntity' ||
-        //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
-        // }
-        open={tooltipOpen}
-        title={<EntityDetails {...{ entity }} />}
-        arrow
-        TransitionComponent={Zoom}
-        disableFocusListener={true}
-        placement="left"
-      >
-        <span
-          ref={ref}
-          {...(tags && { style: entityS })}
-          onClick={toggleTooltip}
+      <ClickAwayListener onClickAway={closeTooltip}>
+        <Tooltip
+          // open={
+          //   entity.data.id === 'secondEntity' ||
+          //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
+          // }
+          open={tooltipOpen}
+          title={<EntityDetails {...{ entity }} />}
+          arrow
+          TransitionComponent={Zoom}
+          disableFocusListener={true}
+          placement="left"
         >
-          <span css={iconS}>{tags && icon}</span>
-          <span css={textS}>{children}</span>
-        </span>
-      </Tooltip>
+          <span
+            ref={ref}
+            {...(tags && { style: entityS })}
+            onClick={openTooltip}
+          >
+            <span css={iconS}>{tags && icon}</span>
+            <span css={textS}>{children}</span>
+          </span>
+        </Tooltip>
+      </ClickAwayListener>
     )
   })
 )

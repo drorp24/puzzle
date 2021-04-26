@@ -81,10 +81,6 @@ const Relations = () => {
     dispatch(positionShifted({ id, entityRangeIndex, shifted }))
   }
 
-  const onLoad = reactFlowInstance => {
-    const els = reactFlowInstance.getElements()
-  }
-
   useEffect(() => {
     try {
       const entityEntries = Object.entries(entities)
@@ -227,7 +223,6 @@ const Relations = () => {
         {...{
           elements,
           nodeTypes,
-          onLoad,
           onElementsRemove,
           onConnect,
           onNodeDragStop,

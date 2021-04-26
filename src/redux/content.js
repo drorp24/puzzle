@@ -50,7 +50,12 @@ export const fetchContent = createAsyncThunk(
 
       if (!rawContent)
         // eslint-disable-next-line no-throw-literal
-        throw { id: null, field: 'file', value: file, issue: 'Invalid file' }
+        throw {
+          api: 'contentApi',
+          field: 'file',
+          value: file,
+          issue: 'Invalid file',
+        }
 
       const content = convertContent(rawContent)
       showContent(content)
@@ -70,7 +75,7 @@ const initialState = contentAdapter.getInitialState({
   loading: 'idle',
   changes: 0,
   selectedId: null,
-  file: 'doc_0',
+  file: null,
   issues: [],
 })
 
@@ -212,7 +217,7 @@ export const selectContent = ({ content }) => {
   const sortedEntities = entities // 'entities' key is deprecated; use 'sortedEntities'
   const keyedEntities = content.entities
   const ids = contentSelectors.selectIds(content)
-  const { loading, error, selectedId, relations } = content
+  const { loading, error, selectedId, relations, file: doc_id } = content
   const selectedEntity = keyedEntities[selectedId]
   const isLoading = loading === 'pending'
   const loaded = sortedEntities.length > 0 && loading === 'idle' && !error
@@ -228,6 +233,7 @@ export const selectContent = ({ content }) => {
     loaded,
     error,
     relations,
+    doc_id,
   }
 }
 

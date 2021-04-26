@@ -1,4 +1,5 @@
 {
+  "feedbackError": "Couldn't update server with you feedback",
   "loading": "Loading...",
   "contentError": "Content error",
   "userError": "Wrong user or password",

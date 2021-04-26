@@ -7,6 +7,7 @@ import { Handle } from 'react-flow-renderer'
 import { EntityDetails } from '../editor/EntityDetails'
 
 import { makeStyles } from '@material-ui/core/styles'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
 import red from '@material-ui/core/colors/red'
@@ -31,10 +32,15 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
   const [tooltipOpen, setTooltipOpen] = useState(false)
   const data = { id, subTypes }
   const entity = { type, data }
-  const toggleTooltip = () => {
-    if (editor) setTooltipOpen(state => !state)
-  }
 
+  // if (editor) is to prevent tooltip from appearing
+  // at the end of a node drag-and-drop
+  const openTooltip = () => {
+    if (editor) setTooltipOpen(true)
+  }
+  const closeTooltip = () => {
+    if (editor) setTooltipOpen(false)
+  }
   useEffect(() => {
     console.log('Node is rendered')
   }, [])
@@ -73,22 +79,23 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
           visibility: handlesVisibility,
         }}
       />
-
-      <Tooltip
-        open={tooltipOpen}
-        title={<EntityDetails {...{ entity }} />}
-        arrow
-        TransitionComponent={Zoom}
-        disableFocusListener={true}
-        placement="left"
-      >
-        <span className={classes.entity} onClick={toggleTooltip}>
-          <span className={classes.icon}>{icon}</span>
-          <span className={classes.text} style={{ direction }}>
-            {text}
+      <ClickAwayListener onClickAway={closeTooltip}>
+        <Tooltip
+          open={tooltipOpen}
+          title={<EntityDetails {...{ entity }} />}
+          arrow
+          TransitionComponent={Zoom}
+          disableFocusListener={true}
+          placement="left"
+        >
+          <span className={classes.entity} onClick={openTooltip}>
+            <span className={classes.icon}>{icon}</span>
+            <span className={classes.text} style={{ direction }}>
+              {text}
+            </span>
           </span>
-        </span>
-      </Tooltip>
+        </Tooltip>
+      </ClickAwayListener>
       {inputs &&
         inputs.map(({ source, target, type }) => (
           <Handle

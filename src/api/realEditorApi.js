@@ -60,13 +60,15 @@ const convertShayToRaw = (
       const geometry = swap(id, geolocation)
       const { issue } = geometry
       if (issue) issues.push(issue)
+      const { entity_location_id, feedback } = geolocation
+      const properties = { entity_location_id, feedback }
 
       const data = {
         id,
         score,
         subTypes: [lists[sub_type_id[0]]?.value],
         word,
-        geoLocation: { geometry },
+        geoLocation: { geometry, properties },
       }
       const entity = { type, mutability, data }
       entityMap[id] = entity

@@ -2,6 +2,8 @@
 import { memo, useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectContent, updateTag, selectIds } from '../redux/content'
+import { postFeedback } from '../redux/feedback'
+
 import { useDirection } from '../utility/appUtilities'
 
 import { FixedSizeList as List } from 'react-window'
@@ -103,7 +105,7 @@ const styles = {
   selectedTagIcon: {
     color: 'rgba(256, 256, 256, 0.2)',
   },
-  selectedTagIconOn: {
+  selectedTagIcowrongn: {
     color: 'white !important',
   },
   dimText: {
@@ -163,14 +165,20 @@ const Table = () => {
 // ToDo: style tag buttons properly when row is selected
 
 const Row = memo(({ index, style }) => {
-  const { entities, selected } = useSelector(selectContent)
+  const { entities, selected, doc_id } = useSelector(selectContent)
   const { mode } = useSelector(store => store.app)
   const dispatch = useDispatch()
 
   const entity = entities[index]
   const {
     type,
-    data: { id, score, geoLocation, tag: currentTag },
+    data: {
+      id,
+      score,
+      geoLocation: {
+        properties: { feedback: currentTag, entity_location_id },
+      },
+    },
     entityRanges,
   } = entity
 
@@ -192,13 +200,22 @@ const Row = memo(({ index, style }) => {
   const selectedInfo = id === selected ? styles.selectedInfo : {}
 
   const tagState = {
-    yes: 'off',
-    maybe: 'off',
-    no: 'off',
+    correct: 'off',
+    not_sure: 'off',
+    wrong: 'off',
   }
   tagState[tag] = 'on'
 
   const tagClick = id => (e, tag) => {
+    const data = {
+      username: 'user_x',
+      document_id: doc_id,
+      entity_id: id,
+      entity_location_id,
+      feedback: tag,
+    }
+
+    dispatch(postFeedback(data))
     dispatch(updateTag({ id, tag }))
     setTag(tag)
   }
@@ -243,17 +260,25 @@ const Row = memo(({ index, style }) => {
         size="small"
         css={styles.buttonGroup}
       >
-        <ToggleButton value="yes" title="Yes" css={styles[tagState['yes']]}>
+        <ToggleButton
+          value="correct"
+          title="Correct"
+          css={styles[tagState['correct']]}
+        >
           <Yes css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
         <ToggleButton
-          value="maybe"
-          title="Maybe"
-          css={styles[tagState['maybe']]}
+          value="not_sure"
+          title="Not_sure"
+          css={styles[tagState['not_sure']]}
         >
           <Maybe css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
-        <ToggleButton value="no" title="No" css={styles[tagState['no']]}>
+        <ToggleButton
+          value="wrong"
+          title="Wrong"
+          css={styles[tagState['wrong']]}
+        >
           <No css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
       </ToggleButtonGroup>

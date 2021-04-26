@@ -13,6 +13,7 @@ const useNotifications = setOpen => {
   const contentError = useSelector(
     store => store.content.error?.status && store.content.error.status !== 404
   )
+  const feedbackError = useSelector(store => store.feedback.error)
 
   useEffect(() => {
     if (userError) {
@@ -26,7 +27,13 @@ const useNotifications = setOpen => {
       setMessage(t('contentError'))
       setSeverity('error')
     }
-  }, [setOpen, userError, contentError, t])
+
+    if (feedbackError) {
+      setOpen(true)
+      setMessage(t('feedbackError'))
+      setSeverity('error')
+    }
+  }, [setOpen, userError, contentError, feedbackError, t])
 
   return { message, severity }
 }
