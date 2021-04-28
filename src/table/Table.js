@@ -27,6 +27,7 @@ import { EntityDetails } from '../editor/EntityDetails'
 
 import usePixels from '../utility/usePixels'
 import noScrollbar from '../styling/noScrollbar'
+import Spinner from '../layout/Spinner'
 
 const styles = {
   autoSizer: {
@@ -121,7 +122,7 @@ const styles = {
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
-  const { entities, selected, error } = useSelector(selectContent)
+  const { entities, selectedId, error, isLoading } = useSelector(selectContent)
   const ids = useSelector(selectIds)
   const itemCount = entities.length
   const itemSize = usePixels(4)
@@ -136,12 +137,14 @@ const Table = () => {
       const top = index * itemSize
       outerRef.current.scrollTo({ top, behavior: 'smooth' })
     }
-    if (selected) scrollTo(selected)
-  }, [ids, itemSize, selected])
+    if (selectedId) scrollTo(selectedId)
+  }, [ids, itemSize, selectedId])
 
   if (error?.status === 404) {
     return null
   }
+
+  if (isLoading) return <Spinner />
 
   return (
     <AutoSizer style={styles.autoSizer}>
@@ -171,7 +174,7 @@ const Table = () => {
 // ToDo: style tag buttons properly when row is selected
 
 const Row = memo(({ index, style }) => {
-  const { entities, selected, doc_id } = useSelector(selectContent)
+  const { entities, selectedId, doc_id } = useSelector(selectContent)
   const { mode } = useSelector(store => store.app)
   const dispatch = useDispatch()
 
@@ -199,9 +202,9 @@ const Row = memo(({ index, style }) => {
       : styles.darkEven
   const line = { lineHeight: `${style.height}px` }
 
-  const selectedRow = id === selected ? styles.selected : {}
-  const selectedTagIcon = id === selected ? styles.selectedTagIcon : {}
-  const selectedInfo = id === selected ? styles.selectedInfo : {}
+  const selectedRow = id === selectedId ? styles.selected : {}
+  const selectedTagIcon = id === selectedId ? styles.selectedTagIcon : {}
+  const selectedInfo = id === selectedId ? styles.selectedInfo : {}
 
   const tagState = {
     correct: 'off',

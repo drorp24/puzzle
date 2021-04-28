@@ -7,10 +7,9 @@ const appSlice = createSlice({
     locale: 'he',
     drawerOpen: false,
     window: {},
-    view: { editor: true, tags: true },
-    editor: {
-      /*  scrolling: 0 */
-    },
+    view: { editor: true, tags: true, relations: false },
+    editor: {},
+    refresh: 0,
   },
   reducers: {
     toggleMode: state => ({
@@ -43,19 +42,16 @@ const appSlice = createSlice({
     //     scrolling: state.editor.scrolling + 1,
     //   },
     // }),
-    view: (state, { payload }) => {
-      console.log('in app.js. view has just been dispatched')
-      return {
-        ...state,
-        view: {
-          ...state.view,
-          ...payload,
-          exclusiveRelations: payload.relations
-            ? false
-            : payload.exclusiveRelations || state.view.exclusiveRelations,
-        },
-      }
-    },
+    view: (state, { payload }) => ({
+      ...state,
+      view: {
+        ...state.view,
+        ...payload,
+        exclusiveRelations: payload.relations
+          ? false
+          : payload.exclusiveRelations || state.view.exclusiveRelations,
+      },
+    }),
     hide: (state, { payload }) => ({
       ...state,
       hide: {
@@ -63,6 +59,7 @@ const appSlice = createSlice({
         ...payload,
       },
     }),
+    requestRefresh: state => ({ ...state, refresh: state.refresh + 1 }),
   },
 })
 
@@ -75,7 +72,8 @@ export const {
   toggleDrawer,
   setDimensions,
   view,
+  view: setView,
   hide,
   setAppProp,
-  // scrolling,
+  requestRefresh,
 } = actions

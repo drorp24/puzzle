@@ -312,6 +312,7 @@ export const {
   changes,
   updatePosition,
   positionShifted,
+  select,
   selected,
   show,
   updateTag,

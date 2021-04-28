@@ -38,7 +38,6 @@ const FileSelect = () => {
     },
     form: {
       height: '100%',
-      width: '95%',
     },
     textField: theme => ({
       height: '100%',
@@ -55,8 +54,12 @@ const FileSelect = () => {
     endAdornment: {
       '& svg': {
         fontSize: '1.2rem',
+        margin: '0 0.3rem',
       },
     },
+    searchIcon: theme => ({
+      color: theme.palette.action.active,
+    }),
   }
 
   const onSubmit = ({ file }) => {
@@ -93,7 +96,7 @@ const FileSelect = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start" css={styles.startAdornment}>
-                <SearchIcon />
+                <SearchIcon css={styles.searchIcon} />
               </InputAdornment>
             ),
             endAdornment: (

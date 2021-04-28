@@ -1,5 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { requestRefresh, view } from '../redux/app'
+
 import { useLocale, capitalize } from '../utility/appUtilities'
 
 import Paper from '@material-ui/core/Paper'
@@ -10,6 +13,8 @@ import Editor from '../editor/Editor'
 import Table from '../table/Table'
 import Map from '../map/Map'
 import noScrollbar from '../styling/noScrollbar'
+import IconButton from '@material-ui/core/IconButton'
+import RefreshIcon from '@material-ui/icons/Refresh'
 
 const heights = {
   search: 6,
@@ -22,6 +27,12 @@ const Locations = () => {
   const { locale, placement } = useLocale()
   const [info, setInfo] = useState(['text'])
   const [listHeight, setListHeight] = useState(heights.full)
+  const dispatch = useDispatch()
+
+  const reqRefresh = () => {
+    dispatch(requestRefresh())
+    dispatch(view({ editor: true, tags: true, relations: false }))
+  }
 
   const tableHeight = info.includes('text')
     ? info.includes('table')
@@ -100,6 +111,9 @@ const Locations = () => {
         <div></div>
         <div css={styles.input}>
           <FileSelect />
+          <IconButton onClick={reqRefresh}>
+            <RefreshIcon />
+          </IconButton>
           <InfoSelect {...{ info, setInfo, heights, setListHeight }} />
         </div>
         <div></div>

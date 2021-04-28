@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { fetchContent, changes, selectContent } from '../redux/content'
-import { setAppProp } from '../redux/app'
+import { setAppProp, setView } from '../redux/app'
 import { useLocale, capitalize } from '../utility/appUtilities'
 
 import {
@@ -33,7 +33,8 @@ const MyEditor = () => {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const ref = useRef()
 
-  const { view, drawerOpen } = useSelector(store => store.app)
+  const { view, drawerOpen, refresh } = useSelector(store => store.app)
+
   const { placement } = useLocale()
 
   const dispatch = useDispatch()
@@ -136,12 +137,14 @@ const MyEditor = () => {
     // Without calling unwrapResult, reject reducer will reach the then clause as well.
     //
     // As a convention, that promise should be caught right here to guarantee no ugly uncaught exceptions.
+    dispatch(setView({ editor: true, tags: true, relations: false }))
+
     dispatch(fetchContent({ file, convertContent, showContent }))
       .then(unwrapResult)
       .catch(error => {
         console.error(error)
       })
-  }, [dispatch, file])
+  }, [dispatch, file, refresh])
 
   // selection & entity creation
   useEffect(() => {
@@ -170,7 +173,7 @@ const MyEditor = () => {
     dispatch(setAppProp({ editor: position }))
   }, [dispatch, drawerOpen])
 
-  if (isLoading) return <Spinner />
+  if (isLoading) return <Spinner top />
   if (error?.status === 404) {
     return null
   }
