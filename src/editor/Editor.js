@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchContent, changes } from '../redux/content'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { fetchContent, changes, selectContent } from '../redux/content'
 import { setAppProp } from '../redux/app'
 import { useLocale, capitalize } from '../utility/appUtilities'
 
@@ -24,8 +25,7 @@ import noScrollbar from '../styling/noScrollbar'
 import Spinner from '../layout/Spinner'
 
 const MyEditor = () => {
-  const file = useSelector(store => store.content.file)
-  const isLoading = useSelector(store => store.content.loading === 'pending')
+  const { file, isLoading, error } = useSelector(selectContent)
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
@@ -129,15 +129,18 @@ const MyEditor = () => {
     const showContent = content =>
       setEditorState(EditorState.createWithContent(content, decorator))
 
-    // ! error cacthing
-    // Being a thunk, fetchContent returns a promise. As a convention, that promise should be caught
-    // to prevent ugly uncaught exceptions, though in this specific case,
-    // fetchContent's fulfilled reducer catches on its own.
-    dispatch(fetchContent({ file, convertContent, showContent })).catch(
-      error => {
+    // ! error catching
+    // redux-toolkit's thunks always return a promise with an action object (either fulfilled or rejected),
+    // but to get back the original payload and, more importantly, to have the error thrown back here,
+    // unwrapResult is required.
+    // Without calling unwrapResult, reject reducer will reach the then clause as well.
+    //
+    // As a convention, that promise should be caught right here to guarantee no ugly uncaught exceptions.
+    dispatch(fetchContent({ file, convertContent, showContent }))
+      .then(unwrapResult)
+      .catch(error => {
         console.error(error)
-      }
-    )
+      })
   }, [dispatch, file])
 
   // selection & entity creation
@@ -168,6 +171,9 @@ const MyEditor = () => {
   }, [dispatch, drawerOpen])
 
   if (isLoading) return <Spinner />
+  if (error?.status === 404) {
+    return null
+  }
   return (
     <div css={styles.container}>
       <div css={styles.editor} ref={ref}>

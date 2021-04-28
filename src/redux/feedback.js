@@ -11,22 +11,12 @@ const feedbackAdapter = createEntityAdapter({})
 
 export const postFeedback = createAsyncThunk(
   'feedback/post',
-  async (data, thunkAPI) => {
+  async (data, { rejectWithValue }) => {
     try {
-      console.log('feedback.js. about to call feedbackApi with data: ', data)
-      const feedbackResponse = await feedbackApi(data)
-
-      if (!feedbackResponse)
-        // eslint-disable-next-line no-throw-literal
-        throw {
-          api: 'feedbackApi',
-          value: data,
-          issue: 'Invalid file',
-        }
-
-      return { feedbackResponse }
+      const feedbackRecord = await feedbackApi(data)
+      return { feedbackRecord }
     } catch (error) {
-      return thunkAPI.rejectWithValue(error)
+      return rejectWithValue(error)
     }
   }
 )

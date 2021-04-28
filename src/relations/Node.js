@@ -41,9 +41,6 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
   const closeTooltip = () => {
     if (editor) setTooltipOpen(false)
   }
-  useEffect(() => {
-    console.log('Node is rendered')
-  }, [])
 
   const useStyles = makeStyles(theme => ({
     entity: entityStyle({ type, role, element }),

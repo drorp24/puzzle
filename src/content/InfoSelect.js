@@ -37,11 +37,14 @@ const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
 
     const curListHeight = listHeight(info)
     const newListHeight = listHeight(newInfo)
-    console.log('newListHeight: ', newListHeight)
 
     if (newListHeight < curListHeight) {
+      console.log('curListHeight: ', curListHeight)
+      console.log('newListHeight: ', newListHeight)
+      const height = newListHeight
       setTimeout(() => {
-        setListHeight(newListHeight)
+        console.log('setting list height after timeout to', height)
+        setListHeight(height)
       }, 1000)
     } else {
       setListHeight(newListHeight)

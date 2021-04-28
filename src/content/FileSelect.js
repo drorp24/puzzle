@@ -21,6 +21,7 @@ const FileSelect = () => {
   const styles = {
     root: {
       height: '100%',
+      flex: '1',
       '& input': {
         height: '100%',
       },
@@ -35,6 +36,7 @@ const FileSelect = () => {
     },
     form: {
       height: '100%',
+      width: '95%',
     },
     textField: theme => ({
       height: '100%',
@@ -59,9 +61,7 @@ const FileSelect = () => {
     dispatch(setFile({ file }))
   }
 
-  const onChange = e => {
-    console.log('e: ', e.target.value)
-  }
+  const onChange = e => {}
 
   useEffect(() => {
     if (error) setError('file', { message: t('noSuchFile') })

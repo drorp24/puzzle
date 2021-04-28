@@ -92,8 +92,6 @@ export const EntitySpan = ({
     )
       return
 
-    console.log('decoratorComponents useEffect entered')
-
     const reportIfPositionShifted = () => {
       const { width, height } = ref.current?.getBoundingClientRect() || {}
       // since flow entities & relations are absolutely positioned relative to their editor parent, offsets are used

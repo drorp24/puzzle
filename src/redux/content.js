@@ -30,7 +30,7 @@ export const fetchContent = createAsyncThunk(
       //
       // 1. throw an error object literal instead of Error instance
       //    redux can store only serializable data, so if error is to be stored there,
-      //    it needs to sit in ab object literal instread of an Error instance.
+      //    it needs to sit in ab object literal instead of an Error instance.
       //    This is true whether the thrower is realEditorApi or this function.
       //
       // ? Issues
@@ -41,10 +41,8 @@ export const fetchContent = createAsyncThunk(
       //    Instead they are appended to the data as a kind of meta data, inside an 'issues' key,
       //    then included in the payload to be recorded in the [fetchContent.fulfilled] reducer.
       //
-      // Real failures are recorded in redux' content.error key and render the app unusuable until resolved;
-      // Issues are recorded in content.issues and don't interfere with using the app.
-      //
-      // Real failures are reported to the user; issues aren't.
+      // Real failures are recorded in redux' content.error key and reported to the user with a snackbar;
+      // Issues are recorded in content.issues and aren't reported.
       //
       const rawContent = await realEditorApi(file)
 
@@ -118,9 +116,21 @@ const contentSlice = createSlice({
           shifted,
         }
     },
-    updateTag: (state, { payload: { id, tag } }) => {
+    updateFeedback: (
+      state,
+      { payload: { entity_id, entity_location_id, feedback } }
+    ) => {
       // Immer again
-      state.entities[id].data.tag = tag
+      if (!state.entities[entity_id]?.data?.geoLocation?.properties) {
+        const message = 'Error recording feedback in store'
+        console.error('message')
+        state.issues.push({ entity_id, entity_location_id, feedback, message })
+        return
+      }
+      state.entities[entity_id].data.geoLocation.properties = {
+        entity_location_id,
+        feedback,
+      }
     },
     setFile: (state, { payload }) => ({
       ...state,
@@ -149,7 +159,7 @@ const contentSlice = createSlice({
           state.currentRequestId = undefined
           state.loading = 'idle'
           state.error = null
-          if (issues) state.issues = [...state.issues, ...issues]
+          if (issues) state.issues = issues
           contentAdapter.setAll(state, entities)
           state.relations = relations
           relations.forEach(({ from, to, type }) => {
@@ -217,7 +227,7 @@ export const selectContent = ({ content }) => {
   const sortedEntities = entities // 'entities' key is deprecated; use 'sortedEntities'
   const keyedEntities = content.entities
   const ids = contentSelectors.selectIds(content)
-  const { loading, error, selectedId, relations, file: doc_id } = content
+  const { loading, error, selectedId, relations, file } = content
   const selectedEntity = keyedEntities[selectedId]
   const isLoading = loading === 'pending'
   const loaded = sortedEntities.length > 0 && loading === 'idle' && !error
@@ -233,7 +243,8 @@ export const selectContent = ({ content }) => {
     loaded,
     error,
     relations,
-    doc_id,
+    file,
+    doc_id: file,
   }
 }
 
@@ -306,6 +317,7 @@ export const {
   updateTag,
   setFile,
   addIssue,
+  updateFeedback,
 } = actions
 
 export default reducer

@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { memo, useState, useRef, useEffect } from 'react'
+import { memo, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectContent, updateTag, selectIds } from '../redux/content'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { selectContent, selectIds, updateFeedback } from '../redux/content'
 import { postFeedback } from '../redux/feedback'
 
 import { useDirection } from '../utility/appUtilities'
@@ -105,7 +106,7 @@ const styles = {
   selectedTagIcon: {
     color: 'rgba(256, 256, 256, 0.2)',
   },
-  selectedTagIcowrongn: {
+  selectedTagIconOn: {
     color: 'white !important',
   },
   dimText: {
@@ -120,7 +121,7 @@ const styles = {
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
-  const { entities, selected } = useSelector(selectContent)
+  const { entities, selected, error } = useSelector(selectContent)
   const ids = useSelector(selectIds)
   const itemCount = entities.length
   const itemSize = usePixels(4)
@@ -137,6 +138,10 @@ const Table = () => {
     }
     if (selected) scrollTo(selected)
   }, [ids, itemSize, selected])
+
+  if (error?.status === 404) {
+    return null
+  }
 
   return (
     <AutoSizer style={styles.autoSizer}>
@@ -176,13 +181,11 @@ const Row = memo(({ index, style }) => {
       id,
       score,
       geoLocation: {
-        properties: { feedback: currentTag, entity_location_id },
+        properties: { feedback, entity_location_id },
       },
     },
     entityRanges,
   } = entity
-
-  const [tag, setTag] = useState(currentTag)
 
   const { icon, color } = entityTypes[type]
   const { text } = entityRanges[0]
@@ -204,7 +207,7 @@ const Row = memo(({ index, style }) => {
     not_sure: 'off',
     wrong: 'off',
   }
-  tagState[tag] = 'on'
+  tagState[feedback] = 'on'
 
   const tagClick = id => (e, tag) => {
     const data = {
@@ -216,8 +219,13 @@ const Row = memo(({ index, style }) => {
     }
 
     dispatch(postFeedback(data))
-    dispatch(updateTag({ id, tag }))
-    setTag(tag)
+      .then(unwrapResult)
+      .then(() => {
+        dispatch(updateFeedback(data))
+      })
+      .catch(error => {
+        console.error(error)
+      })
   }
 
   return (
@@ -254,7 +262,7 @@ const Row = memo(({ index, style }) => {
       </Tooltip>
 
       <ToggleButtonGroup
-        value={tag}
+        value={feedback}
         exclusive
         onChange={tagClick(id)}
         size="small"
