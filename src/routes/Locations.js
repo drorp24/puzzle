@@ -22,7 +22,6 @@ const Locations = () => {
   const { locale, placement } = useLocale()
   const [info, setInfo] = useState(['text'])
   const [listHeight, setListHeight] = useState(heights.full)
-  console.log('listHeight: ', listHeight)
 
   const tableHeight = info.includes('text')
     ? info.includes('table')

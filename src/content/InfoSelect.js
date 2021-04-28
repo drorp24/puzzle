@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { useRef } from 'react'
 import useTranslation from '../i18n/useTranslation'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
@@ -22,31 +23,28 @@ const styles = {
 
 const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
   const t = useTranslation()
+  const timerRef = useRef()
 
   const handleInfoSelection = (event, newInfo) => {
-    console.log('info, newInfo: ', info, newInfo)
-
     const listHeight = selection =>
       selection.includes('text')
         ? selection.includes('table')
           ? heights.table
-          : 0
+          : heights.table
         : selection.includes('table')
         ? heights.full
-        : 0
+        : heights.table
 
     const curListHeight = listHeight(info)
     const newListHeight = listHeight(newInfo)
 
     if (newListHeight < curListHeight) {
-      console.log('curListHeight: ', curListHeight)
-      console.log('newListHeight: ', newListHeight)
-      const height = newListHeight
-      setTimeout(() => {
-        console.log('setting list height after timeout to', height)
-        setListHeight(height)
+      timerRef.current = setTimeout(() => {
+        setListHeight(newListHeight)
       }, 1000)
     } else {
+      // clear pending shrink requests
+      clearTimeout(timerRef.current)
       setListHeight(newListHeight)
     }
 
