@@ -26,12 +26,14 @@ const FileSelect = () => {
         height: '100%',
       },
       '& .MuiFormHelperText-root.Mui-error': {
-        marginTop: '-0.4rem',
-        fontSize: '0.7rem',
+        marginTop: '-3px',
+        fontSize: '1.9vh',
+        lineHeight: '1.5vh',
       },
       '& .MuiFormHelperText-root': {
-        marginTop: '-0.4rem',
-        fontSize: '0.7rem',
+        marginTop: '-3px',
+        fontSize: '1.9vh',
+        lineHeight: '1.5vh',
       },
     },
     form: {
@@ -43,7 +45,7 @@ const FileSelect = () => {
       display: 'block',
       color: loaded && !error ? 'deepskyblue' : 'inherit',
     }),
-    input: {
+    Input: {
       height: '100%',
       color: 'inherit',
     },
@@ -99,8 +101,9 @@ const FileSelect = () => {
                 <ChatIcon />
               </InputAdornment>
             ),
-            style: styles.input,
+            style: styles.Input,
             onChange,
+            inputProps: { style: { padding: 0 } },
           }}
           css={styles.textField}
           style={{ display: 'block' }}
