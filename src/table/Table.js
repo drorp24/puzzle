@@ -156,6 +156,7 @@ const Table = () => {
               overscanCount="10"
               outerRef={outerRef}
               css={noScrollbar}
+              style={{ width: '100%' }}
               {...{ height, width, itemCount, itemSize, direction }}
             >
               {Row}

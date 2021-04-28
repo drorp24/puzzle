@@ -267,12 +267,12 @@ export const selectSelectedId = ({ content: { selectedId } }) => selectedId
 export const selectShowId = ({ content: { show } }) => show
 
 export const selectSelectedEntity = ({ content }) => {
-  const { selected } = content
-  if (!selected) return null
+  const { selectedId } = content
+  if (!selectedId) return null
 
-  const selectedE = selectEntityById(selected)({ content })
+  const selectedE = selectEntityById(selectedId)({ content })
   if (!selectedE?.data?.geoLocation) return null
-  const id = selected
+  const id = selectedId
 
   const {
     data: {
