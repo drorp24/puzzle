@@ -26,7 +26,7 @@ heights.full = 100 - heights.search - heights.gap
 
 const Locations = () => {
   const { locale, placement } = useLocale()
-  const [info, setInfo] = useState(['text'])
+  const [info, setInfo] = useState(['text', 'table'])
   const [listHeight, setListHeight] = useState(heights.full)
   const dispatch = useDispatch()
 

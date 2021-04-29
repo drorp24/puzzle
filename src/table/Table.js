@@ -144,7 +144,7 @@ const Table = () => {
     return null
   }
 
-  if (isLoading) return <Spinner />
+  if (isLoading) return <Spinner top />
 
   return (
     <AutoSizer style={styles.autoSizer}>

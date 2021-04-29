@@ -167,9 +167,9 @@ export const EntityDetails = ({ entity: { type, data } }) => {
           <div css={styles.explainer}></div>
         </CardContent>
         <CardActions disableSpacing>
-          <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>
+          {/* <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>
             <AccountTreeIcon css={styles.modeColor} />
-          </IconButton>
+          </IconButton> */}
           <IconButton onClick={markSelected(id)} disabled={!locationExists}>
             <RoomIcon css={{ ...styles.modeColor, ...styles.locationIcon }} />
           </IconButton>
