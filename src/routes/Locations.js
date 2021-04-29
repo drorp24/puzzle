@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { requestRefresh, view } from '../redux/app'
+import { view } from '../redux/app'
+import { requestRefresh } from '../redux/content'
 
 import { useLocale, capitalize } from '../utility/appUtilities'
 

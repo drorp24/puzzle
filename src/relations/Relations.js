@@ -50,6 +50,7 @@ const Relations = () => {
 
   const {
     editor: viewEditor,
+    tags: viewTags,
     connections: editRelations,
     relations: viewRelations,
     exclusiveRelations,
@@ -214,7 +215,10 @@ const Relations = () => {
     <div
       css={styles.container}
       style={{
-        visibility: viewRelations || exclusiveRelations ? 'visible' : 'hidden',
+        visibility:
+          (viewRelations || exclusiveRelations) && viewTags
+            ? 'visible'
+            : 'hidden',
         direction: 'ltr',
         ...(editRelations && styles.editMode),
       }}

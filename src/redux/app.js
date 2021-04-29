@@ -9,7 +9,6 @@ const appSlice = createSlice({
     window: {},
     view: { editor: true, tags: true, relations: false },
     editor: {},
-    refresh: 0,
   },
   reducers: {
     toggleMode: state => ({
@@ -35,13 +34,6 @@ const appSlice = createSlice({
       ...state,
       ...payload,
     }),
-    // scrolling: state => ({
-    //   ...state,
-    //   editor: {
-    //     ...state.editor,
-    //     scrolling: state.editor.scrolling + 1,
-    //   },
-    // }),
     view: (state, { payload }) => ({
       ...state,
       view: {
@@ -52,6 +44,13 @@ const appSlice = createSlice({
           : payload.exclusiveRelations || state.view.exclusiveRelations,
       },
     }),
+    toggleExclusiveRelations: (state, { payload: { id } }) => ({
+      ...state,
+      view: {
+        ...state.view,
+        exclusiveRelations: !state.view.exclusiveRelations,
+      },
+    }),
     hide: (state, { payload }) => ({
       ...state,
       hide: {
@@ -59,7 +58,6 @@ const appSlice = createSlice({
         ...payload,
       },
     }),
-    requestRefresh: state => ({ ...state, refresh: state.refresh + 1 }),
   },
 })
 
@@ -70,10 +68,10 @@ export const {
   toggleMode,
   toggleLocale,
   toggleDrawer,
+  toggleExclusiveRelations,
   setDimensions,
   view,
   view: setView,
   hide,
   setAppProp,
-  requestRefresh,
 } = actions

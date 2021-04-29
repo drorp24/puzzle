@@ -52,7 +52,7 @@ const EditorControl = () => {
   const dispatch = useDispatch()
 
   const [editorDisabled] = useState(false)
-  const [tagsDisabled] = useState(false)
+  const [tagsDisabled, setTagsDisabled] = useState(false)
   const [relationsDisabled, setRelationsDisabled] = useState(false)
   const [connectionsDisabled, setConnectionsDisabled] = useState(false)
 
@@ -73,6 +73,16 @@ const EditorControl = () => {
   useEffect(() => {
     const unSelect = view =>
       setSelected(selected => selected.filter(i => i !== view))
+
+    // ToDo: create a function
+    setTagsDisabled(
+      !(selected.includes('editor') || selected.includes('relations'))
+    )
+    if (
+      selected.includes('tags') &&
+      !(selected.includes('editor') || selected.includes('relations'))
+    )
+      unSelect('tags')
 
     setRelationsDisabled(!selected.includes('tags'))
     if (selected.includes('relations') && !selected.includes('tags'))

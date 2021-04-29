@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useSelector, useDispatch } from 'react-redux'
 import { select, selectEntityById } from '../redux/content'
-import { view } from '../redux/app'
+import { view, toggleExclusiveRelations } from '../redux/app'
 
 import entityTypes from './entityTypes'
 import useTheme from '../styling/useTheme'
@@ -121,8 +121,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   }
 
   const showRelationsOf = id => () => {
-    dispatch(select(id))
-    dispatch(view({ exclusiveRelations: true }))
+    dispatch(toggleExclusiveRelations(id))
   }
 
   const markSelected = id => () => {

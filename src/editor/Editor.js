@@ -25,7 +25,7 @@ import noScrollbar from '../styling/noScrollbar'
 import Spinner from '../layout/Spinner'
 
 const MyEditor = () => {
-  const { file, isLoading, error } = useSelector(selectContent)
+  const { file, isLoading, error, refresh } = useSelector(selectContent)
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
@@ -33,7 +33,7 @@ const MyEditor = () => {
   const [selectorOpen, setSelectorOpen] = useState(false)
   const ref = useRef()
 
-  const { view, drawerOpen, refresh } = useSelector(store => store.app)
+  const { view, drawerOpen } = useSelector(store => store.app)
 
   const { placement } = useLocale()
 

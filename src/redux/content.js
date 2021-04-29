@@ -74,6 +74,7 @@ const initialState = contentAdapter.getInitialState({
   changes: 0,
   selectedId: null,
   file: null,
+  refresh: 0,
   issues: [],
 })
 
@@ -132,10 +133,15 @@ const contentSlice = createSlice({
         feedback,
       }
     },
-    setFile: (state, { payload }) => ({
-      ...state,
-      ...payload,
-    }),
+    setFile: (state, { payload: { file } }) => {
+      return file === state.file
+        ? { ...state, refresh: state.refresh + 1 }
+        : {
+            ...state,
+            file,
+          }
+    },
+    requestRefresh: state => ({ ...state, refresh: state.refresh + 1 }),
     addIssue: (state, { payload }) => ({
       ...state,
       issues: [...state.issues, payload],
@@ -227,7 +233,7 @@ export const selectContent = ({ content }) => {
   const sortedEntities = entities // 'entities' key is deprecated; use 'sortedEntities'
   const keyedEntities = content.entities
   const ids = contentSelectors.selectIds(content)
-  const { loading, error, selectedId, relations, file } = content
+  const { loading, error, selectedId, relations, file, refresh } = content
   const selectedEntity = keyedEntities[selectedId]
   const isLoading = loading === 'pending'
   const loaded = sortedEntities.length > 0 && loading === 'idle' && !error
@@ -245,6 +251,7 @@ export const selectContent = ({ content }) => {
     relations,
     file,
     doc_id: file,
+    refresh,
   }
 }
 
@@ -317,6 +324,7 @@ export const {
   show,
   updateTag,
   setFile,
+  requestRefresh,
   addIssue,
   updateFeedback,
 } = actions

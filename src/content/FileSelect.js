@@ -11,8 +11,10 @@ import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import ChatIcon from '@material-ui/icons/ChatOutlined'
 import SearchIcon from '@material-ui/icons/SearchOutlined'
+import { CleaningServicesOutlined } from '@material-ui/icons'
 
 const FileSelect = () => {
+  console.log('FileSelect rendered')
   const t = useTranslation()
   const { register, handleSubmit, setError, formState } = useForm()
   const { error, loaded } = useSelector(selectContent)
@@ -26,14 +28,14 @@ const FileSelect = () => {
         height: '100%',
       },
       '& .MuiFormHelperText-root.Mui-error': {
-        marginTop: '-3px',
-        fontSize: '1.9vh',
-        lineHeight: '1.5vh',
+        marginTop: '0',
+        fontSize: 'max(1.5vh, 1rem)', // in 13'' laptop, the max fontSize (2vh) is smaller than 1rem
+        lineHeight: '2vh',
       },
       '& .MuiFormHelperText-root': {
-        marginTop: '-3px',
-        fontSize: '1.9vh',
-        lineHeight: '1.5vh',
+        marginTop: '0',
+        fontSize: 'max(1.5vh, 1rem)',
+        lineHeight: '2vh',
       },
     },
     form: {
@@ -63,15 +65,26 @@ const FileSelect = () => {
   }
 
   const onSubmit = ({ file }) => {
+    console.log('onSubmit')
     dispatch(setFile({ file }))
   }
 
   const onChange = e => {}
 
   useEffect(() => {
-    if (error) setError('file', { message: t('noSuchFile') })
+    console.log('in useEffect. error: ', error)
+    if (error) {
+      console.log('yes there is an error. about to setError')
+      setError('file', { message: t('noSuchFile') })
+      console.log('error right after setError:', error)
+    }
   }, [error, setError, t])
 
+  console.log(
+    'formState.errors?.file?.message: ',
+    formState.errors?.file?.message
+  )
+  console.log('formState.errors: ', formState.errors)
   return (
     <div css={styles.root}>
       <form
