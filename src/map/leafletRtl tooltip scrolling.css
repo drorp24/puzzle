@@ -1,0 +1,15 @@
+.leaflet-pane.leaflet-tooltip-pane {
+  direction: ltr;
+}
+
+.leaflet-pane.leaflet-tooltip-pane .leaflet-tooltip {
+  overflow: scroll;
+  pointer-events: all;
+  /* max-height: 45vh; */
+  -ms-overflow-style: none;
+  scrollbar-width: 'none';
+}
+
+.leaflet-pane.leaflet-tooltip-pane .leaflet-tooltip::-webkit-scrollbar {
+  display: none;
+}

@@ -83,6 +83,5 @@ export const locations = {
 }
 
 export const flyToOptions = {
-  maxZoom: 16,
   duration: 1,
 }

@@ -178,7 +178,8 @@ const Entity = memo(
           //   entity.data.id === 'secondEntity' ||
           //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
           // }
-          open={tooltipOpen}
+          // * Uncomment to trigger by click
+          // open={tooltipOpen}
           title={<EntityDetails {...{ entity }} />}
           arrow
           TransitionComponent={Zoom}

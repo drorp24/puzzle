@@ -39,7 +39,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   } = useSelector(selectEntityById(id))
   const locationExists = geoLocation?.geometry?.coordinates?.length
   const name = entityRanges[0]?.text
-  const explanation = geoLocation?.properties?.explain || {}
+  const explanation = geoLocation?.properties?.explain
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}

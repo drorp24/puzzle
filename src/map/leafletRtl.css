@@ -1,0 +1,4 @@
+/* leaflet rtl bug https://github.com/Leaflet/Leaflet/issues/7201    */
+.leaflet-pane.leaflet-tooltip-pane {
+  direction: ltr;
+}

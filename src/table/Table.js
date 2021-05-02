@@ -257,6 +257,7 @@ const Row = memo(({ index, style }) => {
         TransitionComponent={Zoom}
         disableFocusListener={true}
         placement="right"
+        PopperProps={{ style: { width: '15rem' } }}
       >
         <IconButton
           style={{ ...styles.icon, ...selectedInfo, ...styles.dimText }}

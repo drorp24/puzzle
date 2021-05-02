@@ -6,6 +6,7 @@ import { show } from '../redux/content'
 import SelectedGeo from './SelectedGeo'
 
 import 'leaflet/dist/leaflet.css'
+import './leafletRtl.css'
 import { MapContainer, WMSTileLayer, LayersControl } from 'react-leaflet'
 import { tileProviders, locations } from './config'
 

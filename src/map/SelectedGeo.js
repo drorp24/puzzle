@@ -9,9 +9,14 @@ import {
   selected,
 } from '../redux/content'
 
-import { capitalize } from '../utility/appUtilities'
-
-import { useMap, Polygon, Polyline, Marker, Popup } from 'react-leaflet'
+import {
+  useMap,
+  Polygon,
+  Polyline,
+  Marker,
+  Popup,
+  Tooltip,
+} from 'react-leaflet'
 import { flyToOptions } from './config'
 
 // https://github.com/PaulLeCam/react-leaflet/issues/453
@@ -20,9 +25,9 @@ import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import * as L from 'leaflet'
 import 'leaflet-defaulticon-compatibility'
 
-const styles = {
-  pathOptions: { color: 'deepskyblue' },
-}
+import FeatureDetails from './FeatureDetails'
+import entityTypes from '../editor/entityTypes'
+import noScrollbar from '../styling/noScrollbar'
 
 // ! re-rendering issue
 //
@@ -155,21 +160,57 @@ const SelectedGeo = () => {
       dispatch(selected(id))
     },
   }
+
+  const { details } = selectedEntity
+
+  const styles = {
+    pathOptions: { color: entityTypes[type]?.color },
+  }
+
   const { pathOptions } = styles
+
+  // ! Tooltips overflow
+  // Extremely large tooltips (over page height) will be partly hidden.
+  // Should I ever require it, scrolling tooltips requires:
+  //  - Map to have scrollWheelZoom={false}
+  //  - Tooltip here to have permanent={true}
+  //  - tooltip scrolling.css
+  //  - leaflet to fix its rtl bug (see css)
+  // This way or the other scrolling tooltips is a bad UX. Such data requires its own pane.
 
   switch (type) {
     case 'Polygon':
-      return <Polygon {...{ positions, eventHandlers, pathOptions }} />
+      return (
+        <Polygon {...{ positions, eventHandlers, pathOptions }}>
+          <Tooltip sticky direction="left">
+            <FeatureDetails {...{ details }} />
+          </Tooltip>
+        </Polygon>
+      )
     case 'Point':
       return (
         <Marker {...{ position: positions, eventHandlers, pathOptions }}>
-          <Popup>{capitalize(showEntity?.name)}</Popup>
+          <Tooltip sticky direction="left" style={styles.tooltip}>
+            <FeatureDetails {...{ details }} />
+          </Tooltip>
         </Marker>
       )
     case 'LineString':
-      return <Polyline {...{ positions, eventHandlers, pathOptions }} />
+      return (
+        <Polyline {...{ positions, eventHandlers, pathOptions }}>
+          <Tooltip sticky direction="left" style={styles.tooltip}>
+            <FeatureDetails {...{ details }} />
+          </Tooltip>
+        </Polyline>
+      )
     default:
-      return <Polygon {...{ positions, eventHandlers, pathOptions }} />
+      return (
+        <Polygon {...{ positions, eventHandlers, pathOptions }}>
+          <Tooltip sticky direction="left" style={styles.tooltip}>
+            <FeatureDetails {...{ details }} />
+          </Tooltip>
+        </Polygon>
+      )
   }
 }
 
