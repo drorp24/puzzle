@@ -16,7 +16,7 @@ const Row = ({ a, b }) => (
   </div>
 )
 
-const FeatureDetails = ({ details }) =>
+const FeatureDetails = ({ details = {} }) =>
   Object.entries(details).map(([a, b]) => <Row key={a} {...{ a, b }} />)
 
 export default FeatureDetails

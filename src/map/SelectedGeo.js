@@ -161,10 +161,11 @@ const SelectedGeo = () => {
     },
   }
 
-  const { details } = selectedEntity
+  const { details, entityType } = selectedEntity
 
+  console.log('type: ', type)
   const styles = {
-    pathOptions: { color: entityTypes[type]?.color },
+    pathOptions: { color: entityTypes[entityType]?.color },
   }
 
   const { pathOptions } = styles

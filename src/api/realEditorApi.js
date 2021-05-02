@@ -61,7 +61,22 @@ const convertShayToRaw = (
       const { issue } = geometry
       if (issue) issues.push(issue)
 
-      const { properties = {} } = geolocation || {}
+      // if (id === 'b7933af2-bf3f-40f6-8d5b-f178ce59c55b') {
+      //   geolocation.properties.explain = undefined
+      //   geolocation.properties.details = undefined
+      //   geolocation.properties.entity_location_id = undefined
+      // }
+
+      const {
+        properties = {
+          explain: null,
+          details: {},
+          entity_location_id: null,
+          feedback: null,
+        },
+      } = geolocation || {}
+
+      // ToDo: make a function
       if (!Object.keys(properties).length) {
         issues.push({
           id,
@@ -70,9 +85,18 @@ const convertShayToRaw = (
           issue: 'undefined',
         })
       } else if (!properties.entity_location_id) {
+        properties.entity_location_id = null
         issues.push({
           id,
           field: 'entity_location_id',
+          value: 'undefined',
+          issue: 'undefined',
+        })
+      } else if (!properties.details) {
+        properties.details = {}
+        issues.push({
+          id,
+          field: 'details',
           value: 'undefined',
           issue: 'undefined',
         })

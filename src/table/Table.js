@@ -3,7 +3,7 @@ import { memo, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
 import { selectContent, selectIds, updateFeedback } from '../redux/content'
-import { postFeedback } from '../redux/feedback'
+import { postFeedback, error } from '../redux/feedback'
 
 import { useDirection } from '../utility/appUtilities'
 
@@ -28,6 +28,7 @@ import { EntityDetails } from '../editor/EntityDetails'
 import usePixels from '../utility/usePixels'
 import noScrollbar from '../styling/noScrollbar'
 import Spinner from '../layout/Spinner'
+import eitherOfTheKeysIsEmpty from '../utility/eitherOfTheKeysIsEmpty'
 
 const styles = {
   autoSizer: {
@@ -222,14 +223,24 @@ const Row = memo(({ index, style }) => {
       feedback: tag,
     }
 
-    dispatch(postFeedback(data))
-      .then(unwrapResult)
-      .then(() => {
-        dispatch(updateFeedback(data))
-      })
-      .catch(error => {
-        console.error(error)
-      })
+    if (eitherOfTheKeysIsEmpty(data)) {
+      dispatch(
+        error({
+          field: 'Entity location feedback',
+          value: data,
+          issue: 'Missing data',
+        })
+      )
+    } else {
+      dispatch(postFeedback(data))
+        .then(unwrapResult)
+        .then(() => {
+          dispatch(updateFeedback(data))
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
   }
 
   return (

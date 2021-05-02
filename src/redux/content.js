@@ -282,6 +282,7 @@ export const selectSelectedEntity = ({ content }) => {
   const id = selectedId
 
   const {
+    type: entityType,
     data: {
       geoLocation: {
         geometry: { type, coordinates },
@@ -289,7 +290,7 @@ export const selectSelectedEntity = ({ content }) => {
       },
     },
   } = selectedE
-  return { id, type, coordinates, details }
+  return { id, type, coordinates, details, entityType }
 }
 
 export const selectShowEntity = ({ content }) => {

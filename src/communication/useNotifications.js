@@ -14,6 +14,7 @@ const useNotifications = setOpen => {
     store => store.content.error?.status && store.content.error.status !== 404
   )
   const feedbackError = useSelector(store => store.feedback.error)
+  const feedbackIssue = feedbackError?.issue
 
   useEffect(() => {
     if (userError) {
@@ -30,7 +31,9 @@ const useNotifications = setOpen => {
 
     if (feedbackError) {
       setOpen(true)
-      setMessage(t('feedbackError'))
+      setMessage(
+        feedbackIssue === 'Missing data' ? t('missingData') : t('feedbackError')
+      )
       setSeverity('error')
     }
   }, [setOpen, userError, contentError, feedbackError, t])
