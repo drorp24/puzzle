@@ -184,6 +184,7 @@ const Entity = memo(
           TransitionComponent={Zoom}
           disableFocusListener={true}
           placement="left"
+          PopperProps={{ style: { width: '15rem' } }}
         >
           <span
             ref={ref}

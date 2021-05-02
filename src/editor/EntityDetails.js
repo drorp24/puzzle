@@ -6,6 +6,8 @@ import { view, toggleExclusiveRelations } from '../redux/app'
 import entityTypes from './entityTypes'
 import useTheme from '../styling/useTheme'
 import { useMode, useLocale, capitalize } from '../utility/appUtilities'
+import useTranslation from '../i18n/useTranslation'
+import noScrollbar from '../styling/noScrollbar'
 
 import { ThemeProvider, makeStyles } from '@material-ui/core/styles'
 import Chip from '@material-ui/core/Chip'
@@ -26,6 +28,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const { placement } = useLocale()
   const darkTheme = useTheme({ mode: 'dark', direction })
   const dispatch = useDispatch(0)
+  const t = useTranslation()
 
   const { icon, color } = entityTypes[type]
   const { id, subTypes } = data
@@ -36,6 +39,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   } = useSelector(selectEntityById(id))
   const locationExists = geoLocation?.geometry?.coordinates?.length
   const name = entityRanges[0]?.text
+  const explanation = geoLocation?.properties?.explain || {}
 
   // ToDo: pills' cancel icon ('x') will eventually enable to remove sub-types
   const handleDelete = () => {}
@@ -74,7 +78,6 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const styles = {
     root: {
       backgroundColor: 'transparent !important',
-      minWidth: '15rem',
     },
     entityType: {
       backgroundColor: `${color} !important`,
@@ -101,8 +104,14 @@ export const EntityDetails = ({ entity: { type, data } }) => {
     },
     explainer: {
       height: '8rem',
-      backgroundColor: 'rgba(256, 256, 256, 0.1)',
+      padding: '0.5rem',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      border: '1px solid rgba(256, 256, 256, 0.5)',
+      borderRadius: '3px',
       marginTop: '1rem',
+      overflow: 'scroll',
+      ...noScrollbar,
+      color: 'white',
     },
     modeColor: {
       color: darkTheme.palette.text.distinct,
@@ -162,9 +171,9 @@ export const EntityDetails = ({ entity: { type, data } }) => {
         </div>
         <CardContent>
           <Divider css={{ ...styles.modeColor, ...styles.dividerSplitLine }}>
-            Explainer
+            {t('explainer')}
           </Divider>
-          <div css={styles.explainer}></div>
+          <div css={styles.explainer}>{explanation}</div>
         </CardContent>
         <CardActions disableSpacing>
           {/* <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>

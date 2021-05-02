@@ -7,7 +7,7 @@ import getArrayDepth from '../utility/getArrayDepth'
 // ToDo: remove getArrayDepth; depth should be derived from type;
 // find out which types are supported
 const swap = (id, geolocation) => {
-  const { type, coordinates } = geolocation || {
+  const { type, coordinates } = (geolocation && geolocation.geometry) || {
     type: undefined,
     coordinates: undefined,
   }
@@ -60,8 +60,23 @@ const convertShayToRaw = (
       const geometry = swap(id, geolocation)
       const { issue } = geometry
       if (issue) issues.push(issue)
-      const { entity_location_id, feedback } = geolocation || {} // extra protection for testing
-      const properties = { entity_location_id, feedback }
+
+      const { properties = {} } = geolocation || {}
+      if (!Object.keys(properties).length) {
+        issues.push({
+          id,
+          field: 'properties',
+          value: 'undefined',
+          issue: 'undefined',
+        })
+      } else if (!properties.entity_location_id) {
+        issues.push({
+          id,
+          field: 'entity_location_id',
+          value: 'undefined',
+          issue: 'undefined',
+        })
+      }
 
       const data = {
         id,
