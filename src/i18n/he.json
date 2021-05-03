@@ -1,4 +1,6 @@
 {
+  "passwordRequired": "נא מלאו סיסמה",
+  "usernameRequired": "נא מלאו שם משתמש",
   "missingData": "לא ניתן לעדכן את בחירתך: חסר מידע בקובץ",
   "explainer": "הסבר",
   "feedbackError": "לא הצלחנו לעדכן את הסרבר בפידבק שלכם. אנא פנו לעזרה",

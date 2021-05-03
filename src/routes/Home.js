@@ -3,6 +3,7 @@ import { useState, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleDrawer, toggleLocale, toggleMode } from '../redux/app'
 import { logout } from '../redux/users'
+import useUser from '../auth/useUser'
 
 import {
   Switch,
@@ -24,15 +25,15 @@ import DashboardOutlinedIcon from '@material-ui/icons/DashboardOutlined'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import Logout from '@material-ui/icons/PowerSettingsNewOutlined'
 import Button from '@material-ui/core/Button'
+import UserIcon from '@material-ui/icons/PersonOutlineOutlined'
 
 import useTranslation from '../i18n/useTranslation'
+import containsHeb from '../utility/containsHeb'
 
 import Page from '../layout/Page'
 import Dashboard from './Dashboard'
 import File from './File'
 import Locations from './Locations'
-
-// ToDo: username & login status should be inside the side drawer, not in any route
 
 const Home = () => {
   const { url } = useRouteMatch()
@@ -42,6 +43,7 @@ const Home = () => {
   const { mode } = useMode()
   const { direction, rtl, ltr } = useLocale()
   const theme = useTheme({ mode, direction })
+  const { username } = useUser()
   const t = useTranslation()
 
   const [dir, setDir] = useState(direction)
@@ -59,6 +61,12 @@ const Home = () => {
   const styles = {
     root: {
       display: 'flex',
+    },
+    nav: {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      height: '100%',
     },
     drawer: {
       width: open ? drawerWidth.open : drawerWidth.close,
@@ -116,10 +124,27 @@ const Home = () => {
           color: 'white !important',
         },
       },
+      '&:last-of-type': {
+        flex: '1',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        color: username ? theme.palette.primary.main : 'inherit',
+        '& > span': {
+          display: 'flex',
+          justifyContent: 'flex-start',
+        },
+        '&:hover': {
+          backgroundColor: 'inherit',
+          color: 'inherit !important',
+          '& svg': {
+            color: 'inherit !important',
+          },
+        },
+      },
     }),
     title: {
       margin: '0 2px',
-      fontSize: direction === 'rtl' ? '1.2rem' : 'inherit',
     },
     route: {
       width: open ? routeWidth.open : routeWidth.close,
@@ -186,12 +211,18 @@ const Home = () => {
       onClick: () => dispatch(logout()),
       title: t('logout'),
     },
+    {
+      key: 'user',
+      icon: <UserIcon />,
+      onClick: () => {},
+      title: username,
+    },
   ]
 
   return (
     <Page css={styles.root}>
       <div css={styles.drawer}>
-        <nav>
+        <nav css={styles.nav}>
           <Button
             fullWidth
             css={styles.chevronItem}
@@ -212,18 +243,30 @@ const Home = () => {
                 <div css={styles.iconWrapper} style={{ color }}>
                   {icon}
                 </div>
-                <div css={styles.title}>{title}</div>
+                <div
+                  css={styles.title}
+                  style={{
+                    fontSize: containsHeb(title) ? '1rem' : '0.75rem',
+                  }}
+                >
+                  {title}
+                </div>
               </Button>
             </Link>
           ))}
-          {toggles.map(({ key, title, icon, onClick }) => (
+          {toggles.map(({ key, title, icon, onClick, css }) => (
             <Button
               fullWidth
               css={styles.drawerItem}
               {...{ key, onClick, title }}
             >
               <div css={styles.iconWrapper}>{icon}</div>
-              <div css={styles.title}>{title}</div>
+              <div
+                css={styles.title}
+                style={{ fontSize: containsHeb(title) ? '1rem' : '0.7rem' }}
+              >
+                {title}
+              </div>
             </Button>
           ))}
         </nav>

@@ -86,8 +86,8 @@ const MyEditor = () => {
       gridTemplateColumns: '85% 5% 10%',
       gridTemplateRows: '50% 50%',
       gridTemplateAreas: `
-      "editor space selector"
       "editor space control"
+      "editor space selector"
       `,
       overflow: 'hidden',
       color: theme.palette.text.contrast,
@@ -115,8 +115,8 @@ const MyEditor = () => {
       gridArea: 'control',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'flex-end',
-      paddingBottom: '0.5rem',
+      justifyContent: 'flex-start',
+      paddingTop: '1rem',
       [`padding${capitalize(placement)}`]: '0.5rem',
       zIndex: '1',
     },

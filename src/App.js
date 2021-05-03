@@ -63,9 +63,6 @@ export default function App() {
                   <Route path="/login">
                     <Login />
                   </Route>
-                  <Route path="/editor">
-                    <Editor />
-                  </Route>
                   <Route path="/simulateerror">
                     <SimulateError />
                   </Route>

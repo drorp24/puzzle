@@ -145,7 +145,7 @@ const Table = () => {
     return null
   }
 
-  if (isLoading) return <Spinner top />
+  if (isLoading) return null
 
   return (
     <AutoSizer style={styles.autoSizer}>
@@ -223,7 +223,9 @@ const Row = memo(({ index, style }) => {
       feedback: tag,
     }
 
-    if (eitherOfTheKeysIsEmpty(data)) {
+    const { feedback, ...shouldHaveKey } = data
+
+    if (eitherOfTheKeysIsEmpty(shouldHaveKey)) {
       dispatch(
         error({
           field: 'Entity location feedback',

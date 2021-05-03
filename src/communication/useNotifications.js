@@ -36,7 +36,7 @@ const useNotifications = setOpen => {
       )
       setSeverity('error')
     }
-  }, [setOpen, userError, contentError, feedbackError, t])
+  }, [setOpen, userError, contentError, feedbackError, t, feedbackIssue])
 
   return { message, severity }
 }

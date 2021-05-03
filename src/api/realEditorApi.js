@@ -1,4 +1,5 @@
 import axios from 'axios'
+import authHeader from './authHeader'
 
 import objectify from '../utility/objectify'
 import { keyProxy } from '../utility/proxies'
@@ -132,8 +133,8 @@ const realEditorApi = async fileId => {
   const analysis = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_ANALYSIS_ENDPOINT}${fileId}`
   const lists = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_LISTS_ENDPOINT}`
 
-  const getAnalysis = () => axios.get(analysis)
-  const getLists = () => axios.get(lists)
+  const getAnalysis = () => axios.get(analysis, { headers: authHeader() })
+  const getLists = () => axios.get(lists, { headers: authHeader() })
 
   return Promise.all([getAnalysis(), getLists()])
     .then(([analysis, lists]) =>

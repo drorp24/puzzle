@@ -9,7 +9,7 @@ import useTranslation from '../i18n/useTranslation'
 
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
-import ChatIcon from '@material-ui/icons/ChatOutlined'
+import CheckIcon from '@material-ui/icons/CheckOutlined'
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import { CleaningServicesOutlined } from '@material-ui/icons'
 
@@ -44,7 +44,10 @@ const FileSelect = () => {
     textField: theme => ({
       height: '100%',
       display: 'block',
-      color: loaded && !error ? 'deepskyblue' : 'inherit',
+      color: loaded && !error ? 'green' : error ? 'red' : 'inherit',
+      '& input': {
+        fontWeight: loaded && !error ? 900 : 'inherit',
+      },
     }),
     Input: {
       height: '100%',
@@ -112,9 +115,9 @@ const FileSelect = () => {
                 <SearchIcon css={styles.searchIcon} />
               </InputAdornment>
             ),
-            endAdornment: (
+            endAdornment: loaded && !error && (
               <InputAdornment position="end" css={styles.endAdornment}>
-                <ChatIcon />
+                <CheckIcon />
               </InputAdornment>
             ),
             style: styles.Input,
