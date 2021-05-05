@@ -6,15 +6,14 @@ import { setFile, selectContent } from '../redux/content'
 import { useForm } from 'react-hook-form'
 
 import useTranslation from '../i18n/useTranslation'
+import statusToText from './statusToText'
 
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import CheckIcon from '@material-ui/icons/CheckOutlined'
 import SearchIcon from '@material-ui/icons/SearchOutlined'
-import { CleaningServicesOutlined } from '@material-ui/icons'
 
 const FileSelect = () => {
-  console.log('FileSelect rendered')
   const t = useTranslation()
   const { register, handleSubmit, setError, formState } = useForm()
   const { error, loaded } = useSelector(selectContent)
@@ -29,7 +28,8 @@ const FileSelect = () => {
       },
       '& .MuiFormHelperText-root.Mui-error': {
         marginTop: '0',
-        fontSize: 'max(1.5vh, 1rem)', // in 13'' laptop, the max fontSize (2vh) is smaller than 1rem
+        // The max space is 2vh. In a 13'' laptop, it's quite small, whereas in desktop it's too big
+        fontSize: 'max(1.5vh, 0.75rem)',
         lineHeight: '2vh',
       },
       '& .MuiFormHelperText-root': {
@@ -68,26 +68,18 @@ const FileSelect = () => {
   }
 
   const onSubmit = ({ file }) => {
-    console.log('onSubmit')
     dispatch(setFile({ file }))
   }
 
   const onChange = e => {}
 
   useEffect(() => {
-    console.log('in useEffect. error: ', error)
     if (error) {
-      console.log('yes there is an error. about to setError')
-      setError('file', { message: t('noSuchFile') })
-      console.log('error right after setError:', error)
+      const { status } = error
+      setError('file', { message: t(statusToText(status)) })
     }
-  }, [error, setError, t])
+  }, [error, formState.errors, setError, t])
 
-  console.log(
-    'formState.errors?.file?.message: ',
-    formState.errors?.file?.message
-  )
-  console.log('formState.errors: ', formState.errors)
   return (
     <div css={styles.root}>
       <form
@@ -108,7 +100,7 @@ const FileSelect = () => {
           autoFocus
           inputRef={register({ required: true, onChange })}
           error={!!formState.errors?.file?.message}
-          helperText={formState.errors?.file && t('noSuchFile')}
+          helperText={formState.errors?.file && formState.errors?.file?.message}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start" css={styles.startAdornment}>

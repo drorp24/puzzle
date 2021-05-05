@@ -77,7 +77,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Login() {
-  const loggedIn = useSelector(store => !!store.users.loggedIn.username)
+  const loggedIn = useSelector(store => !!store.users.loggedIn?.access_token)
   const { mode } = useMode()
   const { direction } = useLocale()
   const theme = useTheme({ mode, direction })

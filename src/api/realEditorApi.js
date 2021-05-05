@@ -1,5 +1,4 @@
-import axios from 'axios'
-import authHeader from './authHeader'
+import { axiosApiInstance } from './authApi'
 
 import objectify from '../utility/objectify'
 import { keyProxy } from '../utility/proxies'
@@ -130,11 +129,11 @@ const convertShayToRaw = (
 }
 
 const realEditorApi = async fileId => {
-  const analysis = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_ANALYSIS_ENDPOINT}${fileId}`
+  const analysis = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_ANALYSIS_ENDPOINT}${fileId}/`
   const lists = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_LISTS_ENDPOINT}`
 
-  const getAnalysis = () => axios.get(analysis, { headers: authHeader() })
-  const getLists = () => axios.get(lists, { headers: authHeader() })
+  const getAnalysis = () => axiosApiInstance.get(analysis)
+  const getLists = () => axiosApiInstance.get(lists)
 
   return Promise.all([getAnalysis(), getLists()])
     .then(([analysis, lists]) =>
@@ -145,7 +144,7 @@ const realEditorApi = async fileId => {
       throw {
         field: 'file',
         value: fileId,
-        issue: error.response?.data?.error || 'Invalid file',
+        issue: error.response?.data?.error || 'No response from Api',
         status: error.response?.status,
       }
     })

@@ -46,6 +46,7 @@ export const fetchContent = createAsyncThunk(
       //
       const rawContent = await realEditorApi(file)
 
+      // safeguard only; if api returns no data then it throws, reaching the catch below
       if (!rawContent)
         // eslint-disable-next-line no-throw-literal
         throw {

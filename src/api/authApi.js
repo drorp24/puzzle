@@ -1,3 +1,7 @@
+import store from '../redux/store'
+
+import { logout } from '../redux/users'
+
 import axios from 'axios'
 
 const loginEndpoint = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_LOGIN_ENDPOINT}`
@@ -11,17 +15,27 @@ export const login = async ({ username, password }) => {
       password,
     })
     .then(response => {
-      if (response.data.accessToken) {
+      if (response.data?.access_token) {
         // ToDo: see that a refresh token is included in the data and kept as well
         localStorage.setItem('user', JSON.stringify(response.data))
       }
 
       return response.data
     })
+    .catch(error => {
+      // eslint-disable-next-line no-throw-literal
+      throw {
+        api: 'user',
+        value: { username },
+        issue: error.response?.data?.error || 'No response from Api',
+        status: error.response?.status,
+      }
+    })
 }
 
-export const logout = () => {
+export const logOut = () => {
   localStorage.removeItem('user')
+  store.dispatch(logout())
 }
 
 // ! Requests header generation, Response refresh handling
@@ -43,11 +57,7 @@ axiosApiInstance.interceptors.request.use(
     const value = localStorage.getItem('user')
     const keys = JSON.parse(value)
     config.headers = {
-      // ToDo: modify with the actual names of the accessToken and refreshToken
       Authorization: `Bearer ${keys.access_token}`,
-      Accept: 'application/json',
-      // ToDo: might require the below. axios say they don't support that out of the box (?)
-      'Content-Type': 'application/x-www-form-urlencoded',
     }
     return config
   },
@@ -63,12 +73,19 @@ axiosApiInstance.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config
-    if (error.response.status === 403 && !originalRequest._retry) {
-      originalRequest._retry = true
-      const access_token = await refreshAccessToken()
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
-      return axiosApiInstance(originalRequest)
-    }
+    //
+    // * Refresh (403) convention:
+    // * use the refresh token to acquire a new access token then replace it in the header for subsequent calls
+    //
+    // if (error.response.status === 403 && !originalRequest._retry) {
+    //   originalRequest._retry = true
+    //   const access_token = await refreshAccessToken()
+    //   axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token
+    //   return axiosApiInstance(originalRequest)
+    // }
+    // * Refresh workaround: simply logout
+    if (error.response.status === 403) logOut()
+
     return Promise.reject(error)
   }
 )
@@ -79,7 +96,7 @@ const refreshAccessToken = async () => {}
 // By default, axios serializes JS objects to JSON
 // To send data in the above format, do:
 //
-const params = new URLSearchParams()
-params.append('param1', 'value1')
-params.append('param2', 'value2')
-axios.post('/foo', params)
+// const params = new URLSearchParams()
+// params.append('param1', 'value1')
+// params.append('param2', 'value2')
+// axios.post('/foo', params)

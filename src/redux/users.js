@@ -1,16 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { getUser } from '../api/fakeUsersApi'
+// import { getUser } from '../api/fakeUsersApi'
+import { login } from '../api/authApi'
 
 export const fetchUser = createAsyncThunk(
   'user/fetch',
   async ({ username, password }, thunkAPI) => {
     try {
-      const data = await getUser({ username, password })
+      const data = await login({ username, password })
+      // safeguard only; if api returns no data then it throws, reaching the catch below
       if (!data) throw new Error('No data returned')
       if (data.error) throw new Error(data.error?.message?.toString())
-      return data
+      return { ...data, username }
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.toString())
+      return thunkAPI.rejectWithValue(error)
     }
   }
 )

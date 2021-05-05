@@ -1,4 +1,7 @@
 {
+  "hardFailure": "Network issues experienced. Reload and retry",
+  "tokenExpired": "Token has expired",
+  "noAuth": "Authorization issue. Please contact support",
   "passwordRequired": "Passwqord required",
   "usernameRequired": "Username required",
   "missingData": "Could not post feedback - missing data",

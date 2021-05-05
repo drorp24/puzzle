@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Logout = ({ noButton }) => {
-  const username = useSelector(store => store.users.loggedIn.username)
+  const loggedIn = useSelector(store => store.users.loggedIn?.access_token)
   const dispatch = useDispatch()
   const classes = useStyles()
 
@@ -34,10 +34,8 @@ const Logout = ({ noButton }) => {
 
   return (
     <div className={classes.root}>
-      <span className={classes.username}>
-        {username || 'No user signed in'}
-      </span>
-      {!noButton && username && (
+      <span className={classes.username}></span>
+      {!noButton && loggedIn && (
         <Button
           className={classes.button}
           size="small"
