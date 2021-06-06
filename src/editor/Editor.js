@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { fetchContent, changes, selectContent } from '../redux/content'
+import { fetchContent, changes, selectContent, clear } from '../redux/content'
 import { setAppProp, setView } from '../redux/app'
 import { useLocale, capitalize } from '../utility/appUtilities'
 
@@ -130,27 +130,34 @@ const MyEditor = () => {
     const showContent = content =>
       setEditorState(EditorState.createWithContent(content, decorator))
 
+    const emptyContent = () => setEditorState(EditorState.createEmpty())
+
     // ! error catching
-    // redux-toolkit's thunks always return a promise with an action object (either fulfilled or rejected),
-    // but to get back the original payload and, more importantly, to have the error thrown back here,
-    // unwrapResult is required.
-    // Without calling unwrapResult, reject reducer will reach the then clause as well.
+    // redux-toolkit's thunks always return a promise with an action object (either fulfilled or rejected).
+    // If anyone requires that promise to instead return the original payload, or (more importantly) the error,
+    // then unwrapResult must be chained right after the dispatch.
     //
-    // As a convention, that promise should be caught right here to guarantee no ugly uncaught exceptions.
+    // Failing to call unwrapResult will make an error reaching the reject reducer get swallowed there,
+    // and the flow to consequently reach the '.then' clause here rather than the '.catch'.
+    //
+    // I think the convention should be the following:
+    // If an error during a dispatched action should trigger the caller to do some other activity or dispatch in response,
+    // then the caller (e.g. here) should be notified, so it can perform the other activity or dispatch.
     dispatch(setView({ editor: true, tags: true, relations: false }))
 
     dispatch(fetchContent({ file, convertContent, showContent }))
       .then(unwrapResult)
       .catch(error => {
-        console.error(error)
+        console.error('Editor: error returned:', error)
+        dispatch(clear())
+        emptyContent()
       })
   }, [dispatch, file, refresh])
 
   // selection & entity creation
   useEffect(() => {
-    const { selectionExists, selectionSpansBlocks } = parseSelection(
-      editorState
-    )
+    const { selectionExists, selectionSpansBlocks } =
+      parseSelection(editorState)
     if (selectionExists && selectionSpansBlocks) {
       // alert('Please select inside a single block') // ToDo: replace alert with a snackbar
       return

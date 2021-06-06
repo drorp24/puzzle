@@ -88,10 +88,6 @@ const contentSlice = createSlice({
     update: contentAdapter.updateOne,
     error: (state, { payload: error }) => ({ ...state, error }),
     changes: state => ({ ...state, changes: state.changes + 1 }),
-    selected: (state, { payload }) => {
-      // selected is deprecated; use 'select'
-      state.selectedId = payload
-    },
     select: (state, { payload }) => {
       state.selectedId = payload
     },
@@ -266,8 +262,10 @@ export const selectEntities = ({
   selectedId,
 })
 
-export const selectEntityById = id => ({ content }) =>
-  contentSelectors.selectById(content, id)
+export const selectEntityById =
+  id =>
+  ({ content }) =>
+    contentSelectors.selectById(content, id)
 
 export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
