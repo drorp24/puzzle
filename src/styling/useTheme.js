@@ -39,7 +39,6 @@ const useTheme = ({ mode, direction } = {}) => {
       },
     }
 
-    console.log('i am here')
     return createMuiTheme({
       direction,
       palette: {

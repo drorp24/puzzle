@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { view } from '../redux/app'
 import { requestRefresh } from '../redux/content'
 
-import { useLocale, capitalize } from '../utility/appUtilities'
+import { useLocale, useMode } from '../utility/appUtilities'
 
 import Paper from '@material-ui/core/Paper'
 
@@ -13,7 +13,6 @@ import InfoSelect from '../content/InfoSelect'
 import Editor from '../editor/Editor'
 import Table from '../table/Table'
 import Map from '../map/Map'
-import noScrollbar from '../styling/noScrollbar'
 import IconButton from '@material-ui/core/IconButton'
 import RefreshIcon from '@material-ui/icons/Refresh'
 
@@ -26,6 +25,7 @@ heights.full = 100 - heights.search - heights.gap
 
 const Locations = () => {
   const { locale, placement } = useLocale()
+  const { light } = useMode()
   const [info, setInfo] = useState(['text', 'table'])
   const [listHeight, setListHeight] = useState(heights.table)
   const dispatch = useDispatch()
@@ -52,8 +52,6 @@ const Locations = () => {
     container: {
       display: 'grid',
       gridTemplateColumns: '50% 50%',
-      overflow: 'scroll',
-      ...noScrollbar,
     },
     paper: theme => ({
       height: '100%',
@@ -64,18 +62,15 @@ const Locations = () => {
       gridTemplateRows: `${heights.gap / 2}vh ${heights.search}vh ${
         heights.gap / 2
       }vh ${heights.full}vh`,
-      [`padding${capitalize(placement)}`]: '1rem',
-      backgroundColor: `${theme.palette.background.backdrop} !important`,
+      padding: '0 1rem',
+      backgroundColor: light ? '#fff' : 'rgba(256, 256, 256, 0.1) !important',
     }),
     input: theme => ({
       height: `${heights.search}vh`,
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      border: theme.palette.border,
-      borderRadius: '3px',
       padding: '0 0.75rem',
-      backgroundColor: theme.palette.background.paper,
       zIndex: 1,
       textTransform: 'capitalize',
       fontSize: locale === 'he' ? '1rem' : '0.8125rem',
@@ -83,10 +78,8 @@ const Locations = () => {
     editor: theme => ({
       height: `${heights.full}vh`,
       transition: 'height 0.7s',
-      border: theme.palette.border,
       lineHeight: '3.5',
       padding: '0 1rem',
-      backgroundColor: theme.palette.background.paper,
       zIndex: 0,
     }),
     table: theme => ({
@@ -94,11 +87,12 @@ const Locations = () => {
       height: `${listHeight}vh`,
       transform: `translateY(${tableTop}vh)`,
       transition: 'transform 0.5s',
-      width: 'calc(100% - 1rem)',
-      border: theme.palette.border,
-      padding: '0 1rem',
+      width: 'calc(100% - 2rem)',
+      [placement]: '1rem',
+      borderRadius: '5px',
       backgroundColor: theme.palette.background.paper,
       zIndex: 0,
+      border: light ? 'none' : '1px solid #757575',
     }),
     tableInner: {
       height: `${tableHeight}vh`,
@@ -108,7 +102,7 @@ const Locations = () => {
 
   return (
     <div css={styles.container}>
-      <Paper square elevation={4} css={styles.paper}>
+      <Paper square={false} elevation={4} css={styles.paper}>
         <div></div>
         <div css={styles.input}>
           <FileSelect />

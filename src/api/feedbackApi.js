@@ -1,10 +1,10 @@
-import axios from 'axios'
+import { axiosApiInstance } from './authApi'
 
 const feedbackApi = async data => {
   const feedbackEndpoint = `${process.env.REACT_APP_API_SERVER}${process.env.REACT_APP_FEEDBACK_ENDPOINT}`
 
   try {
-    await axios.post(feedbackEndpoint, data)
+    await axiosApiInstance.post(feedbackEndpoint, data)
     return data
   } catch (error) {
     // eslint-disable-next-line no-throw-literal

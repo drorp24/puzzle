@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { memo, forwardRef, useState } from 'react'
-import { useRef, useEffect } from 'react'
+import { memo, forwardRef, useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   updatePosition,
@@ -12,10 +11,10 @@ import { levelIconWithText } from '../editor/entityTypes'
 import usePixels from '../utility/usePixels'
 import { useMode, useLocale } from '../utility/appUtilities'
 
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
-import Tooltip from '@material-ui/core/Tooltip'
-import Zoom from '@material-ui/core/Zoom'
-import { EntityDetails } from './EntityDetails'
+// import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+// import Tooltip from '@material-ui/core/Tooltip'
+// import Zoom from '@material-ui/core/Zoom'
+// import { EntityDetails } from './EntityDetails'
 
 import entityTypes, {
   entityStyle,
@@ -23,9 +22,10 @@ import entityTypes, {
   entityTextStyle,
 } from './entityTypes'
 
-export const TextSpan = type => ({ children }) => (
-  <span css={entityStyle(type)}>{children}</span>
-)
+export const TextSpan =
+  type =>
+  ({ children }) =>
+    <span css={entityStyle(type)}>{children}</span>
 
 // ! entities & ranges
 // draft's text entities and reactflow's nodes are unaware of each other and render separately.
@@ -71,12 +71,14 @@ export const EntitySpan = ({
     store => store.app.window
   )
   const dispatch = useDispatch()
-  const level = usePixels(levelIconWithText)
+  const level = usePixels(levelIconWithText.y)
 
-  const of = ({ blockKey, start, end }) => item =>
-    item.blockKey === blockKey &&
-    item.offset === start &&
-    item.length === end - start
+  const of =
+    ({ blockKey, start, end }) =>
+    item =>
+      item.blockKey === blockKey &&
+      item.offset === start &&
+      item.length === end - start
 
   // if editing is ever allowed, this will break
   const entityRangeIndex =
@@ -150,11 +152,19 @@ export const EntitySpan = ({
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />
 }
 
+// ToDo: Remove Tooltip
+// In the newer versions, text decorator components are never meant to be viewed anymore,
+// and their sole purpose is to enable calculating nodes coordinates
+// so they precisely fit the entities' positions within the text.
+//
+// Since that makes only nodes stick on the surface of the text,
+// it's only those nodes that require tooltips to show when hovered.
+
 // memo ensures position changes do not trigger unnecessary re-rendering
 // forwardRef enables using this component's ref in parent component
 const Entity = memo(
   forwardRef(({ contentState, entityKey, children, tags }, ref) => {
-    const [tooltipOpen, setTooltipOpen] = useState(false)
+    // const [tooltipOpen, setTooltipOpen] = useState(false)
     const entity = contentState.getEntity(entityKey)
     const { type } = entity
     const { icon } = entityTypes[type]
@@ -163,40 +173,39 @@ const Entity = memo(
     const { capitalPlacement } = useLocale()
     const entityS = entityStyle({ type, role, mode })
     const iconS = entityIconStyle({ type, role, mode })
-    const textS = entityTextStyle({ capitalPlacement })
+    const textS = entityTextStyle({ capitalPlacement, mode })
 
-    const openTooltip = () => {
-      setTooltipOpen(true)
-    }
-    const closeTooltip = () => {
-      setTooltipOpen(false)
-    }
+    // const openTooltip = () => {
+    //   setTooltipOpen(true)
+    // }
+    // const closeTooltip = () => {
+    //   setTooltipOpen(false)
+    // }
     return (
-      <ClickAwayListener onClickAway={closeTooltip}>
-        <Tooltip
-          // open={
-          //   entity.data.id === 'secondEntity' ||
-          //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
-          // }
-          // * Uncomment to trigger by click
-          // open={tooltipOpen}
-          title={<EntityDetails {...{ entity }} />}
-          arrow
-          TransitionComponent={Zoom}
-          disableFocusListener={true}
-          placement="left"
-          PopperProps={{ style: { width: '15rem' } }}
-        >
-          <span
-            ref={ref}
-            {...(tags && { style: entityS })}
-            onClick={openTooltip}
-          >
-            <span css={iconS}>{tags && icon}</span>
-            <span css={textS}>{children}</span>
-          </span>
-        </Tooltip>
-      </ClickAwayListener>
+      // <ClickAwayListener onClickAway={closeTooltip}>
+      //   <Tooltip
+      //     // open={
+      //     //   entity.data.id === 'secondEntity' ||
+      //     //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
+      //     // }
+      //     // * Uncomment to trigger by click
+      //     // open={tooltipOpen}
+      //     title={<EntityDetails {...{ entity }} />}
+      //     arrow
+      //     TransitionComponent={Zoom}
+      //     disableFocusListener={true}
+      //     placement="left"
+      //     PopperProps={{ style: { width: '15rem' } }}
+      //   >
+      <span
+        ref={ref}
+        {...(tags && { style: entityS })} /* onClick={openTooltip} */
+      >
+        <span css={iconS}>{tags && icon}</span>
+        <span css={textS}>{children}</span>
+      </span>
+      // </Tooltip>
+      // </ClickAwayListener>
     )
   })
 )

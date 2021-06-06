@@ -7,7 +7,7 @@ import getArrayDepth from '../utility/getArrayDepth'
 // ToDo: remove getArrayDepth; depth should be derived from type;
 // find out which types are supported
 const swap = (id, geolocation) => {
-  const { type, coordinates } = (geolocation && geolocation.geometry) || {
+  const { type, coordinates } = geolocation?.geometry || {
     type: undefined,
     coordinates: undefined,
   }
@@ -102,6 +102,15 @@ const convertShayToRaw = (
         })
       }
 
+      properties.explain = `
+        <div>
+          <h1>HTML text</h1>
+          <div></div>
+          <span><strong style="color: red; text-transform: uppercase"> טקסט זה </strong>
+          נשלח עם תגיות HTML</span>
+        </div>
+        `
+
       const data = {
         id,
         score,
@@ -142,6 +151,7 @@ const realEditorApi = async fileId => {
     .catch(error => {
       // eslint-disable-next-line no-throw-literal
       throw {
+        source: 'realEditorApi',
         field: 'file',
         value: fileId,
         issue: error.response?.data?.error || 'No response from Api',

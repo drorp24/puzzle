@@ -5,7 +5,7 @@ import { unwrapResult } from '@reduxjs/toolkit'
 import { selectContent, selectIds, updateFeedback } from '../redux/content'
 import { postFeedback, error } from '../redux/feedback'
 
-import { useDirection } from '../utility/appUtilities'
+import { useDirection, useLocale, useMode } from '../utility/appUtilities'
 
 import { FixedSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
@@ -19,6 +19,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import Zoom from '@material-ui/core/Zoom'
 import Info from '@material-ui/icons/InfoOutlined'
 import IconButton from '@material-ui/core/IconButton'
+import Paper from '@material-ui/core/Paper'
 
 import { useIntl } from 'react-intl'
 
@@ -27,7 +28,6 @@ import { EntityDetails } from '../editor/EntityDetails'
 
 import usePixels from '../utility/usePixels'
 import noScrollbar from '../styling/noScrollbar'
-import Spinner from '../layout/Spinner'
 import eitherOfTheKeysIsEmpty from '../utility/eitherOfTheKeysIsEmpty'
 
 const styles = {
@@ -37,7 +37,6 @@ const styles = {
   header: {
     fontWeight: '400',
     padding: '0 1rem',
-    color: '#9e9e9e',
   },
   row: {
     display: 'flex',
@@ -84,13 +83,7 @@ const styles = {
   tagHeader: {
     textAlign: 'center',
   },
-  buttonGroup: {
-    height: '2rem',
-    justifySelf: 'end',
-    alignSelf: 'center',
-    padding: '0 1rem',
-    // border: '1px solid',
-  },
+
   selected: {
     backgroundColor: 'rgba(0, 0, 0, 0.6) !important',
     color: '#fff !important',
@@ -117,6 +110,9 @@ const styles = {
   centered: {
     textAlign: 'center',
   },
+  paper: {
+    padding: '0 1rem',
+  },
 }
 
 // ToDo: make ToggleButtonGroup responsive
@@ -128,7 +124,10 @@ const Table = () => {
   const itemCount = entities.length
   const itemSize = usePixels(4)
   const direction = useDirection()
+  const { light } = useMode()
   const outerRef = useRef()
+
+  const backgroundColor = light ? '#fff' : 'rgba(0, 0, 0, 0.3)'
 
   useEffect(() => {
     const scrollTo = entityId => {
@@ -152,7 +151,12 @@ const Table = () => {
       {({ height, width }) => {
         height -= itemSize
         return (
-          <>
+          <Paper
+            square={false}
+            elevation={3}
+            css={styles.paper}
+            style={{ backgroundColor }}
+          >
             <Header
               style={{ ...styles.row, ...styles.header, height: itemSize }}
             />
@@ -165,7 +169,7 @@ const Table = () => {
             >
               {Row}
             </List>
-          </>
+          </Paper>
         )
       }}
     </AutoSizer>
@@ -279,6 +283,38 @@ const Row = memo(({ index, style }) => {
         </IconButton>
       </Tooltip>
 
+      <Feedback {...{ feedback, tagClick, id, tagState, selectedTagIcon }} />
+    </div>
+  )
+})
+
+const Feedback = memo(
+  ({ feedback, tagClick, id, tagState, selectedTagIcon }) => {
+    const { capitalPlacement, capitalAntiPlacement } = useLocale()
+    const styles = {
+      buttonGroup: theme => ({
+        height: '2rem',
+        justifySelf: 'end',
+        alignSelf: 'center',
+        padding: '0 1rem',
+        // direction-switch borders fix
+        '& .MuiToggleButtonGroup-groupedHorizontal:not(:first-child)': {
+          [`border${capitalPlacement}Color`]: theme.palette.divider,
+        },
+        '& .MuiToggleButtonGroup-groupedHorizontal:last-child': {
+          [`borderTop${capitalPlacement}Radius`]: 'inherit',
+          [`borderBottom${capitalPlacement}Radius`]: 'inherit',
+        },
+        '& .MuiToggleButtonGroup-groupedHorizontal:not(:last-child)': {
+          [`borderTop${capitalAntiPlacement}Radius`]: 'inherit',
+          [`borderBottom${capitalAntiPlacement}Radius`]: 'inherit',
+        },
+        '& svg': {
+          fontSize: '1rem',
+        },
+      }),
+    }
+    return (
       <ToggleButtonGroup
         value={feedback}
         exclusive
@@ -308,9 +344,9 @@ const Row = memo(({ index, style }) => {
           <No css={{ ...styles.tagIcon, ...selectedTagIcon }} />
         </ToggleButton>
       </ToggleButtonGroup>
-    </div>
-  )
-})
+    )
+  }
+)
 
 const Header = memo(({ style }) => {
   const intl = useIntl()

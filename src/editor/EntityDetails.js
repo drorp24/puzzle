@@ -173,7 +173,10 @@ export const EntityDetails = ({ entity: { type, data } }) => {
           <Divider css={{ ...styles.modeColor, ...styles.dividerSplitLine }}>
             {t('explainer')}
           </Divider>
-          <div css={styles.explainer}>{explanation}</div>
+          <div
+            css={styles.explainer}
+            dangerouslySetInnerHTML={{ __html: explanation }}
+          ></div>
         </CardContent>
         <CardActions disableSpacing>
           {/* <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>

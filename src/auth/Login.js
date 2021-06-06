@@ -153,10 +153,6 @@ export default function Login() {
               error={!!errors.password}
               helperText={errors.password && t('passwordRequired')}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label={t('rememberMe')}
-            />
             <Button
               type="submit"
               fullWidth
@@ -166,18 +162,6 @@ export default function Login() {
             >
               {t('signIn')}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  {t('forgotPassword')}
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link disabled href="#" variant="body2">
-                  {t('signUp')}
-                </Link>
-              </Grid>
-            </Grid>
           </form>
         </div>
       </div>

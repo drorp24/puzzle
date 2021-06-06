@@ -9,9 +9,10 @@ import NotListedIcon from '@material-ui/icons/HelpOutlined'
 import OrganizationIcon from '@material-ui/icons/GroupsOutlined'
 
 export const useColor = relationType =>
-  useMemo(() => entityTypes[relationTypes[relationType].entity].color, [
-    relationType,
-  ])
+  useMemo(
+    () => entityTypes[relationTypes[relationType].entity].color,
+    [relationType]
+  )
 
 export const relationTypes = keyProxy({
   son: {
@@ -94,7 +95,7 @@ const entityTypes = keyProxy({
   },
 })
 
-export const levelIconWithText = 0.25
+export const levelIconWithText = { x: -0.05, y: 0.285 }
 
 // ! node & text styling
 // Since they overlap, both draft.js spans and react-flow's nodes use identical styling rules
@@ -113,9 +114,9 @@ export const entityStyle = ({ type, role, element, mode, id }) => ({
   alignItems: 'center',
   lineHeight: '1',
   ...(role === 'text' && {
-    transform: `translateY(${
-      entityTypes[type].icon ? `${levelIconWithText}rem` : '0'
-    }`,
+    transform: entityTypes[type].icon
+      ? `translate(${levelIconWithText.x}rem, ${levelIconWithText.y}rem)`
+      : '(0,0)',
   }),
 })
 export const entityIconStyle = ({ type, role, mode = 'light' }) => ({
@@ -133,6 +134,6 @@ export const entityTextStyle = ({
   capitalAntiPlacement,
 }) => ({
   [`margin${capitalPlacement || capitalAntiPlacement}`]: '0.4rem',
-  color: 'black',
+  color: mode === 'light' ? 'black' : 'white',
 })
 export default entityTypes

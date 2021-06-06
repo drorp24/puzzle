@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 
 import useTranslation from '../i18n/useTranslation'
 import statusToText from './statusToText'
+import { useMode } from '../utility/appUtilities'
 
 import TextField from '@material-ui/core/TextField'
 import InputAdornment from '@material-ui/core/InputAdornment'
@@ -17,6 +18,7 @@ const FileSelect = () => {
   const t = useTranslation()
   const { register, handleSubmit, setError, formState } = useForm()
   const { error, loaded } = useSelector(selectContent)
+  const { light } = useMode()
   const dispatch = useDispatch()
 
   const styles = {
@@ -40,11 +42,20 @@ const FileSelect = () => {
     },
     form: {
       height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
     },
     textField: theme => ({
-      height: '100%',
-      display: 'block',
-      color: loaded && !error ? 'green' : error ? 'red' : 'inherit',
+      height: '3rem',
+      color:
+        loaded && !error
+          ? light
+            ? 'green'
+            : 'springgreen'
+          : error
+          ? 'red'
+          : 'inherit',
       '& input': {
         fontWeight: loaded && !error ? 900 : 'inherit',
       },

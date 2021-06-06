@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect, memo } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectEntities, positionShifted, addIssue } from '../redux/content'
 import ReactFlow, { removeElements, addEdge } from 'react-flow-renderer'
@@ -40,7 +40,6 @@ export const styles = {
 
 // ToDo: spread the handles so they don't overlap
 
-// ToDo: when 'editRelations' is on and 'showText' is off, text inside pills disappears
 const Relations = () => {
   const [elements, setElements] = useState([])
   const dispatch = useDispatch()
@@ -51,8 +50,8 @@ const Relations = () => {
   const {
     editor: viewEditor,
     tags: viewTags,
-    connections: editRelations,
     relations: viewRelations,
+    connections: editRelations,
     exclusiveRelations,
   } = useSelector(store => store.app.view)
 
@@ -142,6 +141,7 @@ const Relations = () => {
                     exclusiveRelations,
                     selectedId,
                     entityFromType: entities[from].type,
+                    viewRelations,
                   })
                   edges.push(relation)
                   // setElements(els => [...els, relation])
@@ -157,51 +157,6 @@ const Relations = () => {
       const issue = { component, name, message }
       dispatch(addIssue(issue))
     }
-
-    // ToDo: re-position shifted nodes back to place whenever viewEditor is on
-    // Though setElements gets an entirely new array, with the correct positioning,
-    // nothing seems to make react-flow rerender shifted nodes.
-    // As a temporary workaround, the dragStop event returns the shifted node back to place.
-    // The following code was an attempt to make it work. It didn't.
-
-    // setElements(elements =>
-    //   elements.map(element => {
-    //     const shiftedNode = element.type === 'node' && shiftedNodes[element.id]
-
-    //     if (shiftedNode) {
-    //       console.log('shiftedNode: ', shiftedNode)
-    //       const {
-    //         index,
-    //         position: { x, y },
-    //       } = shiftedNode
-    //       element.position = { x, y }
-
-    //       // ToDo: this makes FileSelect re-render
-    //       // dispatch(
-    //       //   positionShifted({
-    //       //     id: element.id,
-    //       //     entityRangeIndex: index,
-    //       //     shifted: false,
-    //       //   })
-    //       // )
-    //       return { ...element, position: { x, y } }
-    //     }
-    //     return element
-    //   })
-    // )
-
-    // })
-
-    // This is left here since it did succeed in positioning a node
-    // though it looks equivalent to the setElements attempts above, that didn't do the job.
-    // setElements(elements =>
-    //   elements.map(element => {
-    //     if (element.id === '6644bd08-59d8-43c8-9919-4e069b7b91b0-0') {
-    //       element.position = { x: 0, y: 0 }
-    //     }
-    //     return element
-    //   })
-    // )
   }, [
     entities,
     relations,
@@ -209,16 +164,34 @@ const Relations = () => {
     editRelations,
     selectedId,
     dispatch,
+    viewRelations,
   ])
+
+  // allow enough time for nodes & relations' positions to be calculated before revealing them
+  const visibilityRef = useRef()
+  const [visibility, setVisibility] = useState('visible')
+  useEffect(() => {
+    visibilityRef.current = visibilityRef.current || {}
+    if (!viewTags) {
+      setVisibility('hidden')
+      visibilityRef.current.viewTags = false
+    } else if (
+      visibilityRef.current?.viewTags === false &&
+      !visibilityRef.current?.timer
+    ) {
+      visibilityRef.current.timer = setTimeout(() => {
+        setVisibility('visible')
+        visibilityRef.current.viewTags = true
+        visibilityRef.current.timer = null
+      }, 500)
+    }
+  }, [viewTags, visibility])
 
   return (
     <div
       css={styles.container}
       style={{
-        visibility:
-          (viewRelations || exclusiveRelations) && viewTags
-            ? 'visible'
-            : 'hidden',
+        visibility,
         direction: 'ltr',
         ...(editRelations && styles.editMode),
       }}
@@ -232,6 +205,7 @@ const Relations = () => {
           onNodeDragStop,
           ...options,
           nodesDraggable: !viewEditor,
+          nodesConnectable: editRelations,
         }}
       />
     </div>

@@ -16,7 +16,6 @@ import {
 import { useLocale, useMode } from '../utility/appUtilities'
 import useTheme from '../styling/useTheme'
 
-import Folder from '@material-ui/icons/FolderOpenOutlined'
 import ChatOutlinedIcon from '@material-ui/icons/ChatOutlined'
 import SwitchRightOutlinedIcon from '@material-ui/icons/SwitchRightOutlined'
 import DarkModeOutlinedIcon from '@material-ui/icons/DarkModeOutlined'
@@ -146,6 +145,14 @@ const Home = () => {
     title: {
       margin: '0 2px',
     },
+    transformedTitle: {
+      position: 'relative',
+      right: '-3.3rem',
+      top: '-4.5rem',
+      transform: 'rotate(270deg)',
+      fontSize: '1.2rem !important',
+      fontWeight: '400',
+    },
     route: {
       width: open ? routeWidth.open : routeWidth.close,
       transition: 'width 1s',
@@ -216,6 +223,7 @@ const Home = () => {
       icon: <UserIcon />,
       onClick: () => {},
       title: username,
+      transformed: true,
     },
   ]
 
@@ -254,7 +262,7 @@ const Home = () => {
               </Button>
             </Link>
           ))}
-          {toggles.map(({ key, title, icon, onClick, css }) => (
+          {toggles.map(({ key, title, icon, transformed, onClick }) => (
             <Button
               fullWidth
               css={styles.drawerItem}
@@ -262,7 +270,7 @@ const Home = () => {
             >
               <div css={styles.iconWrapper}>{icon}</div>
               <div
-                css={styles.title}
+                css={transformed ? styles.transformedTitle : styles.title}
                 style={{ fontSize: containsHeb(title) ? '1rem' : '0.7rem' }}
               >
                 {title}

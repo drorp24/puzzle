@@ -74,16 +74,6 @@ const EditorControl = () => {
     const unSelect = view =>
       setSelected(selected => selected.filter(i => i !== view))
 
-    // ToDo: create a function
-    setTagsDisabled(
-      !(selected.includes('editor') || selected.includes('relations'))
-    )
-    if (
-      selected.includes('tags') &&
-      !(selected.includes('editor') || selected.includes('relations'))
-    )
-      unSelect('tags')
-
     setRelationsDisabled(!selected.includes('tags'))
     if (selected.includes('relations') && !selected.includes('tags'))
       unSelect('relations')

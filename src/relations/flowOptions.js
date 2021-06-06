@@ -68,11 +68,16 @@ export const makeRelation = ({
   exclusiveRelations,
   selectedId,
   entityFromType,
+  viewRelations,
 }) => {
   const source = `${from}-${fromEntityRangeIndex}`
   const target = `${to}-${toEntityRangeIndex}`
   const isHidden =
-    exclusiveRelations && selectedId && selectedId !== from && selectedId !== to
+    !viewRelations ||
+    (exclusiveRelations &&
+      selectedId &&
+      selectedId !== from &&
+      selectedId !== to)
   const relation = {
     id: `${source}-${target}-${type}`,
     source: `${source}`,
