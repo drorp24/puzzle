@@ -5,7 +5,7 @@ import { unwrapResult } from '@reduxjs/toolkit'
 import { selectContent, selectIds, updateFeedback } from '../redux/content'
 import { postFeedback, error } from '../redux/feedback'
 
-import { useDirection, useLocale, useMode } from '../utility/appUtilities'
+import { useLocale, useMode } from '../utility/appUtilities'
 
 import { FixedSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
@@ -123,7 +123,7 @@ const Table = () => {
   const ids = useSelector(selectIds)
   const itemCount = entities.length
   const itemSize = usePixels(4)
-  const direction = useDirection()
+  const { direction } = useLocale()
   const { light } = useMode()
   const outerRef = useRef()
 
