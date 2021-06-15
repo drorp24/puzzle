@@ -12,6 +12,7 @@ import { IntlProvider } from 'react-intl'
 import he from './i18n/he.json'
 import en from './i18n/en.json'
 import { useDirection } from './utility/appUtilities'
+import Direction from './layout/Direction'
 
 import ProtectedRoute from './auth/ProtectedRoute'
 import Login from './auth/Login'
@@ -21,6 +22,7 @@ import Snackbar from './communication/Snackbar'
 import SimulateError from './utility/SimulateError'
 import ErrorBoundary from './utility/ErrorBoundary'
 
+import { StylesProvider } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import useTheme from './styling/useTheme'
@@ -34,40 +36,44 @@ export default function App() {
   window.theme = theme // ToDo: remove
 
   return (
-    <HelmetProvider>
-      <Helmet>
-        <html lang={locale} />
-        <body dir={direction} style="overflow: hidden" />
-      </Helmet>
-      <IntlProvider
-        messages={messages[locale]}
-        locale={locale}
-        defaultLocale="en"
-        onError={() => console.error('IntlProvider Error')}
-      >
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <ErrorBoundary>
-            <Router>
-              <Switch>
-                <ProtectedRoute exact path="/">
-                  <Redirect to="/home/locations" />
-                </ProtectedRoute>
-                <ProtectedRoute path="/home">
-                  <Home />
-                </ProtectedRoute>
-                <Route path="/login">
-                  <Login />
-                </Route>
-                <Route path="/simulateerror">
-                  <SimulateError />
-                </Route>
-              </Switch>
-              <Snackbar />
-            </Router>
-          </ErrorBoundary>
-        </ThemeProvider>
-      </IntlProvider>
-    </HelmetProvider>
+    <StylesProvider injectFirst>
+      <HelmetProvider>
+        <Direction locale={locale}>
+          <Helmet>
+            <html lang={locale} />
+            <body dir={direction} style="overflow: hidden" />
+          </Helmet>
+          <IntlProvider
+            messages={messages[locale]}
+            locale={locale}
+            defaultLocale="en"
+            onError={() => console.error('IntlProvider Error')}
+          >
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <ErrorBoundary>
+                <Router>
+                  <Switch>
+                    <ProtectedRoute exact path="/">
+                      <Redirect to="/home/locations" />
+                    </ProtectedRoute>
+                    <ProtectedRoute path="/home">
+                      <Home />
+                    </ProtectedRoute>
+                    <Route path="/login">
+                      <Login />
+                    </Route>
+                    <Route path="/simulateerror">
+                      <SimulateError />
+                    </Route>
+                  </Switch>
+                  <Snackbar />
+                </Router>
+              </ErrorBoundary>
+            </ThemeProvider>
+          </IntlProvider>
+        </Direction>
+      </HelmetProvider>
+    </StylesProvider>
   )
 }
