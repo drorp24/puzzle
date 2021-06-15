@@ -35,6 +35,10 @@ const feedbackSlice = createSlice({
     add: feedbackAdapter.addOne,
     update: feedbackAdapter.updateOne,
     error: (state, { payload: error }) => ({ ...state, error }),
+    notified: state => ({
+      ...state,
+      error: { ...state.error, notified: true },
+    }),
   },
   extraReducers: {
     [postFeedback.pending]: (state, { meta: { requestId } }) => {
@@ -68,6 +72,6 @@ const feedbackSlice = createSlice({
 })
 
 const { reducer, actions } = feedbackSlice
-export const { clear, add, update, error } = actions
+export const { clear, add, update, error, notified } = actions
 
 export default reducer

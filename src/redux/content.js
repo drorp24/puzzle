@@ -87,6 +87,10 @@ const contentSlice = createSlice({
     add: contentAdapter.addOne,
     update: contentAdapter.updateOne,
     error: (state, { payload: error }) => ({ ...state, error }),
+    notified: state => ({
+      ...state,
+      error: { ...state.error, notified: true },
+    }),
     changes: state => ({ ...state, changes: state.changes + 1 }),
     select: (state, { payload }) => {
       state.selectedId = payload
@@ -317,6 +321,7 @@ export const {
   add,
   update,
   error,
+  notified,
   changes,
   updatePosition,
   positionShifted,

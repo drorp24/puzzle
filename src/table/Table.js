@@ -222,7 +222,7 @@ const Row = memo(({ index, style }) => {
     const data = {
       username: 'user_x',
       document_id: doc_id,
-      entity_id: id,
+      // entity_id: id,
       entity_location_id,
       feedback: tag,
     }

@@ -29,6 +29,10 @@ const usersSlice = createSlice({
   initialState,
   reducers: {
     logout: () => initialState,
+    notified: state => ({
+      ...state,
+      error: { ...state.error, notified: true },
+    }),
   },
   extraReducers: {
     [fetchUser.pending]: (state, { meta: { requestId } }) => {
@@ -59,6 +63,6 @@ const usersSlice = createSlice({
 })
 
 const { reducer, actions } = usersSlice
-export const { logout } = actions
+export const { logout, notified } = actions
 
 export default reducer
