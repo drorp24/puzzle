@@ -161,7 +161,7 @@ const Table = () => {
               style={{ ...styles.row, ...styles.header, height: itemSize }}
             />
             <List
-              overscanCount="10"
+              overscanCount="30"
               outerRef={outerRef}
               css={noScrollbar}
               style={{ width: '100%' }}
