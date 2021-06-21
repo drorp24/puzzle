@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useEffect, useRef, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { selectSelectedId, selectSelectedEntity } from '../redux/content'
+import { selectSelectedLocation } from '../redux/content'
 import { useMode } from '../utility/appUtilities'
 
 import { useMap, Polygon, Polyline, Marker, Popup } from 'react-leaflet'
@@ -29,16 +29,17 @@ const SelectedGeo = () => {
   const theme = useTheme()
   const { mode } = useMode()
 
-  const selectedId = useSelector(selectSelectedId)
-  const selectedEntity = useSelector(selectSelectedEntity)
-  const { type, coordinates } = selectedEntity || {}
+  // const selectedId = useSelector(selectSelectedId)
+  const selectedLocationId = useSelector(store => store.content.selectedLocationId)
+  const selectedLocation = useSelector(selectSelectedLocation(selectedLocationId))
+  const { type, coordinates } = selectedLocation?.geometry || {}
   const positions = coordinates
 
-  const selectedRef = useRef()
-  const sameId = selectedId && selectedId === selectedRef.current?.selectedId
-  const sameCoordinates =
-    coordinates?.length < 3 &&
-    isEqual(coordinates, selectedRef.current?.coordinates)
+  // const selectedRef = useRef()
+  // const sameId = selectedId && selectedId === selectedRef.current?.selectedId
+  // const sameCoordinates =
+  //   coordinates?.length < 3 &&
+  //   isEqual(coordinates, selectedRef.current?.coordinates)
 
   const polygon = useMemo(
     () => (type === 'Point' ? [coordinates] : coordinates),
@@ -48,26 +49,26 @@ const SelectedGeo = () => {
   useEffect(() => {
     if (
       !map ||
-      !selectedId ||
-      !selectedEntity ||
-      !coordinates?.length ||
+      // !selectedId ||
+      !selectedLocation ||
+      !coordinates?.length
       // prevent flying to same location / coordinates
-      sameId ||
-      sameCoordinates
+      //  || sameId ||
+      // sameCoordinates
     )
       return
 
-    selectedRef.current = { selectedId, coordinates }
+    // selectedRef.current = { selectedId, coordinates }
 
     map.flyToBounds(L.polygon(polygon).getBounds(), flyToOptions)
   }, [
     map,
-    selectedId,
-    selectedEntity,
+    // selectedId,
+    selectedLocation,
     polygon,
     coordinates?.length,
-    sameId,
-    sameCoordinates,
+    // sameId,
+    // sameCoordinates,
     coordinates,
   ])
 
@@ -88,13 +89,13 @@ const SelectedGeo = () => {
     }
   }, [mode, theme.palette.background.paper])
 
-  if (!selectedEntity) return null
+  if (!selectedLocation) return null
 
   const eventHandlers = {
     click: () => {},
   }
 
-  const { details, entityType } = selectedEntity
+  const { details, entityType } = selectedLocation
 
   const styles = {
     pathOptions: { color: entityTypes[entityType]?.color },

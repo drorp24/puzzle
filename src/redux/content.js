@@ -5,6 +5,8 @@ import {
   // current,
 } from '@reduxjs/toolkit'
 
+import {find, getOr} from "lodash/fp"
+
 // import { getFakeHebContent } from '../api/fakeEditorApiHeb'
 import { createEntitiesFromContent } from '../../src/editor/entities'
 import realEditorApi from '../api/realEditorApi'
@@ -74,6 +76,7 @@ const initialState = contentAdapter.getInitialState({
   loading: 'idle',
   changes: 0,
   selectedId: null,
+  selectedLocationId: null,
   file: null,
   refresh: 0,
   issues: [],
@@ -94,6 +97,9 @@ const contentSlice = createSlice({
     changes: state => ({ ...state, changes: state.changes + 1 }),
     select: (state, { payload }) => {
       state.selectedId = payload
+    },
+    selectLocation: (state, { payload }) => {
+      state.selectedLocationId = payload
     },
     show: (state, { payload }) => {
       state.show = payload
@@ -123,16 +129,22 @@ const contentSlice = createSlice({
       { payload: { entity_id, entity_location_id, feedback } }
     ) => {
       // Immer again
-      if (!state.entities[entity_id]?.data?.geoLocation?.properties) {
-        const message = 'Error recording feedback in store'
-        console.error('message')
-        state.issues.push({ entity_id, entity_location_id, feedback, message })
-        return
+      
+      if (state.entities[entity_id]?.data?.geoLocations) {
+        const locationToFeedback = find(gLoc => gLoc?.properties['entity_location_id'] === entity_location_id, 
+                                  state.entities[entity_id].data.geoLocations)
+          if(locationToFeedback != null){
+            locationToFeedback.properties = {
+              ...locationToFeedback.properties,
+                feedback,
+            }
+            return
+          }
       }
-      state.entities[entity_id].data.geoLocation.properties = {
-        entity_location_id,
-        feedback,
-      }
+      const message = 'Error recording feedback in store'
+      console.error('message')
+      state.issues.push({ entity_id, entity_location_id, feedback, message })
+      return      
     },
     setFile: (state, { payload: { file } }) => {
       return file === state.file
@@ -273,46 +285,15 @@ export const selectEntityById =
 
 export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
-export const selectSelectedId = ({ content: { selectedId } }) => selectedId
-export const selectShowId = ({ content: { show } }) => show
 
-export const selectSelectedEntity = ({ content }) => {
-  const { selectedId } = content
-  if (!selectedId) return null
-
-  const selectedE = selectEntityById(selectedId)({ content })
-  if (!selectedE?.data?.geoLocation) return null
-  const id = selectedId
-
-  const {
-    type: entityType,
-    data: {
-      geoLocation: {
-        geometry: { type, coordinates },
-        properties: { details },
-      },
-    },
-  } = selectedE
-  return { id, type, coordinates, details, entityType }
-}
-
-export const selectShowEntity = ({ content }) => {
-  const { show } = content
-  if (!show) return null
-
-  const showE = selectEntityById(show)({ content })
-  if (!showE?.data?.geoLocation) return null
-  const id = show
-
-  const {
-    data: {
-      name,
-      geoLocation: {
-        geometry: { type, coordinates },
-      },
-    },
-  } = showE
-  return { id, type, coordinates, name }
+export const selectSelectedLocation = (selectedLocationId) => ({content}) => {  
+  const selectedEntity = contentSelectors.selectById(content, content.selectedId)
+  const geolocations = selectedEntity?.data?.geoLocations
+  if(geolocations != null){
+    const selectedLocation = geolocations[selectedLocationId]
+    return selectedLocation
+  }
+  return null  
 }
 
 const { reducer, actions } = contentSlice
@@ -326,6 +307,7 @@ export const {
   updatePosition,
   positionShifted,
   select,
+  selectLocation,
   selected,
   show,
   updateTag,
@@ -336,3 +318,46 @@ export const {
 } = actions
 
 export default reducer
+
+
+// export const selectSelectedId = ({ content: { selectedId } }) => selectedId
+// export const selectShowId = ({ content: { show } }) => show
+
+// export const selectSelectedEntity = ({ content }) => {
+//   const { selectedId } = content
+//   if (!selectedId) return null
+
+//   const selectedE = selectEntityById(selectedId)({ content })
+//   if (!selectedE?.data?.geoLocation) return null
+//   const id = selectedId
+
+//   const {
+//     type: entityType,
+//     data: {
+//       geoLocation: {
+//         geometry: { type, coordinates },
+//         properties: { details },
+//       },
+//     },
+//   } = selectedE
+//   return { id, type, coordinates, details, entityType }
+// }
+
+// export const selectShowEntity = ({ content }) => {
+//   const { show } = content
+//   if (!show) return null
+
+//   const showE = selectEntityById(show)({ content })
+//   if (!showE?.data?.geoLocation) return null
+//   const id = show
+
+//   const {
+//     data: {
+//       name,
+//       geoLocation: {
+//         geometry: { type, coordinates },
+//       },
+//     },
+//   } = showE
+//   return { id, type, coordinates, name }
+// }

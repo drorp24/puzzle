@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { memo } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useLocale } from '../utility/appUtilities'
 
 import { Handle } from 'react-flow-renderer'
@@ -20,8 +20,12 @@ import entityTypes, {
   entityTextStyle,
 } from '../editor/entityTypes'
 import { styles } from './Relations'
+import {
+  select
+} from '../redux/content'
 
 const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
+  const dispatch = useDispatch()
   const { relations, connections } = useSelector(store => store.app.view)
   const { direction, capitalAntiPlacement } = useLocale()
   const relationsHandlesVisibility =
@@ -40,6 +44,9 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
     text: entityTextStyle({ capitalAntiPlacement }),
   }))
   const classes = useStyles()
+  const handleOnClick = () => {
+    dispatch(select(id))
+  }
 
   return (
     <>
@@ -68,7 +75,13 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
           visibility: extraHandlesVisibility,
         }}
       />
-      <Tooltip
+      <span onClick={handleOnClick}  className={classes.entity}>
+          <span className={classes.icon}>{icon}</span>
+          <span className={classes.text} style={{ direction }}>
+            {text}
+          </span>
+        </span>
+      {/* <Tooltip
         title={<EntityDetails {...{ entity }} />}
         arrow
         TransitionComponent={Zoom}
@@ -76,13 +89,8 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
         placement="left"
         PopperProps={{ style: { width: '15rem' } }}
       >
-        <span className={classes.entity}>
-          <span className={classes.icon}>{icon}</span>
-          <span className={classes.text} style={{ direction }}>
-            {text}
-          </span>
-        </span>
-      </Tooltip>
+        
+      </Tooltip> */}
       {inputs &&
         inputs.map(({ source, target, type }) => (
           <Handle

@@ -21,7 +21,10 @@ const initialState = {
   currentRequestId: undefined,
   loading: 'idle',
   error: null,
-  loggedIn: {},
+  loggedIn: {
+    // access_token:"yes we can",
+    // username:"shay"
+  },
 }
 
 const usersSlice = createSlice({

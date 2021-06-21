@@ -44,7 +44,7 @@
 // entity represented by that point, using the original key again.
 // I am sure there will be several more use cases going forward for this kind of keying.
 //
-
+import {keyBy} from "lodash/fp"
 import { axiosApiInstance } from './authApi'
 
 import objectify from '../utility/objectify'
@@ -100,61 +100,59 @@ const convertShayToRaw = (
   const issues = []
 
   Object.values(entities).forEach(
-    ({ id, geolocation = {}, score, sub_type_id, type_id, word }) => {
+    ({ id, geolocations = [], sub_type_id, type_id, word }) => {
       const type = lists[type_id]?.value
       const mutability = 'IMMUTABLE'
-      // if (id === '6644bd08-59d8-43c8-9919-4e069b7b91b0') geolocation = undefined // for tesing
-      const geometry = swap(id, geolocation)
-      const { issue } = geometry
-      if (issue) issues.push(issue)
+      const geometries = []
+      for (let i = 0; i < geolocations.length; i++) {
+        const geoLocation = geolocations[i]
+        const geometry = swap(id, geoLocation)
+        const { issue } = geoLocation
+        if (issue) issues.push(issue)
 
-      // if (id === 'b7933af2-bf3f-40f6-8d5b-f178ce59c55b') {
-      //   geolocation.properties.explain = undefined
-      //   geolocation.properties.details = undefined
-      //   geolocation.properties.entity_location_id = undefined
-      // }
+        const {
+          properties = {
+            explain: null,
+            details: {},
+            entity_location_id: null,
+            feedback: null,
+          },
+        } = geoLocation || {}
 
-      const {
-        properties = {
-          explain: null,
-          details: {},
-          entity_location_id: null,
-          feedback: null,
-        },
-      } = geolocation || {}
-
-      // ToDo: make a function
-      if (!Object.keys(properties).length) {
-        issues.push({
-          id,
-          field: 'properties',
-          value: 'undefined',
-          issue: 'undefined',
-        })
-      } else if (!properties.entity_location_id) {
-        properties.entity_location_id = null
-        issues.push({
-          id,
-          field: 'entity_location_id',
-          value: 'undefined',
-          issue: 'undefined',
-        })
-      } else if (!properties.details) {
-        properties.details = {}
-        issues.push({
-          id,
-          field: 'details',
-          value: 'undefined',
-          issue: 'undefined',
-        })
+        // ToDo: make a function
+        if (!Object.keys(properties).length) {
+          issues.push({
+            id,
+            field: 'properties',
+            value: 'undefined',
+            issue: 'undefined',
+          })
+        } else if (!properties.entity_location_id) {
+          properties.entity_location_id = null
+          issues.push({
+            id,
+            field: 'entity_location_id',
+            value: 'undefined',
+            issue: 'undefined',
+          })
+        } else if (!properties.details) {
+          properties.details = {}
+          issues.push({
+            id,
+            field: 'details',
+            value: 'undefined',
+            issue: 'undefined',
+          })
+        }  
+        geometries.push({geometry, properties})
       }
+      
 
       const data = {
-        id,
-        score,
+        id,        
         subTypes: [lists[sub_type_id[0]]?.value],
         word,
-        geoLocation: { geometry, properties },
+        geoLocations: keyBy('properties.entity_location_id',geometries)
       }
       const entity = { type, mutability, data }
       entityMap[id] = entity

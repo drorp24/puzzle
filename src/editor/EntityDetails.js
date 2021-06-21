@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useSelector, useDispatch } from 'react-redux'
-import { select, selectEntityById } from '../redux/content'
+import { selectLocation, selectEntityById } from '../redux/content'
 import { view, toggleExclusiveRelations } from '../redux/app'
 
 import entityTypes from './entityTypes'
@@ -22,7 +22,7 @@ import TableIcon from '@material-ui/icons/TableChartOutlined'
 import Divider from '@material-ui/core/Divider'
 import Avatar from '@material-ui/core/Avatar'
 
-export const EntityDetails = ({ entity: { type, data } }) => {
+export const EntityDetails = ({ entity: { type, data }, entity_location_id }) => {
   const { tags: tagsShown } = useSelector(store => store.app.view)
   const { direction } = useMode()
   const { placement } = useLocale()
@@ -34,9 +34,10 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   const { id, subTypes } = data
   // 'entity' argument is only what draft.js holds for the entity. For the rest, redux should be called.
   const {
-    data: { geoLocation },
+    data: { geoLocations },
     entityRanges,
   } = useSelector(selectEntityById(id))
+  const geoLocation = geoLocations[entity_location_id]
   const locationExists = geoLocation?.geometry?.coordinates?.length
   const name = entityRanges[0]?.text
   const explanation = geoLocation?.properties?.explain
@@ -129,12 +130,12 @@ export const EntityDetails = ({ entity: { type, data } }) => {
     },
   }
 
-  const showRelationsOf = id => () => {
-    dispatch(toggleExclusiveRelations(id))
-  }
+  // const showRelationsOf = id => () => {
+  //   dispatch(toggleExclusiveRelations(id))
+  // }
 
-  const markSelected = id => () => {
-    dispatch(select(id))
+  const markSelected = () => {
+    dispatch(selectLocation(entity_location_id))
   }
 
   const { title, content, subheader, avatar } = classes
@@ -142,14 +143,14 @@ export const EntityDetails = ({ entity: { type, data } }) => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Card elevation={0} css={styles.root}>
-        <CardHeader
+        {/* <CardHeader
           avatar={<Avatar css={styles.avatar}>{icon}</Avatar>}
           title={type}
           subheader={name}
           classes={{ title, content, subheader, avatar }}
-        />
-        <Divider css={styles.divider} />
-        <div css={styles.subTypes}>
+        /> */}
+        {/* <Divider css={styles.divider} /> */}
+        {/* <div css={styles.subTypes}>
           {subTypes &&
             subTypes.map(
               subType =>
@@ -168,7 +169,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
                   />
                 )
             )}
-        </div>
+        </div> */}
         <CardContent>
           <Divider css={{ ...styles.modeColor, ...styles.dividerSplitLine }}>
             {t('explainer')}
@@ -182,7 +183,7 @@ export const EntityDetails = ({ entity: { type, data } }) => {
           {/* <IconButton onClick={showRelationsOf(id)} disabled={!tagsShown}>
             <AccountTreeIcon css={styles.modeColor} />
           </IconButton> */}
-          <IconButton onClick={markSelected(id)} disabled={!locationExists}>
+          <IconButton onClick={markSelected} disabled={!locationExists}>
             <RoomIcon css={{ ...styles.modeColor, ...styles.locationIcon }} />
           </IconButton>
           {/* <IconButton>

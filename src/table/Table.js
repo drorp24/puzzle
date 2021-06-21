@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
+import {getOr} from 'lodash/fp'
 import { memo, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { selectContent, selectIds, updateFeedback } from '../redux/content'
+import { selectContent, selectIds, updateFeedback, selectLocation } from '../redux/content'
 import { postFeedback, error } from '../redux/feedback'
 
 import { useLocale, useMode } from '../utility/appUtilities'
@@ -119,9 +120,10 @@ const styles = {
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
-  const { entities, selectedId, error, isLoading } = useSelector(selectContent)
+  const { entities, selectedId, error, isLoading, selectedEntity } = useSelector(selectContent)
   const ids = useSelector(selectIds)
-  const itemCount = entities.length
+  
+  const itemCount = Object.keys(getOr({}, 'data.geoLocations', selectedEntity)).length
   const itemSize = usePixels(4)
   const { direction } = useLocale()
   const { light } = useMode()
@@ -129,16 +131,16 @@ const Table = () => {
 
   const backgroundColor = light ? '#fff' : 'rgba(0, 0, 0, 0.3)'
 
-  useEffect(() => {
-    const scrollTo = entityId => {
-      if (!outerRef || !outerRef.current) return
+  // useEffect(() => {
+  //   const scrollTo = entityId => {
+  //     if (!outerRef || !outerRef.current) return
 
-      const index = ids.findIndex(id => id === entityId)
-      const top = index * itemSize
-      outerRef.current.scrollTo({ top, behavior: 'smooth' })
-    }
-    if (selectedId) scrollTo(selectedId)
-  }, [ids, itemSize, selectedId])
+  //     const index = ids.findIndex(id => id === entityId)
+  //     const top = index * itemSize
+  //     outerRef.current.scrollTo({ top, behavior: 'smooth' })
+  //   }
+  //   if (selectedId) scrollTo(selectedId)
+  // }, [ids, itemSize, selectedId])
 
   if (error?.status === 404) {
     return null
@@ -179,22 +181,20 @@ const Table = () => {
 // ToDo: style tag buttons properly when row is selected
 
 const Row = memo(({ index, style }) => {
-  const { entities, selectedId, doc_id } = useSelector(selectContent)
+  const { selectedId, doc_id, selectedEntity } = useSelector(selectContent)
   const { mode } = useSelector(store => store.app)
   const dispatch = useDispatch()
 
-  const entity = entities[index]
   const {
     type,
     data: {
-      id,
-      score,
-      geoLocation: {
-        properties: { feedback, entity_location_id },
-      },
+      id     
     },
     entityRanges,
-  } = entity
+  } = selectedEntity
+  const locKeys = Object.keys(getOr({}, `data.geoLocations]`, selectedEntity))  
+  const geoLocation = getOr({}, `data.geoLocations[${locKeys[index]}]`, selectedEntity)
+  const {properties: {feedback, entity_location_id, score}} = geoLocation
 
   const { icon, color } = entityTypes[type]
   const { text } = entityRanges[0]
@@ -207,9 +207,12 @@ const Row = memo(({ index, style }) => {
       : styles.darkEven
   const line = { lineHeight: `${style.height}px` }
 
-  const selectedRow = id === selectedId ? styles.selected : {}
-  const selectedTagIcon = id === selectedId ? styles.selectedTagIcon : {}
-  const selectedInfo = id === selectedId ? styles.selectedInfo : {}
+  // const selectedRow = id === selectedId ? styles.selected : {}
+  // const selectedTagIcon = id === selectedId ? styles.selectedTagIcon : {}
+  // const selectedInfo = id === selectedId ? styles.selectedInfo : {}
+  const selectedRow = {}
+  const selectedTagIcon = {}
+  const selectedInfo = {}
 
   const tagState = {
     correct: 'off',
@@ -218,11 +221,12 @@ const Row = memo(({ index, style }) => {
   }
   tagState[feedback] = 'on'
 
-  const tagClick = id => (e, tag) => {
+  const tagClick = (e, tag) => {
+    e.stopPropagation()
     const data = {
       username: 'user_x',
       document_id: doc_id,
-      // entity_id: id,
+      entity_id: selectedId,
       entity_location_id,
       feedback: tag,
     }
@@ -249,8 +253,13 @@ const Row = memo(({ index, style }) => {
     }
   }
 
+  const markSelected = () => {
+    dispatch(selectLocation(entity_location_id))
+  }
+
   return (
     <div
+    onClick={markSelected}
       css={{
         ...style,
         ...styles.row,
@@ -269,7 +278,7 @@ const Row = memo(({ index, style }) => {
       {/* <Cell value={place} /> */}
       <Cell value={score} cellStyle={{ ...styles.cell, ...styles.dimText }} />
       <Tooltip
-        title={<EntityDetails {...{ entity }} />}
+        title={<EntityDetails {...{ entity: selectedEntity, entity_location_id }} />}
         arrow
         TransitionComponent={Zoom}
         disableFocusListener={true}
@@ -283,13 +292,13 @@ const Row = memo(({ index, style }) => {
         </IconButton>
       </Tooltip>
 
-      <Feedback {...{ feedback, tagClick, id, tagState, selectedTagIcon }} />
+      <Feedback {...{ feedback, tagClick, tagState, selectedTagIcon }} />
     </div>
   )
 })
 
 const Feedback = memo(
-  ({ feedback, tagClick, id, tagState, selectedTagIcon }) => {
+  ({ feedback, tagClick, tagState, selectedTagIcon }) => {
     const { capitalPlacement, capitalAntiPlacement } = useLocale()
     const styles = {
       buttonGroup: theme => ({
@@ -318,7 +327,7 @@ const Feedback = memo(
       <ToggleButtonGroup
         value={feedback}
         exclusive
-        onChange={tagClick(id)}
+        onChange={tagClick}
         size="small"
         css={styles.buttonGroup}
       >

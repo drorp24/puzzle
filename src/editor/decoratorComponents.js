@@ -148,7 +148,7 @@ export const EntitySpan = ({
     // relations,
     level,
   ])
-
+  
   return <Entity {...{ contentState, entityKey, children, tags, ref }} />
 }
 
@@ -174,38 +174,15 @@ const Entity = memo(
     const entityS = entityStyle({ type, role, mode })
     const iconS = entityIconStyle({ type, role, mode })
     const textS = entityTextStyle({ capitalPlacement, mode })
-
-    // const openTooltip = () => {
-    //   setTooltipOpen(true)
-    // }
-    // const closeTooltip = () => {
-    //   setTooltipOpen(false)
-    // }
+    
     return (
-      // <ClickAwayListener onClickAway={closeTooltip}>
-      //   <Tooltip
-      //     // open={
-      //     //   entity.data.id === 'secondEntity' ||
-      //     //   entity.data.id === 'ef9753ee-3c4b-4fb8-98f3-ef19ae6f5ed4'
-      //     // }
-      //     // * Uncomment to trigger by click
-      //     // open={tooltipOpen}
-      //     title={<EntityDetails {...{ entity }} />}
-      //     arrow
-      //     TransitionComponent={Zoom}
-      //     disableFocusListener={true}
-      //     placement="left"
-      //     PopperProps={{ style: { width: '15rem' } }}
-      //   >
-      <span
+      <span   
         ref={ref}
-        {...(tags && { style: entityS })} /* onClick={openTooltip} */
+        {...(tags && { style: entityS })} 
       >
         <span css={iconS}>{tags && icon}</span>
         <span css={textS}>{children}</span>
       </span>
-      // </Tooltip>
-      // </ClickAwayListener>
     )
   })
 )
