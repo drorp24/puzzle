@@ -200,9 +200,6 @@ const Row = memo(({ index, style }) => {
       : styles.darkEven
   const line = { lineHeight: `${style.height}px` }
 
-  // const selectedRow = id === selectedId ? styles.selected : {}
-  // const selectedTagIcon = id === selectedId ? styles.selectedTagIcon : {}
-  // const selectedInfo = id === selectedId ? styles.selectedInfo : {}
   const selectedRow = {}
   const selectedTagIcon = {}
   const selectedInfo = {}

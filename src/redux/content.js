@@ -108,10 +108,14 @@ const contentSlice = createSlice({
         selectedLocs = filter(tmp_loc => tmp_loc.parId !== id, state.selectedLocs)
       }
       state.selectedLocs = selectedLocs
-      if(!selectedLocs || selectedLocs.length === 0){
-        state.selectedLocIdOnMap = null        
+      const selectedLocationIdInside = find((tmp_loc) => tmp_loc.locId === state.selectedLocationId , selectedLocs)
+      if(!selectedLocationIdInside){
+        state.selectedLocationId = null
       }
-      // return {...state, selectedLocs}
+      const selectedLocIdOnMapInside = find((tmp_loc) => tmp_loc.locId === state.selectedLocIdOnMap , selectedLocs)
+      if(!selectedLocIdOnMapInside){
+        state.selectedLocIdOnMap = null
+      }
     },
     unSelectAllLocations: (state) => {
       state.selectedLocs=[]
@@ -366,46 +370,3 @@ export const {
 } = actions
 
 export default reducer
-
-
-// export const selectSelectedId = ({ content: { selectedId } }) => selectedId
-// export const selectShowId = ({ content: { show } }) => show
-
-// export const selectSelectedEntity = ({ content }) => {
-//   const { selectedId } = content
-//   if (!selectedId) return null
-
-//   const selectedE = selectEntityById(selectedId)({ content })
-//   if (!selectedE?.data?.geoLocation) return null
-//   const id = selectedId
-
-//   const {
-//     type: entityType,
-//     data: {
-//       geoLocation: {
-//         geometry: { type, coordinates },
-//         properties: { details },
-//       },
-//     },
-//   } = selectedE
-//   return { id, type, coordinates, details, entityType }
-// }
-
-// export const selectShowEntity = ({ content }) => {
-//   const { show } = content
-//   if (!show) return null
-
-//   const showE = selectEntityById(show)({ content })
-//   if (!showE?.data?.geoLocation) return null
-//   const id = show
-
-//   const {
-//     data: {
-//       name,
-//       geoLocation: {
-//         geometry: { type, coordinates },
-//       },
-//     },
-//   } = showE
-//   return { id, type, coordinates, name }
-// }
