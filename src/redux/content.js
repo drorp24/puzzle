@@ -196,6 +196,9 @@ const contentSlice = createSlice({
   },
   extraReducers: {
     [fetchContent.pending]: (state, { meta: { requestId } }) => {
+      state.selectedLocs = []
+      state.selectedLocationId = null
+      state.selectedLocIdOnMap = null
       if (state.loading === 'idle') {
         state.currentRequestId = requestId
         state.loading = 'pending'
@@ -208,8 +211,7 @@ const contentSlice = createSlice({
       { meta: { requestId }, payload: { entities, relations, issues } }
     ) => {
       if (state.loading === 'pending' && state.currentRequestId === requestId) {
-        try {
-          state.selectedLocs = []
+        try {          
           state.currentRequestId = undefined
           state.loading = 'idle'
           state.error = null
