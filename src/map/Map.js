@@ -3,12 +3,13 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { show } from '../redux/content'
 
-import SelectedGeo from './SelectedGeo'
+import FlyToLocation from './FlyToLocation'
 
 import 'leaflet/dist/leaflet.css'
 import './leafletRtl.css'
-import { MapContainer, WMSTileLayer, LayersControl } from 'react-leaflet'
+import { MapContainer, WMSTileLayer, LayersControl, LayerGroup } from 'react-leaflet'
 import { tileProviders, locations } from './config'
+import LocationsLayer from './LocationsLayer'
 
 const styles = {
   map: {
@@ -32,7 +33,8 @@ const Map = () => {
           </LayersControl.BaseLayer>
         ))}
       </LayersControl>
-      <SelectedGeo />
+      <FlyToLocation/>
+      <LocationsLayer/>
     </MapContainer>
   )
 }
