@@ -44,7 +44,7 @@ const Relations = () => {
   const [elements, setElements] = useState([])
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
-  console.log('Relations is rendered')
+  console.log('new Relations is rendered')
 
   const { entities, relations, selectedId } = useSelector(selectEntities)
 

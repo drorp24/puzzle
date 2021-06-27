@@ -81,7 +81,8 @@ const initialState = contentAdapter.getInitialState({
   refresh: 0,
   issues: [],
   selectedLocs: [],
-  selectedLocIdOnMap: null
+  selectedLocIdOnMap: null,
+  reactFlowEntitiesPos: {}
 })
 
 const contentSlice = createSlice({
@@ -144,6 +145,7 @@ const contentSlice = createSlice({
     ) => {
       // Immer to the rescue
       state.entities[id].entityRanges[entityRangeIndex].position = position
+      // state.reactFlowEntitiesPos[id] = {entityRangeIndex: position}
     },
     positionShifted: (
       state,
@@ -309,13 +311,15 @@ export const selectContent = ({ content }) => {
 
 // this will return entities keyed, as they naturally appear in redux
 // todo: memoize with reselect
-export const selectEntities = ({
-  content: { entities, relations, selectedId },
-}) => ({
-  entities,
-  relations,
-  selectedId,
-})
+// export const selectEntities = ({
+//   content: { entities, relations, selectedId },
+// }) => ({
+//   entities,
+//   relations  
+// })
+
+export const selectEntities = (state) => state.content.entities
+export const selectRelations = (state) => state.content.relations
 
 export const selectLocations = (
   {content: { entities, selectedLocs }}

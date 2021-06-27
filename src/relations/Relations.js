@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState, useEffect, useRef, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectEntities, positionShifted, addIssue } from '../redux/content'
+import { selectEntities, selectRelations, positionShifted, addIssue } from '../redux/content'
 import ReactFlow, { removeElements, addEdge } from 'react-flow-renderer'
 
 import { options, makeNode, makeRelation, relationOptions } from './flowOptions'
@@ -45,7 +45,8 @@ const Relations = () => {
   const dispatch = useDispatch()
   console.log('Relations is rendered')
 
-  const { entities, relations, selectedId } = useSelector(selectEntities)
+  const entities = useSelector(selectEntities)
+  const relations = useSelector(selectRelations)
 
   const {
     editor: viewEditor,
@@ -139,7 +140,6 @@ const Relations = () => {
                     toEntityRangeIndex,
                     type,
                     exclusiveRelations,
-                    selectedId,
                     entityFromType: entities[from].type,
                     viewRelations,
                   })
@@ -162,8 +162,6 @@ const Relations = () => {
     relations,
     exclusiveRelations,
     editRelations,
-    selectedId,
-    dispatch,
     viewRelations,
   ])
 

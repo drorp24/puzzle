@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { memo, forwardRef, useState, useRef, useEffect } from 'react'
+import { memo, forwardRef, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   updatePosition,
-  selectContent,
+  // selectEntities,
   selectEntityById,
 } from '../redux/content'
 
@@ -55,9 +55,9 @@ export const EntitySpan = ({
   const { id } = entity.data
 
   const selectorEntity = useSelector(selectEntityById(id))
-  const { loaded, entities } = useSelector(selectContent)
+  // const entities = useSelector(selectEntities)
   const contentChanges = useSelector(store => store.content.changes)
-  const { tags, relations } = useSelector(store => store.app.view)
+  const { tags} = useSelector(store => store.app.view)
   const {
     drawerOpen,
     editor: {
@@ -88,7 +88,7 @@ export const EntitySpan = ({
 
   useEffect(() => {
     if (
-      !loaded ||
+      // !loaded ||
       selectorEntity === undefined ||
       entityRangeIndex === undefined
     )
@@ -130,8 +130,7 @@ export const EntitySpan = ({
       setTimeout(reportIfPositionShifted, 1000)
     }
   }, [
-    loaded,
-    entities.length,
+    // loaded,    
     contentChanges,
     windowHeight,
     windowWidth,

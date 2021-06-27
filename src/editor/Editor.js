@@ -39,8 +39,8 @@ const MyEditor = () => {
 
   const dispatch = useDispatch()
 
-  const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
-  const uSetData = useCallback(setData, [setData])
+  // const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
+  // const uSetData = useCallback(setData, [setData])
 
   const handleChange = newEditorState => {
     // only report changes that have the potential to change entities positions
