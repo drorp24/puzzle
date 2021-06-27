@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import {getOr} from 'lodash/fp'
+import {getOr, map, find, sum} from 'lodash/fp'
 import { memo, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
@@ -36,8 +36,7 @@ const styles = {
     width: '100%',
   },
   header: {
-    fontWeight: '400',
-    padding: '0 1rem',
+    fontWeight: '400'    
   },
   row: {
     display: 'flex',
@@ -78,11 +77,10 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'flex-start',
-    padding: '0 1rem',
+    alignItems: 'center'
   },
   tagHeader: {
-    textAlign: 'center',
+    // textAlign: 'center',
   },
 
   selected: {
@@ -120,10 +118,8 @@ const styles = {
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
-  const { entities, selectedId, error, isLoading, selectedEntity } = useSelector(selectContent)
-  const ids = useSelector(selectIds)
-  
-  const itemCount = Object.keys(getOr({}, 'data.geoLocations', selectedEntity)).length
+  const {selectedLocs, error, isLoading, selectedLocIdOnMap } = useSelector(selectContent)
+  const itemCount = selectedLocs?.length
   const itemSize = usePixels(4)
   const { direction } = useLocale()
   const { light } = useMode()
@@ -131,16 +127,16 @@ const Table = () => {
 
   const backgroundColor = light ? '#fff' : 'rgba(0, 0, 0, 0.3)'
 
-  // useEffect(() => {
-  //   const scrollTo = entityId => {
-  //     if (!outerRef || !outerRef.current) return
+  useEffect(() => {
+    const scrollTo = locId => {
+      if (!outerRef || !outerRef.current) return
 
-  //     const index = ids.findIndex(id => id === entityId)
-  //     const top = index * itemSize
-  //     outerRef.current.scrollTo({ top, behavior: 'smooth' })
-  //   }
-  //   if (selectedId) scrollTo(selectedId)
-  // }, [ids, itemSize, selectedId])
+      const index = selectedLocs.findIndex(loc => loc.locId === locId)
+      const top = index * itemSize
+      outerRef.current.scrollTo({ top, behavior: 'smooth' })
+    }
+    scrollTo(selectedLocIdOnMap)
+  }, [selectedLocIdOnMap, itemSize, selectedLocs])
 
   if (error?.status === 404) {
     return null
@@ -181,23 +177,20 @@ const Table = () => {
 // ToDo: style tag buttons properly when row is selected
 
 const Row = memo(({ index, style }) => {
-  const { selectedId, doc_id, selectedEntity } = useSelector(selectContent)
+  const { doc_id, selectedLocs, entities } = useSelector(selectContent)
   const { mode } = useSelector(store => store.app)
   const dispatch = useDispatch()
-
+  const parentEntity = find(ent => ent.data.id === selectedLocs[index].parId,entities)
   const {
     type,
-    data: {
-      id     
-    },
     entityRanges,
-  } = selectedEntity
-  const locKeys = Object.keys(getOr({}, `data.geoLocations]`, selectedEntity))  
-  const geoLocation = getOr({}, `data.geoLocations[${locKeys[index]}]`, selectedEntity)
-  const {properties: {feedback, entity_location_id, score}} = geoLocation
+  } = parentEntity
+  const geoLocation = parentEntity.data.geoLocations[selectedLocs[index].locId]
+
+  const {properties: {feedback, entity_location_id, score, place_type, text}} = geoLocation  
 
   const { icon, color } = entityTypes[type]
-  const { text } = entityRanges[0]
+  const { text: entity_text } = entityRanges[0]
   // const place = geoLocation?.properties?.name || ''
   const bg =
     index % 2
@@ -226,7 +219,7 @@ const Row = memo(({ index, style }) => {
     const data = {
       username: 'user_x',
       document_id: doc_id,
-      entity_id: selectedId,
+      entity_id: parentEntity.data.id,
       entity_location_id,
       feedback: tag,
     }
@@ -254,7 +247,7 @@ const Row = memo(({ index, style }) => {
   }
 
   const markSelected = () => {
-    dispatch(selectLocation(entity_location_id))
+    dispatch(selectLocation({entity_location_id, parentId: parentEntity.data.id}))
   }
 
   return (
@@ -274,11 +267,12 @@ const Row = memo(({ index, style }) => {
         icon={icon}
         cellStyle={{ ...styles.cell, ...styles.typeIcon, color }}
       />
-      <Cell value={text} cellStyle={{ ...styles.cell, ...styles.left }} />
-      {/* <Cell value={place} /> */}
-      <Cell value={score} cellStyle={{ ...styles.cell, ...styles.dimText }} />
+      <Cell value={entity_text} cellStyle={{ ...styles.cell, ...styles.left }} />
+      <Cell value={place_type} cellStyle={{ ...styles.cell, ...styles.left}}/>
+      <Cell value={text} cellStyle={{ ...styles.cell}}/>
+      <Cell value={score} cellStyle={{ ...styles.cell, ...styles.dimText, textAlign: 'center' }} />
       <Tooltip
-        title={<EntityDetails {...{ entity: selectedEntity, entity_location_id }} />}
+        title={<EntityDetails {...{ entity: parentEntity, entity_location_id }} />}
         arrow
         TransitionComponent={Zoom}
         disableFocusListener={true}
@@ -363,19 +357,28 @@ const Header = memo(({ style }) => {
 
   return (
     <div style={{ ...style, ...line, ...styles.row }}>
-      <Cell value={intl.formatMessage({ id: 'type' })} />
+      <Cell value={intl.formatMessage({ id: 'type' })} 
+      cellStyle={{ textAlign: 'center' }}/>
       <Cell
         value={intl.formatMessage({ id: 'entity' })}
-        cellStyle={{ textAlign: 'center' }}
+        cellStyle={{  }}
+      />
+      <Cell
+        value={intl.formatMessage({ id: 'sub_type' })}
+        cellStyle={{  }}
+      />
+      <Cell
+        value={intl.formatMessage({ id: 'match' })}
+        cellStyle={{  }}
       />
       {/* <Cell value={intl.formatMessage({ id: 'place' })} /> */}
       <Cell
         value={intl.formatMessage({ id: 'score' })}
-        cellStyle={{ textAlign: 'center' }}
+        cellStyle={{  }}
       />
       <Cell
         value={intl.formatMessage({ id: 'info' })}
-        cellStyle={{ textAlign: 'center' }}
+        cellStyle={{  }}
       />
       <Cell
         value={intl.formatMessage({ id: 'tag' })}

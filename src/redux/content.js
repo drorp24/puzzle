@@ -5,7 +5,7 @@ import {
   // current,
 } from '@reduxjs/toolkit'
 
-import {find, getOr} from "lodash/fp"
+import {find, filter, map, flatten, flow} from "lodash/fp"
 
 // import { getFakeHebContent } from '../api/fakeEditorApiHeb'
 import { createEntitiesFromContent } from '../../src/editor/entities'
@@ -80,6 +80,8 @@ const initialState = contentAdapter.getInitialState({
   file: null,
   refresh: 0,
   issues: [],
+  selectedLocs: [],
+  selectedLocIdOnMap: null
 })
 
 const contentSlice = createSlice({
@@ -95,12 +97,40 @@ const contentSlice = createSlice({
       error: { ...state.error, notified: true },
     }),
     changes: state => ({ ...state, changes: state.changes + 1 }),
-    select: (state, { payload }) => {
-      state.selectedId = payload
+    select: (state, { payload: id }) => {
+      state.selectedId = id
+      const alreadySelected = find((tmp_loc) => tmp_loc.parId === id ,state.selectedLocs)
+      let selectedLocs = []
+      if(!alreadySelected){
+        const entity = find(ent => ent.data.id === id, Object.values(state.entities))
+        selectedLocs = [...state.selectedLocs, ...map(loc => ({parId: id, locId: loc.properties.entity_location_id}), Object.values(entity.data.geoLocations))]
+      } else {
+        selectedLocs = filter(tmp_loc => tmp_loc.parId !== id, state.selectedLocs)
+      }
+      state.selectedLocs = selectedLocs
+      if(!selectedLocs || selectedLocs.length === 0){
+        state.selectedLocIdOnMap = null        
+      }
+      // return {...state, selectedLocs}
     },
-    selectLocation: (state, { payload }) => {
-      state.selectedLocationId = payload
+    unSelectAllLocations: (state) => {
+      state.selectedLocs=[]
+      state.selectedLocIdOnMap = null
     },
+    selectAllLocations: (state) => {
+      const allLocs = flow(
+        map((ent) => map(gLoc => ({parId: ent.data.id, locId: gLoc.properties.entity_location_id}), Object.values(ent.data.geoLocations))),
+        flatten)
+        (Object.values(state.entities))
+      state.selectedLocs = allLocs
+    },
+    selectLocation: (state, { payload: {entity_location_id, parentId} }) => {
+      state.selectedLocationId = entity_location_id
+      state.selectedLocationParentId = parentId
+    },
+    selectLocationIdOnMap: (state, { payload: {entity_location_id} }) => {
+      state.selectedLocIdOnMap = entity_location_id
+    },    
     show: (state, { payload }) => {
       state.show = payload
     },
@@ -175,6 +205,7 @@ const contentSlice = createSlice({
     ) => {
       if (state.loading === 'pending' && state.currentRequestId === requestId) {
         try {
+          state.selectedLocs = []
           state.currentRequestId = undefined
           state.loading = 'idle'
           state.error = null
@@ -246,7 +277,7 @@ export const selectContent = ({ content }) => {
   const sortedEntities = entities // 'entities' key is deprecated; use 'sortedEntities'
   const keyedEntities = content.entities
   const ids = contentSelectors.selectIds(content)
-  const { loading, error, selectedId, relations, file, refresh } = content
+  const { loading, error, selectedId, relations, file, refresh, selectedLocs } = content
   const selectedEntity = keyedEntities[selectedId]
   const isLoading = loading === 'pending'
   const loaded = sortedEntities.length > 0 && loading === 'idle' && !error
@@ -256,6 +287,8 @@ export const selectContent = ({ content }) => {
     keyedEntities,
     ids,
     selectedId,
+    selectedLocs,
+    selectedLocIdOnMap: content.selectedLocIdOnMap,
     selectedEntity,
     loading,
     isLoading,
@@ -278,6 +311,18 @@ export const selectEntities = ({
   selectedId,
 })
 
+export const selectLocations = (
+  {content: { entities, selectedLocs }}
+) => {
+  let locations = []
+  for (let index = 0; index < selectedLocs.length; index++) {
+    const loc = selectedLocs[index]
+    const geoLoc = entities[loc.parId].data.geoLocations[loc.locId];
+    locations.push(geoLoc)
+  }
+  return locations
+}
+
 export const selectEntityById =
   id =>
   ({ content }) =>
@@ -287,7 +332,7 @@ export const selectIds = ({ content }) => contentSelectors.selectIds(content)
 
 
 export const selectSelectedLocation = (selectedLocationId) => ({content}) => {  
-  const selectedEntity = contentSelectors.selectById(content, content.selectedId)
+  const selectedEntity = contentSelectors.selectById(content, content.selectedLocationParentId)
   const geolocations = selectedEntity?.data?.geoLocations
   if(geolocations != null){
     const selectedLocation = geolocations[selectedLocationId]
@@ -307,7 +352,10 @@ export const {
   updatePosition,
   positionShifted,
   select,
+  unSelectAllLocations,
+  selectAllLocations,
   selectLocation,
+  selectLocationIdOnMap,
   selected,
   show,
   updateTag,

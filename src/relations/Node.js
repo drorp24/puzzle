@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import {find} from "lodash/fp"
 import { memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLocale } from '../utility/appUtilities'
@@ -27,6 +28,8 @@ import {
 const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
   const dispatch = useDispatch()
   const { relations, connections } = useSelector(store => store.app.view)
+  const selectedLocs = useSelector(store => store.content.selectedLocs)
+  const isSelected = find(loc => loc.parId === id, selectedLocs)
   const { direction, capitalAntiPlacement } = useLocale()
   const relationsHandlesVisibility =
     relations || connections ? 'visible' : 'hidden'
@@ -35,8 +38,7 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
   const role = 'node'
   const element = 'span'
 
-  const data = { id, subTypes }
-  const entity = { type, data }
+  const data = { id, subTypes }  
 
   const useStyles = makeStyles(theme => ({
     entity: entityStyle({ type, role, element }),
@@ -75,7 +77,7 @@ const Node = ({ data: { id, inputs, outputs, type, text, subTypes } }) => {
           visibility: extraHandlesVisibility,
         }}
       />
-      <span onClick={handleOnClick}  className={classes.entity}>
+      <span onClick={handleOnClick} style={{"background-color": isSelected ? "gray" : "transparent"}}  className={classes.entity}>
           <span className={classes.icon}>{icon}</span>
           <span className={classes.text} style={{ direction }}>
             {text}

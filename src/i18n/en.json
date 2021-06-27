@@ -31,6 +31,8 @@
   "mode": "Mode",
   "type": "Type",
   "entity": "Entity",
+  "sub_type": "sub type",
+  "match": "match",
   "place": "Place",
   "score": "Score",
   "info": "Info",

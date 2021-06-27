@@ -1,11 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { unSelectAllLocations, selectAllLocations } from '../redux/content'
 import useTranslation from '../i18n/useTranslation'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
 import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
 import TextIcon from '@material-ui/icons/ChatOutlined'
 import TableIcon from '@material-ui/icons/TableChartOutlined'
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline'
+import DoneAllIcon from '@material-ui/icons/DoneAll'
 
 const styles = {
   infoSelection: {
@@ -19,11 +23,17 @@ const styles = {
       fontSize: '1.2rem',
     },
   },
+  deleteAll: {
+    height: '80%',
+    marginRight: '5px',
+    cursor: 'pointer'
+  }
 }
 
 const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
   const t = useTranslation()
   const timerRef = useRef()
+  const dispatch = useDispatch()
 
   const handleInfoSelection = (event, newInfo) => {
     const listHeight = selection =>
@@ -51,17 +61,19 @@ const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
     setInfo(newInfo)
   }
 
+  const handleUnselectAll  =() => {    
+    dispatch(unSelectAllLocations())    
+  }
+  const handleSelectAll  =() => {    
+    dispatch(selectAllLocations())
+  }
   return (
     <div css={styles.infoSelection}>
       <ToggleButtonGroup
         value={info}
         onChange={handleInfoSelection}
         size="small"
-        css={styles.buttonGroup}
-      >
-        {/* <ToggleButton value="map" css={styles.button}>
-            <MapIcon css={styles.mapIcon} />
-          </ToggleButton> */}
+        css={styles.buttonGroup}>        
         <ToggleButton value="text" css={styles.button} title={t('text')}>
           <TextIcon css={styles.textIcon} />
         </ToggleButton>
@@ -69,6 +81,13 @@ const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
           <TableIcon />
         </ToggleButton>
       </ToggleButtonGroup>
+      <ToggleButtonGroup
+        value={info}
+        size="small"
+        css={styles.buttonGroup}>
+        <DeleteOutlineIcon css={styles.deleteAll} onClick={handleUnselectAll}/>
+        <DoneAllIcon css={styles.deleteAll} onClick={handleSelectAll}/>
+      </ToggleButtonGroup>      
     </div>
   )
 }
