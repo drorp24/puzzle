@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useState, memo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { toggleDrawer, toggleLocale, toggleMode } from '../redux/app'
+import { toggleDrawer, toggleLocale, toggleMode, markDrawerTransitionDone } from '../redux/app'
 import { logout } from '../redux/users'
 import useUser from '../auth/useUser'
 
@@ -227,14 +227,20 @@ const Home = () => {
     },
   ]
 
+  const handler = () => {
+    dispatch(markDrawerTransitionDone())
+  }
+  
   return (
     <Page css={styles.root}>
-      <div css={styles.drawer}>
+      <div css={styles.drawer} >
         <nav css={styles.nav}>
           <Button
             fullWidth
             css={styles.chevronItem}
-            onClick={() => dispatch(toggleDrawer())}
+            onClick={() => {
+              dispatch(toggleDrawer())
+            }}
           >
             <div css={styles.iconWrapper}>
               <ChevronLeftIcon />
@@ -279,7 +285,7 @@ const Home = () => {
           ))}
         </nav>
       </div>
-      <div css={styles.route}>
+      <div css={styles.route} onTransitionEnd={handler}>
         <Switch>
           {routes.map(({ path, component }) => (
             <Route path={`${url}/${path}`} key={path}>

@@ -6,6 +6,7 @@ const appSlice = createSlice({
     mode: 'light',
     locale: 'he',
     drawerOpen: false,
+    drawerInTransition: false,
     window: {},
     view: { editor: true, tags: true, relations: false },
     editor: {},
@@ -22,6 +23,11 @@ const appSlice = createSlice({
     toggleDrawer: state => ({
       ...state,
       drawerOpen: !state.drawerOpen,
+      drawerInTransition: true
+    }),
+    markDrawerTransitionDone: state => ({
+      ...state,
+      drawerInTransition: false
     }),
     setDimensions: (state, { payload: { height, width } }) => ({
       ...state,
@@ -68,6 +74,7 @@ export const {
   toggleMode,
   toggleLocale,
   toggleDrawer,
+  markDrawerTransitionDone,
   toggleExclusiveRelations,
   setDimensions,
   view,

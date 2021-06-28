@@ -1,10 +1,20 @@
 /** @jsxImportSource @emotion/react */
-import { useState, useEffect, useCallback, useRef } from 'react'
+import {find} from "lodash/fp"
+import { useState, useEffect, useRef, memo, forwardRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { fetchContent, changes, selectContent, clear } from '../redux/content'
+import { fetchContent, changes, selectContent, clear, selectEntityById, select } from '../redux/content'
 import { setAppProp, setView } from '../redux/app'
-import { useLocale, capitalize } from '../utility/appUtilities'
+import { useLocale, capitalize, useMode } from '../utility/appUtilities'
+
+import { levelIconWithText } from '../editor/entityTypes'
+import usePixels from '../utility/usePixels'
+
+import entityTypes, {
+  entityStyle,
+  entityIconStyle,
+  entityTextStyle,
+} from './entityTypes'
 
 import {
   Editor,
@@ -16,7 +26,7 @@ import {
 import 'draft-js/dist/Draft.css'
 
 import Relations from '../relations/Relations'
-import Selector, { emptyData } from './Selector'
+import { emptyData } from './Selector'
 import { createEntityFromSelection } from './entities'
 import decorator from './decorator'
 import parseSelection from './selection'
@@ -29,18 +39,16 @@ const MyEditor = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   )
-  const [data, setData] = useState(emptyData)
-  const [selectorOpen, setSelectorOpen] = useState(false)
+  const [data, setData] = useState(emptyData)  
+  const [entitiesRefs, setRefs] = useState({})
   const ref = useRef()
+  
 
-  const { view, drawerOpen } = useSelector(store => store.app)
+  const { view, drawerOpen, drawerInTransition } = useSelector(store => store.app)
 
   const { placement } = useLocale()
 
   const dispatch = useDispatch()
-
-  // const uSetSelectorOpen = useCallback(setSelectorOpen, [setSelectorOpen])
-  // const uSetData = useCallback(setData, [setData])
 
   const handleChange = newEditorState => {
     // only report changes that have the potential to change entities positions
@@ -50,10 +58,7 @@ const MyEditor = () => {
     const contentChanged = newContent !== oldContent
     if (contentChanged) dispatch(changes())
 
-    setEditorState(newEditorState)
-
-    const { selectionExists } = parseSelection(newEditorState)
-    if (selectionExists) setSelectorOpen(true)
+    setEditorState(newEditorState)        
   }
 
   // ! No editing
@@ -128,7 +133,7 @@ const MyEditor = () => {
     const convertContent = rawContent => convertFromRaw(rawContent)
 
     const showContent = content =>
-      setEditorState(EditorState.createWithContent(content, decorator))
+      setEditorState(EditorState.createWithContent(content, decorator(EntitySpan, TextSpan)))
 
     const emptyContent = () => setEditorState(EditorState.createEmpty())
 
@@ -180,9 +185,78 @@ const MyEditor = () => {
     dispatch(setAppProp({ editor: position }))
   }, [dispatch, drawerOpen])
 
+  useEffect(() => {
+    if(isLoading){
+      const refsKeys = Object.keys(entitiesRefs)
+      for (let index = 0; index < refsKeys.length; index++) {
+        const key = refsKeys[index]
+        delete entitiesRefs[key]
+      }
+    }    
+  },
+  [isLoading])
+  const level = usePixels(levelIconWithText.y)
+
   if (isLoading) return <Spinner top />
   if (error?.status === 404) {
     return null
+  }
+  
+
+  const TextSpan =
+  type =>
+  ({ children }) =>
+    <span css={entityStyle(type)}>{children}</span>
+
+
+  const EntitySpan = ({
+    contentState,
+    entityKey,
+    children
+  }) => {
+    const ref = useRef()    
+    const entity = contentState.getEntity(entityKey)
+    const { type, data: { id } } = entity
+    entitiesRefs[id] = ref
+    const selectedLocs = useSelector(store => store.content.selectedLocs)
+    const isSelected = find(loc => loc.parId === id, selectedLocs) !== undefined
+    const { tags} = useSelector(store => store.app.view)    
+    const { icon } = entityTypes[type]
+    const role = 'text'
+    const { mode } = useMode()
+    const { capitalPlacement } = useLocale()
+    const entityS = entityStyle({ type, role, mode, isSelected })
+    const iconS = entityIconStyle({ type, role, mode })
+    const textS = entityTextStyle({ capitalPlacement, mode })
+
+    const handleOnClick = () => {
+      dispatch(select(id))
+    }    
+    
+    return (
+      <span          
+        onClick={handleOnClick}
+        ref={ref}
+        {...(tags && { style: entityS })} 
+      >
+        <span css={iconS}>{tags && icon}</span>
+        <span css={textS}>{children}</span>
+      </span>
+    )
+  }  
+  
+  const entitiesPos = {}
+  const keys = Object.keys(entitiesRefs)  
+  for (let index = 0; index < keys.length; index++) {
+    const k = keys[index];
+    const r = entitiesRefs[k]
+    const { width, height } = r.current?.getBoundingClientRect() || {}
+    // since flow entities & relations are absolutely positioned relative to their editor parent, offsets are used    
+    const x = r.current.offsetLeft
+    const y = r.current.offsetTop + level
+
+    const position = { x, y, width, height }
+    entitiesPos[k] = position
   }
   return (
     <div css={styles.container}>
@@ -201,21 +275,12 @@ const MyEditor = () => {
             css={styles.editor}
           />
           <div css={styles.relations}>
-            <Relations />
+            {!drawerInTransition && view.relations && !isLoading && Object.keys(entitiesPos).length > 0 && <Relations entitiesPos={entitiesPos}/>}
           </div>
         </div>
       </div>
 
       <div css={styles.space} />
-      <div css={styles.selector}>
-        {/* <Selector
-          {...{
-            selectorOpen,
-            uSetSelectorOpen,
-            uSetData,
-          }}
-        /> */}
-      </div>
       <div css={styles.control}>
         <EditorControl />
       </div>

@@ -40,7 +40,7 @@ export const styles = {
 
 // ToDo: spread the handles so they don't overlap
 
-const Relations = () => {
+const Relations = ({entitiesPos}) => {
   const [elements, setElements] = useState([])
   const dispatch = useDispatch()
   console.log('Relations is rendered')
@@ -93,7 +93,8 @@ const Relations = () => {
 
       entityEntries.forEach(([id, { type, data, entityRanges }]) => {
         entityRanges &&
-          entityRanges.forEach(({ position = {}, text }, index) => {
+          entityRanges.forEach(({ text }, index) => {
+            const position = entitiesPos[id]
             const { x, y, width, height, shifted } = position
 
             if (shifted) {
@@ -158,11 +159,13 @@ const Relations = () => {
       dispatch(addIssue(issue))
     }
   }, [
+    dispatch,
     entities,
     relations,
     exclusiveRelations,
     editRelations,
     viewRelations,
+    entitiesPos
   ])
 
   // allow enough time for nodes & relations' positions to be calculated before revealing them

@@ -104,8 +104,8 @@ export const levelIconWithText = { x: -0.05, y: 0.285 }
 // - element: 'node' (react-flow's entire node element) or 'span' (react-flow's text span element)
 // - mode: 'light' or 'dark' (currently not in use)
 // - id: left for debugging purposes
-export const entityStyle = ({ type, role, element, mode, id }) => ({
-  backgroundColor: element === 'span' ? 'none' : entityTypes[type].color,
+export const entityStyle = ({ type, role, element, mode, id, isSelected }) => ({
+  backgroundColor: isSelected ? 'gray' : element === 'span' ? 'none' : entityTypes[type].color,
   borderRadius: '1rem',
   display: 'inline-flex',
   flexDirection: role === 'text' ? 'row-reverse' : 'row',
