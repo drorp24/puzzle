@@ -227,8 +227,10 @@ const Home = () => {
     },
   ]
 
-  const handler = () => {
-    dispatch(markDrawerTransitionDone())
+  const handleTransitionDone = (e) => {
+    if(e.target.getAttribute('custom-att') === 'custom-att'){
+      dispatch(markDrawerTransitionDone())
+    }    
   }
   
   return (
@@ -285,7 +287,7 @@ const Home = () => {
           ))}
         </nav>
       </div>
-      <div css={styles.route} onTransitionEnd={handler}>
+      <div css={styles.route} custom-att='custom-att' onTransitionEnd={handleTransitionDone}>
         <Switch>
           {routes.map(({ path, component }) => (
             <Route path={`${url}/${path}`} key={path}>
