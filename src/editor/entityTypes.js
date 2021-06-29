@@ -112,6 +112,7 @@ export const entityStyle = ({ type, role, element, mode, id, isSelected }) => ({
   justifyContent: 'center',
   padding: '0 0.5rem',
   alignItems: 'center',
+  cursor:'pointer',
   lineHeight: '1',
   ...(role === 'text' && {
     transform: entityTypes[type].icon

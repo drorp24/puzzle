@@ -234,7 +234,7 @@ const MyEditor = () => {
     }    
     
     return (
-      <span          
+      <span
         onClick={handleOnClick}
         ref={ref}
         {...(tags && { style: entityS })} 
@@ -268,6 +268,7 @@ const MyEditor = () => {
           }}
         >
           <Editor
+            readOnly
             editorState={editorState}
             onChange={handleChange}
             keyBindingFn={myKeyBindingFn}
