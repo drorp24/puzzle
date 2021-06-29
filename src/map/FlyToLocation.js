@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { selectSelectedLocation } from '../redux/content'
 
@@ -17,11 +18,14 @@ const FlyToLocation = () => {
 
   const selectedLocationId = useSelector(store => store.content.selectedLocationId)  
   const selectedLocation = useSelector(selectSelectedLocation(selectedLocationId))
-  if(selectedLocationId){
-    const { type, coordinates } = selectedLocation?.geometry || {}
-    const item = type === 'Polygon' ? L.polygon(coordinates) : L.polygon([coordinates])
-    map.flyToBounds(item.getBounds(), flyToOptions)  
-  }  
+
+  useEffect(() =>{
+    if(selectedLocationId){
+      const { type, coordinates } = selectedLocation?.geometry || {}
+      const item = type === 'Polygon' ? L.polygon(coordinates) : L.polygon([coordinates])
+      map.flyToBounds(item.getBounds(), flyToOptions)  
+    }  
+  }, [selectedLocationId, selectedLocation, map])  
 
   return null
 }
