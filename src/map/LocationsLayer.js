@@ -12,12 +12,38 @@ import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import * as L from 'leaflet'
 import 'leaflet-defaulticon-compatibility'
 
+const colors = ['red', 'green', 'blue', 'gray', 'yellow', 'purple', 'orange']
+const markerStyle = `width: 1.5rem;
+                    height: 1.5rem;
+                    display: block;
+                    position: relative;
+                    border-radius: 3rem 3rem 0;
+                    transform: rotate(45deg);
+                    border: 1px solid #FFFFFF`
+
 const LocationsLayer = () => {
   const map = useMap()
   const dispatch = useDispatch()
-  const selectedLocs = useSelector(selectLocations)
+  const selectedLocations = useSelector(selectLocations)
+  const selectedLocs = useSelector((store) => store.content.selectedLocs)
   const [layerGroup, dummy] = useState(L.layerGroup())
   layerGroup.addTo(map)
+
+  const getOptions = ({parId, loc}, color) => {
+    if(loc.geometry.type === 'Polygon'){
+      return {color,properties: loc.properties}      
+    }
+    const markerHtmlStyles = `background-color: ${color}; ${markerStyle}`
+
+    const icon = L.divIcon({
+      className: "my-custom-pin",
+      iconAnchor: [0, 24],
+      labelAnchor: [-6, 0],
+      popupAnchor: [-6, -20],
+      html: `<span style="${markerHtmlStyles}" />`
+    })
+    return {icon,properties: loc.properties}
+  }
 
   const handleLocClicked = (entity_location_id) => {
     if(entity_location_id !== null){
@@ -40,14 +66,20 @@ const LocationsLayer = () => {
     })
   }
 
-  layerGroup.clearLayers()
-  for (let index = 0; index < selectedLocs.length; index++) {
-    const geoLoc = selectedLocs[index];
-    const geoLayer = geoLoc.geometry.type === 'Polygon' ? L.polygon(geoLoc.geometry.coordinates, {properties: geoLoc.properties }) : 
-                                                          L.marker(geoLoc.geometry.coordinates, {properties: geoLoc.properties })
-    setupEvents(geoLayer, geoLoc)
-    layerGroup.addLayer(geoLayer)      
-  }
+  useEffect(() => {
+    layerGroup.clearLayers()
+    const colorsToEntId = {}
+    for (let index = 0; index < selectedLocations.length; index++) {    
+      const item = selectedLocations[index];
+      let color = colorsToEntId.hasOwnProperty(item.parId) ? colorsToEntId[item.parId] : colors[index%(colors.length)]
+      colorsToEntId[item.parId] = color
+      const geoLayer = item.loc.geometry.type === 'Polygon' ? L.polygon(item.loc.geometry.coordinates, getOptions(item, color)) :
+                                                              L.marker(item.loc.geometry.coordinates, getOptions(item, color))
+      setupEvents(geoLayer, item.loc)
+      layerGroup.addLayer(geoLayer)
+    }
+  },
+  [selectedLocs, layerGroup])
 
   return null
   

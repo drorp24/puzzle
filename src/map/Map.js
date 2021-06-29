@@ -10,6 +10,7 @@ import './leafletRtl.css'
 import { MapContainer, WMSTileLayer, LayersControl, LayerGroup } from 'react-leaflet'
 import { tileProviders, locations } from './config'
 import LocationsLayer from './LocationsLayer'
+import BoundingPolygon from './BoundingPolygon'
 
 const styles = {
   map: {
@@ -35,6 +36,7 @@ const Map = () => {
       </LayersControl>
       <FlyToLocation/>
       <LocationsLayer/>
+      <BoundingPolygon/>
     </MapContainer>
   )
 }

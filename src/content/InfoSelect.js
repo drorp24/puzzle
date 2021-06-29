@@ -1,15 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { useRef } from 'react'
-import { useDispatch } from 'react-redux'
-import { unSelectAllLocations, selectAllLocations } from '../redux/content'
+import { useDispatch, useSelector } from 'react-redux'
+import { toggleBoundingPolygon, unSelectAllLocations } from '../redux/content'
 import useTranslation from '../i18n/useTranslation'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
 import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
 import TextIcon from '@material-ui/icons/ChatOutlined'
 import TableIcon from '@material-ui/icons/TableChartOutlined'
+// import DoneAllIcon from '@material-ui/icons/DoneAll'
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline'
-import DoneAllIcon from '@material-ui/icons/DoneAll'
+import CropDin from '@material-ui/icons/CropDin'
 
 const styles = {
   infoSelection: {
@@ -31,6 +32,8 @@ const styles = {
 }
 
 const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
+  const showBoundingPolygon = useSelector((store) => store.content.showBoundingPolygon)
+  const file = useSelector((store) => store.content.file)
   const t = useTranslation()
   const timerRef = useRef()
   const dispatch = useDispatch()
@@ -61,11 +64,12 @@ const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
     setInfo(newInfo)
   }
 
+  const handleToggleAllLocs  =() => {    
+    dispatch(toggleBoundingPolygon())
+  }
+
   const handleUnselectAll  =() => {    
     dispatch(unSelectAllLocations())    
-  }
-  const handleSelectAll  =() => {    
-    dispatch(selectAllLocations())
   }
   return (
     <div css={styles.infoSelection}>
@@ -80,14 +84,11 @@ const InfoSelect = ({ info, setInfo, heights, setListHeight }) => {
         <ToggleButton value="table" css={styles.button} title={t('table')}>
           <TableIcon />
         </ToggleButton>
+        <ToggleButton disabled={!file} selected={showBoundingPolygon} css={styles.button} title={t('bounding polygon')}>
+          <CropDin css={styles.textIcon} onClick={handleToggleAllLocs}/>
+        </ToggleButton>
       </ToggleButtonGroup>
-      <ToggleButtonGroup
-        value={info}
-        size="small"
-        css={styles.buttonGroup}>
-        <DeleteOutlineIcon css={styles.deleteAll} onClick={handleUnselectAll}/>
-        <DoneAllIcon css={styles.deleteAll} onClick={handleSelectAll}/>
-      </ToggleButtonGroup>      
+      <DeleteOutlineIcon css={styles.deleteAll} onClick={handleUnselectAll}/>
     </div>
   )
 }

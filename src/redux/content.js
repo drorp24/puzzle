@@ -5,7 +5,7 @@ import {
   // current,
 } from '@reduxjs/toolkit'
 
-import {find, filter, map, flatten, flow} from "lodash/fp"
+import {find, filter, map} from "lodash/fp"
 
 // import { getFakeHebContent } from '../api/fakeEditorApiHeb'
 import { createEntitiesFromContent } from '../../src/editor/entities'
@@ -82,7 +82,7 @@ const initialState = contentAdapter.getInitialState({
   issues: [],
   selectedLocs: [],
   selectedLocIdOnMap: null,
-  reactFlowEntitiesPos: {}
+  showBoundingPolygon: false
 })
 
 const contentSlice = createSlice({
@@ -122,12 +122,8 @@ const contentSlice = createSlice({
       state.selectedLocs=[]
       state.selectedLocIdOnMap = null
     },
-    selectAllLocations: (state) => {
-      const allLocs = flow(
-        map((ent) => map(gLoc => ({parId: ent.data.id, locId: gLoc.properties.entity_location_id}), Object.values(ent.data.geoLocations))),
-        flatten)
-        (Object.values(state.entities))
-      state.selectedLocs = allLocs
+    toggleBoundingPolygon: (state) => {
+      state.showBoundingPolygon = !state.showBoundingPolygon
     },
     selectLocation: (state, { payload: {entity_location_id, parentId} }) => {
       state.selectedLocationId = entity_location_id
@@ -145,7 +141,6 @@ const contentSlice = createSlice({
     ) => {
       // Immer to the rescue
       state.entities[id].entityRanges[entityRangeIndex].position = position
-      // state.reactFlowEntitiesPos[id] = {entityRangeIndex: position}
     },
     positionShifted: (
       state,
@@ -328,7 +323,7 @@ export const selectLocations = (
   for (let index = 0; index < selectedLocs.length; index++) {
     const loc = selectedLocs[index]
     const geoLoc = entities[loc.parId].data.geoLocations[loc.locId];
-    locations.push(geoLoc)
+    locations.push({parId: loc.parId, loc: geoLoc})
   }
   return locations
 }
@@ -362,8 +357,8 @@ export const {
   updatePosition,
   positionShifted,
   select,
+  toggleBoundingPolygon,
   unSelectAllLocations,
-  selectAllLocations,
   selectLocation,
   selectLocationIdOnMap,
   selected,
