@@ -1,15 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import {getOr, map, find, sum} from 'lodash/fp'
-import { memo, useRef, useEffect } from 'react'
+import {map, find} from 'lodash/fp'
+import { useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { unwrapResult } from '@reduxjs/toolkit'
-import { selectContent, selectIds, updateFeedback, selectLocation } from '../redux/content'
+import { selectContent,updateFeedback, selectLocation } from '../redux/content'
 import { postFeedback, error } from '../redux/feedback'
 
 import { useLocale, useMode } from '../utility/appUtilities'
-
-import { FixedSizeList as List } from 'react-window'
-import AutoSizer from 'react-virtualized-auto-sizer'
 
 import ToggleButton from '@material-ui/core/ToggleButton'
 import ToggleButtonGroup from '@material-ui/core/ToggleButtonGroup'
@@ -55,6 +52,9 @@ const styles = {
     border: '3px solid rgba(0, 0, 0, 0.2)',
   },
   cell: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -118,12 +118,13 @@ const styles = {
 
 const Table = () => {
   // the 'entities' selector maintains entities' sort order
-  const {selectedLocs, error, isLoading, selectedLocIdOnMap } = useSelector(selectContent)
-  const itemCount = selectedLocs?.length
-  const itemSize = usePixels(4)
+  const {selectedLocs, error, isLoading, selectedLocIdOnMap, doc_id, entities } = useSelector(selectContent)
+  const { mode } = useSelector(store => store.app)
+  const itemSize = usePixels(3.5)
   const { direction } = useLocale()
   const { light } = useMode()
   const outerRef = useRef()
+  const dispatch = useDispatch()
 
   const backgroundColor = light ? '#fff' : 'rgba(0, 0, 0, 0.3)'
 
@@ -145,41 +146,26 @@ const Table = () => {
   if (isLoading) return null
 
   return (
-    <AutoSizer style={styles.autoSizer}>
-      {({ height, width }) => {
-        height -= itemSize
-        return (
-          <Paper
+    <Paper
             square={false}
             elevation={3}
             css={styles.paper}
-            style={{ backgroundColor }}
+            style={{ backgroundColor, height:'100%' }}
           >
             <Header
               style={{ ...styles.row, ...styles.header, height: itemSize }}
-            />
-            <List
-              overscanCount="30"
-              outerRef={outerRef}
-              css={noScrollbar}
-              style={{ width: '100%' }}
-              {...{ height, width, itemCount, itemSize, direction }}
-            >
-              {Row}
-            </List>
-          </Paper>
-        )
-      }}
-    </AutoSizer>
+            />    
+      <div ref={outerRef} css={noScrollbar} style={{height:'100%', overflow: 'scroll'}}>
+        <div>
+          {map.convert({'cap': false})((item, index) => rowRenderer({index,doc_id, selectedLocs, entities, mode, dispatch, itemHeight: itemSize}), selectedLocs)}
+        </div>        
+      </div>      
+    </Paper>
   )
 }
 
 // ToDo: style tag buttons properly when row is selected
-
-const Row = memo(({ index, style }) => {
-  const { doc_id, selectedLocs, entities } = useSelector(selectContent)
-  const { mode } = useSelector(store => store.app)
-  const dispatch = useDispatch()
+const rowRenderer = ({ index, doc_id, selectedLocs, entities, mode, dispatch, itemHeight }) => {
   const parentEntity = find(ent => ent.data.id === selectedLocs[index].parId,entities)
   const {
     type,
@@ -198,7 +184,7 @@ const Row = memo(({ index, style }) => {
       : mode === 'light'
       ? styles.lightEven
       : styles.darkEven
-  const line = { lineHeight: `${style.height}px` }
+  // const line = { lineHeight: `${style.height}px` }
 
   const selectedRow = {}
   const selectedTagIcon = {}
@@ -248,16 +234,14 @@ const Row = memo(({ index, style }) => {
   }
 
   return (
-    <div
-    onClick={markSelected}
+    <div      
+      onClick={markSelected}
       css={{
-        ...style,
         ...styles.row,
         ...bg,
-        ...line,
+           height: itemHeight,
         ...selectedRow,
       }}
-      style={style}
     >
       <Cell
         value={type}
@@ -268,6 +252,7 @@ const Row = memo(({ index, style }) => {
       <Cell value={place_type} cellStyle={{ ...styles.cell, ...styles.left}}/>
       <Cell value={text} cellStyle={{ ...styles.cell}}/>
       <Cell value={score} cellStyle={{ ...styles.cell, ...styles.dimText, textAlign: 'center' }} />
+      {/* <Cell icon={<Info/>} value={geoLocation?.properties?.explain}/> */}
       <Tooltip
         title={<EntityDetails {...{ entity: parentEntity, entity_location_id }} />}
         arrow
@@ -286,9 +271,9 @@ const Row = memo(({ index, style }) => {
       <Feedback {...{ feedback, tagClick, tagState, selectedTagIcon }} />
     </div>
   )
-})
+}
 
-const Feedback = memo(
+const Feedback = 
   ({ feedback, tagClick, tagState, selectedTagIcon }) => {
     const { capitalPlacement, capitalAntiPlacement } = useLocale()
     const styles = {
@@ -346,9 +331,8 @@ const Feedback = memo(
       </ToggleButtonGroup>
     )
   }
-)
 
-const Header = memo(({ style }) => {
+const Header = ({ style }) => {
   const intl = useIntl()
   const line = { lineHeight: `${style.height}px` }
 
@@ -383,7 +367,7 @@ const Header = memo(({ style }) => {
       />
     </div>
   )
-})
+}
 
 const Cell = ({ value, icon, cellStyle }) => {
   // const alignment = typeof value === 'number' ? { textAlign: 'right' } : {}
