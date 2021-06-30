@@ -37,5 +37,6 @@
   "score": "ציון",
   "info": "הסבר",
   "tag": "תיוג",
-  "logout": "יציאה"
+  "logout": "יציאה",
+  "bounding polygon": "תיחום מסמך"
 }

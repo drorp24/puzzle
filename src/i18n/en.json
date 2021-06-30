@@ -37,5 +37,6 @@
   "score": "Score",
   "info": "Info",
   "tag": "Tag",
-  "logout": "Log out"
+  "logout": "Log out",
+  "bounding polygon": "bounding polygon"
 }
