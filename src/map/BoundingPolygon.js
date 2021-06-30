@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 // import {map} from "lodash/fp"
+import turf from "turf"
 import { useEffect, useState} from 'react'
 import { useSelector } from 'react-redux'
 import { useMap } from 'react-leaflet'
@@ -20,6 +21,7 @@ const BoundingPolygon = () => {
   const showBoundingPolygon = useSelector((store) => store.content.showBoundingPolygon)
   const allEntities = useSelector((store) => store.content.entities)
 
+
   useEffect(()=>{    
     if(!showBoundingPolygon){
       layerGroup.clearLayers()
@@ -32,20 +34,19 @@ const BoundingPolygon = () => {
         const entityLocs = Object.values(entity.data.geoLocations)
         for (let index = 0; index < entityLocs.length; index++) {
           const geoLoc = entityLocs[index];
-          const geoLayer = geoLoc.geometry.type === 'Polygon' ? L.polygon(geoLoc.geometry.coordinates) : 
-                                                                L.marker(geoLoc.geometry.coordinates)
-          allLayers.push(geoLayer)                    
+          if(geoLoc.geometry.type === 'Point'){
+            const geoLayer = turf.point(geoLoc.geometry.coordinates)
+            allLayers.push(geoLayer)                    
+          }          
         }        
       }
-      const featureGroup = L.featureGroup(allLayers)
-      const bounds = featureGroup.getBounds()
-      const boundingPolygonLayer = L.polygon([
-        bounds.getNorthWest(),bounds.getNorthEast(),
-        bounds.getSouthEast(), bounds.getSouthWest(),
-        bounds.getNorthWest()])
+
+      const points = turf.featureCollection(allLayers);
+      const convex = turf.convex(points)
+      const boundingPolygonLayer = L.polygon(convex.geometry.coordinates)
       layerGroup.addLayer(boundingPolygonLayer)
     }
-  }, [showBoundingPolygon, allEntities, layerGroup])
+  }, [showBoundingPolygon])
 
   return null
   
