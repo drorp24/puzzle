@@ -57,15 +57,15 @@ export default function App() {
                     <ProtectedRoute exact path="/">
                       <Redirect to="/home/locations" />
                     </ProtectedRoute>
-                    {/* <ProtectedRoute path="/home">
+                    <ProtectedRoute path="/home">
                       <Home />
-                    </ProtectedRoute> */}
+                    </ProtectedRoute>
                     <Route path="/home">
                       <Home />
                     </Route>
-                    {/* <Route path="/login">
+                    <Route path="/login">
                       <Login />
-                    </Route> */}
+                    </Route>
                     <Route path="/simulateerror">
                       <SimulateError />
                     </Route>
