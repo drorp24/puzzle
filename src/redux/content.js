@@ -196,6 +196,7 @@ const contentSlice = createSlice({
       state.selectedLocs = []
       state.selectedLocationId = null
       state.selectedLocIdOnMap = null
+      state.showBoundingPolygon = null
       if (state.loading === 'idle') {
         state.currentRequestId = requestId
         state.loading = 'pending'
