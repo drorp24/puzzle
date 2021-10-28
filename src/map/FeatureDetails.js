@@ -9,23 +9,29 @@ import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
 import Divider from '@material-ui/core/Divider'
 import grey from '@material-ui/core/colors/grey'
-const Row = ({ a, b }) => {  
+const Row = ({ a, b }) => {
   const styles = {
-    row: {
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      direction: 'rtl',
+    row: {            
+      direction: 'ltr',
       width: '100%',
       display: 'flex',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       alignItems: 'center',
+    },
+    title:{      
+      minWidth: '100px',
+      flex: 1,
+    },
+    data:{
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      flex: 2,
     },
   }
   return (
     <div css={styles.row}>
-      <span>{a}</span>
-      <span style={{width:'30px'}}></span>
-      <span>{b}</span>
+      <span css={styles.title}>{b}</span>
+      <span css={styles.data}>{a}</span>
     </div>
   )
 }
@@ -42,11 +48,15 @@ const FeatureDetails = ({ properties: {details, headers, place_type, text} }) =>
       overflow: 'scroll',
       ...noScrollbar,
     },
-    header: {
+    header: {      
+      '& .MuiCardHeader-content': {
+        display: 'flex',
+        justifyContent: 'center',
+      },      
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
       // position: 'absolute',
-      direction: 'rtl',
+      direction: 'ltr',
       top: 0,
       width: '100%',
       height: '5rem',

@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv'
 import { StrictMode } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
+import 'typeface-roboto'
 import store from './redux/store'
 
 import ReactDOM from 'react-dom'

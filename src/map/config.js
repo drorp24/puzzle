@@ -78,7 +78,8 @@ export const tileProviders = [
 ]
 
 export const locations = {
-  home: [32.1249061, 34.8286079],
+  // home: [32.1249061, 34.8286079],
+  home: [31.4198, 34.3493],
   away: [31.4388035, 34.3936352],
 }
 

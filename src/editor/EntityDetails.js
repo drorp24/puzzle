@@ -30,10 +30,11 @@ export const EntityDetails = ({ entity: { type, data }, entity_location_id }) =>
   const explanation = geoLocation?.properties?.explain 
 
   const styles = {
-    root: {
+    root: {      
       backgroundColor: 'transparent !important',
     },            
     explainer: {
+      width: '12rem',
       height: '8rem',
       padding: '0.5rem',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
